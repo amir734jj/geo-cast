@@ -1,0 +1,40 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+@Module({
+  imports: [
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const defaultOptions = {
+          applicationName: configService.get<string>('APP_NAME'),
+          synchronize: true,
+          migrationsRun: false,
+          logging: false,
+          autoLoadEntities: true,
+          cache: true,
+        };
+
+        if (configService.get<string>('ENV') === 'Production') {
+          return {
+            ...defaultOptions,
+            type: 'postgres',
+            url: configService.getOrThrow<string>('DATABASE_URL'),
+            extra: {
+              ssl: true,
+            },
+          };
+        } else {
+          return {
+            ...defaultOptions,
+            type: 'sqlite',
+            database: 'database.sqlite',
+          };
+        }
+      },
+    }),
+  ],
+})
+export default class DatabaseModule {}
