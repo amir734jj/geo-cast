@@ -1,0 +1,22 @@
+<div class="container">
+  <h2>Users</h2>
+  <p>This is the list of all types of users including 1) contractors, 2) homeowners 3) internal-users):</p>
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th> Name </th>
+      <th> Email </th>
+      <th> Role </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let user of users">
+      <td> {{ user.name }} </td>
+      <td> {{ user.email }} </td>
+      <td>
+        <!-- <span class="label label-default" > {{ roleToString(user.role) }} </span> -->
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
