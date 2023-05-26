@@ -1,0 +1,17 @@
+{
+  "name": "geo-cast",
+  "version": "1.0.0",
+  "description": "monorepo containing geo-cast services",
+  "workspaces": [
+    "lib",
+    "api",
+    "ui"
+  ],
+  "author": "Amir Hesamian",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "luxon": "^3.3.0",
+    "nanoid": "^3.3.6",
+    "url-join": "^5.0.0"
+  }
+}

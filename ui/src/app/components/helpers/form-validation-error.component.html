@@ -1,0 +1,12 @@
+<div class="alert alert-danger" *ngIf="errorTable.length">
+  <ul>
+    <li *ngFor="let error of errorTable">
+      Validation failed for '{{ error.key }}' because of validation rule '{{ error.keyError }}'
+      <ul>
+        <li *ngFor="let recipient of error.validationError | keyvalue">
+          {{recipient.key}}: {{recipient.value}}
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
