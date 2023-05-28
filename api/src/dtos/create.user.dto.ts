@@ -1,8 +1,9 @@
 import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
 import LoginUserDto from './login.user.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { RegisterType } from "@geo-cast/lib/dtos/account";
 
-export default class CreateUserDto extends LoginUserDto {
+export default class CreateUserDto extends LoginUserDto implements RegisterType {
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
@@ -12,4 +13,9 @@ export default class CreateUserDto extends LoginUserDto {
   @IsString()
   @IsNotEmpty()
   public name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  public password: string;
 }
