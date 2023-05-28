@@ -102,7 +102,7 @@ export default class AuthService {
   public async refreshToken(user: User): Promise<string> {
     if (user.tokens.length >= 10) {
       throw new BadRequestException(
-        'User cannot have more than 10 active JWT tokens.',
+        'UserAccount cannot have more than 10 active JWT tokens.',
       );
     }
 
