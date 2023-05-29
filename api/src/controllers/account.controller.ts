@@ -15,11 +15,12 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import LoginUserDto from '../dtos/login.user.dto';
-import CreateUserDto from '../dtos/create.user.dto';
+import LoginUserDto from '../dto/login.user.dto';
+import CreateUserDto from '../dto/create.user.dto';
 import AuthService from '../services/auth.service';
 import JwtAuthGuard from '../guards/jwt-auth.guard';
 import User from '../models/users.model';
+import ProfileDto from 'src/dto/profile.user.dto';
 
 @ApiTags('account')
 @Controller('account')
@@ -65,6 +66,19 @@ export default class AccountController {
   @ApiForbiddenResponse({ description: 'Forbidden.' })
   async logout(@Request() req): Promise<User | null> {
     return await this.authService.logout(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('profile')
+  @ApiOkResponse({
+    description: 'Successfully updated user profile',
+  })
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
+  @ApiBadRequestResponse({
+    description: 'Failed to update profile',
+  })
+  async updateProfile(@Request() req, @Body() profile: ProfileDto): Promise<User> {
+    return await this.authService.updateProfile(req.user, profile);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -1,12 +1,12 @@
 import { IsString, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { LoginType } from '@geo-cast/lib/dtos/account';
+import { LoginType } from '@geo-cast/lib/dto/account';
 
 export default class LoginUserDto implements LoginType {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  public username: string;
+  public email: string;
 
   @ApiProperty()
   @IsString()

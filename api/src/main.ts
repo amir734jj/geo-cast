@@ -17,6 +17,7 @@ async function bootstrap() {
   app.use(compression());
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.setGlobalPrefix('api');
 
   const options = new DocumentBuilder()
     .setTitle('Nest.js API')
@@ -26,7 +27,7 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
 
-  const port = config.get<number>('PORT') || 3000;
+  const port = config.get<number>('PORT') || 5000;
 
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('swagger', app, document);
