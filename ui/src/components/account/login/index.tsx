@@ -1,60 +1,102 @@
 import { useForm } from 'react-hook-form';
 import { Button, Form, FormGroup } from 'react-bootstrap';
 import useAuthStore from "../../../stores/auth.store";
-import {useState} from "react";
-import {LoginType} from "../../../../../lib/dtos/account";
+import { useEffect, useState } from "react";
+import { LoginType } from "../../../../../lib/dto/account";
 import { login as LoginAction, accountInfo as accountInfoAction } from '../../../actions';
-import {redirect} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { AlertDismissible, Spinner } from '../../common';
+import * as yup from "yup";
+import { yupResolver } from '@hookform/resolvers/yup';
+import { AxiosError } from 'axios';
 
 type LoginFormPropType = {
   loginHandler: (arg: LoginType) => void
 };
 
+const schema = yup.object({
+  email: yup
+    .string()
+    .email("must be a valid email")
+    .required(),
+  password: yup
+    .string()
+    .min(8, "must be at least 8 characters long")
+    .max(20, "must be at most 20 characters long")
+    .required(),
+}).required();
+
 const LoginForm = ({ loginHandler }: LoginFormPropType) => {
-  const { register: formRegister, handleSubmit, formState: { errors } } = useForm<LoginType>();
+  const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<LoginType>({
+    resolver: yupResolver(schema)
+  });
+
+  const [validated, setValidated] = useState(false);
+
+  useEffect(() => {
+    setValidated(isValid);
+  }, [errors, isValid]);
 
   return (
-    <Form onSubmit={handleSubmit(loginHandler)} className="pure-form pure-form-aligned">
-      <FormGroup>
-        <Form.Label htmlFor="username">Username</Form.Label>
+    <Form onSubmit={handleSubmit(loginHandler)} className="pure-form pure-form-aligned" validated={validated}>
+      <FormGroup className='mb-3' controlId="email">
+        <Form.Label>Email</Form.Label>
         <Form.Control
-          id="username"
           className="form-control"
-          {...formRegister("username", { required: true, maxLength: 20 })}
+          type="email"
+          isInvalid={!!errors.email}
+          {...formRegister("email")}
         />
-        {errors.username && <Form.Control.Feedback type="invalid">This field is required</Form.Control.Feedback>}
+        <Form.Text className="text-muted">
+          We will never share your email with anyone else.
+        </Form.Text>
+        {errors.email ? <Form.Control.Feedback type="invalid">{errors.email.message}</Form.Control.Feedback> : null}
       </FormGroup>
-      <FormGroup>
-        <Form.Label htmlFor="password">Password</Form.Label>
+      <FormGroup className='mb-3' controlId="password">
+        <Form.Label>Password</Form.Label>
         <Form.Control
-          id="password"
           className="form-control"
-          {...formRegister("password", { required: true, maxLength: 20 })}
+          isInvalid={!!errors.password}
+          type="password"
+          {...formRegister("password")}
         />
-        {errors.password && <Form.Control.Feedback type="invalid">This field is required</Form.Control.Feedback>}
+        <Form.Text className="text-muted">
+          Password has to be between 8 to 20 characters log
+        </Form.Text>
+        {errors.password ? <Form.Control.Feedback type="invalid">{errors.password.message}</Form.Control.Feedback> : null}
       </FormGroup>
-      <Button type="submit">Submit</Button>
+      <Button variant="primary" type="submit">Submit</Button>
     </Form>
   );
 };
 
 const Login = () => {
+  const [error, setError] = useState<string | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const authContext = useAuthStore();
+  const navigate = useNavigate();
 
   const loginHandler = async (arg: LoginType) => {
-    const {data: token} = await LoginAction(arg);
-    authContext.setToken(token);
-    const {data: user} = await accountInfoAction();
-    authContext.login(user);
-    setLoggedIn(true);
+    try {
+      const { data: token } = await LoginAction(arg);
+      authContext.setToken(token);
+      const { data: user } = await accountInfoAction();
+      authContext.setUser(user);
+      setLoggedIn(true);
+      navigate("/");
+    } catch (e) {
+      setError((e as AxiosError).message);
+    }
   }
 
   if (loggedIn) {
-    return redirect("/");
+    return <Spinner />
   }
 
-  return <LoginForm loginHandler={loginHandler} />;
+  return <>
+    {error ? <AlertDismissible header='logging in failed' variant='danger' message={error} /> : null}
+    <LoginForm loginHandler={loginHandler} />
+  </>;
 }
 
 export default Login;
