@@ -1,22 +1,18 @@
-import {useEffect, useState} from 'react';
-import { redirect } from "react-router-dom";
+import { useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../../stores/auth.store";
-import {Spinner} from "../../common";
+import { Spinner } from "../../common";
 
 const Logout = () => {
-  const [loggedOut, setLoggedOut] = useState(false);
   const authContext = useAuthStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     authContext.logout();
-    setLoggedOut(true);
+    navigate("/");
   }, [authContext])
 
-  if (loggedOut) {
-    return redirect("/");
-  } else {
-    return <Spinner />
-  }
+  return <Spinner />;
 }
 
 export default Logout;
