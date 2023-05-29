@@ -7,12 +7,12 @@ const Header = () => {
   const authenticated = !!authContext?.auth;
 
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar bg="light" expand="lg" collapseOnSelect>
       <Container>
         <Navbar.Brand href="/">GEO-CAST</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mr-auto">
+          <Nav className="me-auto">
             <LinkContainer to="/home">
               <Nav.Link>Board</Nav.Link>
             </LinkContainer>
@@ -20,8 +20,8 @@ const Header = () => {
               <Nav.Link>About</Nav.Link>
             </LinkContainer>
           </Nav>
-          <Nav className="ml-auto">
-            {!authenticated ? (
+          <Nav>
+            {!authenticated ?
               <>
                 <LinkContainer to="/register">
                   <Nav.Link>Register</Nav.Link>
@@ -30,7 +30,7 @@ const Header = () => {
                   <Nav.Link>Login</Nav.Link>
                 </LinkContainer>
               </>
-            ) : (
+              :
               <>
                 <LinkContainer to="/manage">
                   <Nav.Link>Manage</Nav.Link>
@@ -42,7 +42,7 @@ const Header = () => {
                   <Nav.Link>Logout</Nav.Link>
                 </LinkContainer>
               </>
-            )}
+            }
           </Nav>
         </Navbar.Collapse>
       </Container>

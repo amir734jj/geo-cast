@@ -1,10 +1,11 @@
 import { BrowserRouter } from 'react-router-dom';
 import Router from './router';
-import { Header, Main, Footer } from "./components/layout";
+import { Header, Main, Footer, JWT } from "./components/layout";
 
 function App() {
   return (
     <BrowserRouter>
+      <JWT />
       <header>
         <Header />
       </header>

@@ -1,84 +1,135 @@
-import React, {useState} from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { connect } from 'react-redux';
 import { Button, Form, FormGroup } from 'react-bootstrap';
-import { register as registerAction } from '../../actions';
-import { AlertDismissible } from '../common';
-import useAuthStore from "../../../stores/auth.store.ts";
-import {LoginType, UserType} from "../../../../../lib/dtos/account";
-import {register as registerAction} from "../../../actions";
-import {redirect} from "react-router-dom";
+import { RegisterType } from "../../../../../lib/dto/account";
+import { register as registerAction } from "../../../actions";
+import { useNavigate } from "react-router-dom";
+import { PasswordType } from '../../../types/password.input';
+import { AlertDismissible, Spinner } from '../../common';
+import * as yup from "yup";
+import { yupResolver } from '@hookform/resolvers/yup';
+import { AxiosError } from 'axios';
 
-const RegisterForm = ({ registerHandler }) => {
-  const { register: formRegister, handleSubmit, watch, formState: { errors } } = useForm<UserType>();
-  formState.er
+type RegisterFormPropType = {
+  registerHandler: (arg: RegisterType) => void
+};
+
+const schema = yup.object({
+  name: yup
+    .string()
+    .min(3, "must be at least 3 characters long")
+    .max(20, "must be at most 20 characters long")
+    .required(),
+  email: yup
+    .string()
+    .email("must be a valid email")
+    .required(),
+  password: yup
+    .string()
+    .min(8, "must be at least 8 characters long")
+    .max(20, "must be at most 20 characters long")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character'
+    )
+    .required(),
+  password_confirmation: yup
+    .string()
+    .oneOf([yup.ref('password')], 'passwords do not match')
+    .required(),
+}).required();
+
+const RegisterForm = ({ registerHandler }: RegisterFormPropType) => {
+  const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<RegisterType & PasswordType>({
+    resolver: yupResolver(schema)
+  });
+
+  const [validated, setValidated] = useState(false);
+
+  useEffect(() => {
+    setValidated(isValid);
+  }, [errors, isValid]);
+
   return (
-    <div className="mt-3">
-      <Form onSubmit={handleSubmit(registerHandler)} className="pure-form pure-form-aligned">
-        <FormGroup>
-          <Form.Label htmlFor="name">Name</Form.Label>
-          <Form.Control
-            id="name"
-            className="form-control"
-            {...formRegister("name", { required: true, maxLength: 20 })}
-          />
-          {errors.name && <Form.Control.Feedback type="invalid">This field is required</Form.Control.Feedback>}
-        </FormGroup>
-        <FormGroup>
-          <Form.Label htmlFor="email">Email</Form.Label>
-          <Form.Control
-            id="email"
-            className="form-control"
-            {...formRegister("email", { required: true, maxLength: 20 })}
-          />
-          {errors.email && <Form.Control.Feedback type="invalid">This field is required</Form.Control.Feedback>}
-        </FormGroup>
-        <FormGroup>
-          <Form.Label htmlFor="username">Username</Form.Label>
-          <Form.Control
-            id="username"
-            className="form-control"
-            {...formRegister("username", { required: true, maxLength: 20 })}
-          />
-          {errors.username && <Form.Control.Feedback type="invalid">This field is required</Form.Control.Feedback>}
-        </FormGroup>
-        <FormGroup>
-          <Form.Label htmlFor="password">Password</Form.Label>
-          <Form.Control
-            id="password"
-            className="form-control"
-            {...formRegister("password", { required: true, maxLength: 20 })}
-          />
-          {errors.password && <Form.Control.Feedback type="invalid">This field is required</Form.Control.Feedback>}
-        </FormGroup>
-        <FormGroup>
-          <Form.Label htmlFor="passwordConfirmation">Password Confirmation</Form.Label>
-          <Form.Control
-            id="password"
-            className="form-control"
-            {...formRegister("password", { required: true, maxLength: 20 })}
-          />
-          {errors.passwordConfirmation && <Form.Control.Feedback type="invalid">This field is required</Form.Control.Feedback>}
-        </FormGroup>
-        <Button type="submit">Submit</Button>
-      </Form>
-    </div>
+    <Form onSubmit={handleSubmit(registerHandler)} className="pure-form pure-form-aligned" validated={validated}>
+      <FormGroup className='mb-3' controlId="name">
+        <Form.Label>Name</Form.Label>
+        <Form.Control
+          className="form-control"
+          isInvalid={!!errors.name}
+          {...formRegister("name")}
+        />
+        <Form.Text className="text-muted">
+          Password has to be at least 3 characters log
+        </Form.Text>
+        {errors.name ? <Form.Control.Feedback type="invalid">{errors.name.message}</Form.Control.Feedback> : null}
+      </FormGroup>
+      <FormGroup className='mb-3' controlId="email">
+        <Form.Label>Email</Form.Label>
+        <Form.Control
+          className="form-control"
+          isInvalid={!!errors.email}
+          {...formRegister("email")}
+        />
+        <Form.Text className="text-muted">
+          We will never share your email with anyone else.
+        </Form.Text>
+        {errors.email ? <Form.Control.Feedback type="invalid">{errors.email.message}</Form.Control.Feedback> : null}
+      </FormGroup>
+      <FormGroup className='mb-3' controlId="password">
+        <Form.Label>Password</Form.Label>
+        <Form.Control
+          className="form-control"
+          isInvalid={!!errors.password}
+          type="password"
+          {...formRegister("password")}
+        />
+        <Form.Text className="text-muted">
+          Password has to be between 8 to 20 characters log
+        </Form.Text>
+        {errors.password ? <Form.Control.Feedback type="invalid">{errors.password.message}</Form.Control.Feedback> : null}
+      </FormGroup>
+      <FormGroup className='mb-3' controlId="confirm_password">
+        <Form.Label>Password Confirmation</Form.Label>
+        <Form.Control
+          className="form-control"
+          isInvalid={!!errors.password_confirmation}
+          type="password"
+          {...formRegister("password_confirmation")}
+        />
+        <Form.Text className="text-muted">
+          Password confirmation must match the password
+        </Form.Text>
+        {errors.password_confirmation ? <Form.Control.Feedback type="invalid">{errors.password_confirmation.message}</Form.Control.Feedback> : null}
+      </FormGroup>
+      <Button type="submit">Submit</Button>
+    </Form>
   );
 };
 
 const Register = () => {
+  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
   const [registered, setRegistered] = useState(false);
 
-  const registerHandler = async (arg: UserType) => {
-    await registerAction(arg);
-    setRegistered(true);
+  const registerHandler = async (arg: RegisterType) => {
+    try {
+      await registerAction(arg);
+      setRegistered(true);
+      navigate("/login");
+    } catch (e) {
+      setError((e as AxiosError).message);
+    }
   }
 
   if (registered) {
-    return redirect("/login");
+    return <Spinner />
   }
 
-  return <RegisterForm registerHandler={registerHandler} />;
+  return <>
+    {error ? <AlertDismissible header='registering failed' variant='danger' message={error} /> : null}
+    <RegisterForm registerHandler={registerHandler} />
+  </>;
 }
 
 export default Register;
