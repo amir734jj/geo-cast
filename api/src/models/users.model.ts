@@ -12,11 +12,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import IEntity from 'src/interfaces/entity.interface';
 import Role from './roles.model';
-import { UserType } from '@geo-cast/lib/dtos/account';
+import { ProfileType, UserType } from '@geo-cast/lib/dto/account';
 
 @Entity()
-@Unique(['username'])
-export default class User implements IEntity, UserType {
+@Unique(['email'])
+export default class User implements IEntity, UserType, ProfileType {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
@@ -27,11 +27,11 @@ export default class User implements IEntity, UserType {
 
   @ApiProperty()
   @Column({ length: 256, default: '' })
-  name: string;
+  location: string;
 
   @ApiProperty()
-  @Column({ length: 256 })
-  username: string;
+  @Column({ length: 256, default: '' })
+  name: string;
 
   @ApiProperty()
   @Column({ length: 256, default: '' })

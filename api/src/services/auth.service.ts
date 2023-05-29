@@ -1,9 +1,9 @@
 import * as bcrypt from 'bcrypt';
-import LoginUserDto from '../dtos/login.user.dto';
+import LoginUserDto from '../dto/login.user.dto';
 import { DataStoredInToken } from '../interfaces/auth.interface';
 import { DateTime } from 'luxon';
 import UserService from './users.service';
-import CreateUserDto from '../dtos/create.user.dto';
+import CreateUserDto from '../dto/create.user.dto';
 import User from '../models/users.model';
 import TokenService from './token.service';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
@@ -17,6 +17,7 @@ import RoleService from './role.service';
 import Role from '../models/roles.model';
 import { ADMIN_ROLE, BASIC_ROLE } from '../constants/role.constant';
 import { UserRole } from '../enums/role.enum';
+import ProfileDto from 'src/dto/profile.user.dto';
 
 @Injectable()
 export default class AuthService {
@@ -28,7 +29,7 @@ export default class AuthService {
     private readonly roleService: RoleService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   public async register(userData: CreateUserDto): Promise<User> {
     const count = await this.userService.count({ active: true });
@@ -51,7 +52,7 @@ export default class AuthService {
 
   public async login(loginUserDto: LoginUserDto): Promise<string | null> {
     let user = await this.userService.find({
-      username: loginUserDto.username,
+      email: loginUserDto.email,
     });
     if (
       user &&
@@ -100,9 +101,9 @@ export default class AuthService {
   }
 
   public async refreshToken(user: User): Promise<string> {
-    if (user.tokens.length >= 10) {
+    if (user.tokens.length >= 20) {
       throw new BadRequestException(
-        'UserAccount cannot have more than 10 active JWT tokens.',
+        'UserAccount cannot have more than 20 active JWT tokens.',
       );
     }
 
@@ -142,6 +143,21 @@ export default class AuthService {
     }
 
     return await this.userService.update(userId, { ...user, active });
+  }
+
+  public async updateProfile(
+    { id: userId }: User,
+    info: ProfileDto,
+  ): Promise<User | null> {
+    const user = await this.userService.get(userId);
+
+    if (!user) {
+      Logger.log('Failed to find the user {}', userId);
+
+      return null;
+    }
+
+    return await this.userService.update(userId, info);
   }
 
   public async setUserRole(
@@ -199,7 +215,7 @@ export default class AuthService {
     return await bcrypt.hash(
       _.toString({
         random: nanoid(),
-        username: user.username,
+        email: user.email,
         password: user.password,
       }),
       this.salt,
@@ -226,7 +242,7 @@ export default class AuthService {
     return {
       userId: user.id,
       tokenId: token.id,
-      username: user.username,
+      email: user.email,
       token: token.value,
     };
   }
