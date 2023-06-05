@@ -1,8 +1,8 @@
 import { Container } from "react-bootstrap";
-import { ReactChildrenArg } from "../../../types/react.children";
+import { ReactChildrenArg } from "../../../types";
 
 const Main = ({ children }: ReactChildrenArg) => {
-  return <div className="mt-4">
+  return <div className="mx-1 mt-2">
     <Container>
       {children}
     </Container>
