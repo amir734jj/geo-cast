@@ -2,18 +2,18 @@ import { UserType } from "../../../lib/dto/account";
 import store from 'store';
 import { create } from "zustand";
 
-export type AuthState = {
+export type AuthStateType = {
   auth: UserType | null;
   token: string | null;
 };
 
-export type AuthActions = {
+export type AuthActionsType = {
   setUser: (user: UserType) => void,
   logout: () => void,
   setToken: (token: string) => void
 };
 
-const useAuthStore = create<AuthState & AuthActions>()((set) => ({
+export const useAuthStore = create<AuthStateType & AuthActionsType>()((set) => ({
   auth: null,
   token: store.get("token", null),
   setToken: (token: string) => {
@@ -28,5 +28,3 @@ const useAuthStore = create<AuthState & AuthActions>()((set) => ({
     set({ auth: null, token: null });
   }
 }));
-
-export default useAuthStore;

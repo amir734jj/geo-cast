@@ -4,7 +4,7 @@ import { Button, Form, FormGroup } from 'react-bootstrap';
 import { RegisterType } from "../../../../../lib/dto/account";
 import { register as registerAction } from "../../../actions";
 import { useNavigate } from "react-router-dom";
-import { PasswordType } from '../../../types/password.input';
+import { PasswordType } from '../../../types';
 import { AlertDismissible, Spinner } from '../../common';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -18,7 +18,7 @@ const schema = yup.object({
   name: yup
     .string()
     .min(3, "must be at least 3 characters long")
-    .max(20, "must be at most 20 characters long")
+    .max(30, "must be at most 30 characters long")
     .required(),
   email: yup
     .string()
@@ -27,7 +27,7 @@ const schema = yup.object({
   password: yup
     .string()
     .min(8, "must be at least 8 characters long")
-    .max(20, "must be at most 20 characters long")
+    .max(30, "must be at most 30 characters long")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
       'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character'
@@ -39,8 +39,10 @@ const schema = yup.object({
     .required(),
 }).required();
 
+type SchemaType = yup.InferType<typeof schema> & RegisterType & PasswordType;
+
 const RegisterForm = ({ registerHandler }: RegisterFormPropType) => {
-  const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<RegisterType & PasswordType>({
+  const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<SchemaType>({
     resolver: yupResolver(schema)
   });
 

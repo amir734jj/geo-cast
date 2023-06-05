@@ -7,7 +7,7 @@ import Home from "./components/home";
 import Error from "./components/error";
 import About from "./components/about";
 import { Login, Logout, Register } from "./components/account";
-import useAuthStore from "./stores/auth.store";
+import { useAuthStore } from "./stores/auth.store";
 import Profile from "./components/profile";
 
 const Router = () => {

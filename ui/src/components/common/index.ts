@@ -1,5 +1,5 @@
 import AlertDismissible from './alert-dismissible';
 import TagsInput from './tag-input';
-import Spinner from './Spinner';
+import Spinner from './spinner';
 
 export { AlertDismissible, TagsInput, Spinner };

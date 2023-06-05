@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { Button, Form, FormGroup } from 'react-bootstrap';
-import useAuthStore from "../../../stores/auth.store";
+import { useAuthStore } from "../../../stores";
 import { useEffect, useState } from "react";
 import { LoginType } from "../../../../../lib/dto/account";
 import { login as LoginAction, accountInfo as accountInfoAction } from '../../../actions';
@@ -22,12 +22,14 @@ const schema = yup.object({
   password: yup
     .string()
     .min(8, "must be at least 8 characters long")
-    .max(20, "must be at most 20 characters long")
+    .max(30, "must be at most 30 characters long")
     .required(),
 }).required();
 
+type SchemaType = yup.InferType<typeof schema> & LoginType;
+
 const LoginForm = ({ loginHandler }: LoginFormPropType) => {
-  const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<LoginType>({
+  const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<SchemaType>({
     resolver: yupResolver(schema)
   });
 
