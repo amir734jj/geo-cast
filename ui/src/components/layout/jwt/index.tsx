@@ -1,4 +1,4 @@
-import useAuthStore from "../../../stores/auth.store";
+import { useAuthStore } from "../../../stores/auth.store";
 import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import { DateTime } from "luxon";

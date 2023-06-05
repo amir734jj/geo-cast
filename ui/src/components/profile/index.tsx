@@ -6,7 +6,7 @@ import { AlertDismissible, Spinner } from '../common/index';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ProfileType } from '@geo-cast/lib/dto/account/profile.account';
-import useAuthStore from '../../stores/auth.store';
+import { useAuthStore } from "../../stores";
 import _ from 'lodash';
 import { AxiosError } from 'axios';
 
@@ -19,17 +19,19 @@ const schema = yup.object({
   name: yup
     .string()
     .min(3, "must be at least 3 characters long")
-    .max(20, "must be at most 20 characters long")
+    .max(30, "must be at most 30 characters long")
     .required(),
-  location: yup
+  description: yup
     .string()
-    .min(3, "must be at least 3 characters long")
-    .max(50, "must be at most 20 characters long")
-    .required(),
+    .min(3, "should be at least 3 characters long")
+    .max(300, "should have maximum of 280 characters long")
+    .notRequired(),
 }).required();
 
+type SchemaType = yup.InferType<typeof schema> & ProfileType;
+
 const ProfileForm = (arg: ProfilePropType) => {
-  const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<ProfileType>({
+  const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<SchemaType>({
     defaultValues: arg.profile,
     resolver: yupResolver(schema)
   });
@@ -49,16 +51,24 @@ const ProfileForm = (arg: ProfilePropType) => {
           isInvalid={!!errors.name}
           {...formRegister("name")}
         />
+        <Form.Text className="text-muted">
+          This name is public.
+        </Form.Text>
         {errors.name ? <Form.Control.Feedback type="invalid">{errors.name.message}</Form.Control.Feedback> : null}
       </FormGroup>
       <FormGroup className='mb-3' controlId="location">
         <Form.Label>Location</Form.Label>
         <Form.Control
+          as="textarea"
+          rows={3}
           className="form-control"
-          isInvalid={!!errors.location}
-          {...formRegister("location")}
+          isInvalid={!!errors.description}
+          {...formRegister("description")}
         />
-        {errors.location ? <Form.Control.Feedback type="invalid">{errors.location.message}</Form.Control.Feedback> : null}
+        <Form.Text className="text-muted">
+          Public profile bio.
+        </Form.Text>
+        {errors.description ? <Form.Control.Feedback type="invalid">{errors.description.message}</Form.Control.Feedback> : null}
       </FormGroup>
       <Button variant="primary" type="submit">Update</Button>
     </Form>

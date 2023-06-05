@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Alert } from 'react-bootstrap';
-import {BootstrapVariantType} from "../../types/bootstrap.variant";
+import { BootstrapVariantType } from "../../types";
 
 export type AlertDismissiblePropType = {
   message: string;
