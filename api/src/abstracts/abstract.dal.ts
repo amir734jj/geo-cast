@@ -10,10 +10,11 @@ export abstract class AbstractDal<T extends IEntity> implements IBasicCrud<T> {
 
   includes: string[] = [];
 
-  public async all(): Promise<T[]> {
+  public async all(count?: number): Promise<T[]> {
     return await this.repository.find({
       relations: this.includes,
       cache: true,
+      take: count
     });
   }
 

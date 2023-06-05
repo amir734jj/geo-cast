@@ -11,5 +11,5 @@ export default class ProfileDto implements ProfileType {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  location: string;
+  description: string;
 }

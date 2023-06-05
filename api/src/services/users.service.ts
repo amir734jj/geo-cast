@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import User from '../models/users.model';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
