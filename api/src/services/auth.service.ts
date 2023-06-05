@@ -9,7 +9,7 @@ import TokenService from './token.service';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import Token from '../models/token.model';
 import ms from 'ms';
 import { nanoid } from 'nanoid';
