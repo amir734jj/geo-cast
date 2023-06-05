@@ -5,5 +5,4 @@ export type UserType = {
   email: string;
   name: string;
   roles: RoleType[];
-  location: string;
 } & ProfileType;

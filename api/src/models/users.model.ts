@@ -8,6 +8,7 @@ import {
   JoinTable,
 } from 'typeorm';
 import Token from './token.model';
+import Post from './post.model';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import IEntity from 'src/interfaces/entity.interface';
@@ -26,8 +27,8 @@ export default class User implements IEntity, UserType, ProfileType {
   active: boolean;
 
   @ApiProperty()
-  @Column({ length: 256, default: '' })
-  location: string;
+  @Column({ type: "text", default: '' })
+  description: string;
 
   @ApiProperty()
   @Column({ length: 256, default: '' })
@@ -47,4 +48,11 @@ export default class User implements IEntity, UserType, ProfileType {
   @JoinTable({ name: 'user-role-relationship' })
   @ManyToMany(() => Role, (role) => role.users)
   roles: Role[];
+
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
+
+  @JoinTable({ name: 'user-post-like-relationship' })
+  @ManyToMany(() => Post, (post) => post.likedBy)
+  likes: Post[];
 }

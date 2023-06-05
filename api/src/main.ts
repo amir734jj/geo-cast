@@ -20,10 +20,10 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const options = new DocumentBuilder()
-    .setTitle('Nest.js API')
-    .setDescription('Simple MVC application')
+    .setTitle('GEO-CAST API')
+    .setDescription('geo-cast back-end api')
     .setVersion('1.0')
-    .addTag('user')
+    .addTag('social-network')
     .addBearerAuth()
     .build();
 
