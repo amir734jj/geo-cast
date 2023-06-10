@@ -1,7 +1,9 @@
 import { Readable } from "stream";
 
-export abstract class AbstractBlobProvider {
-  abstract download(id: string): Promise<Readable>;
+export type FileInfo = { readable: Readable, filename: string };
 
-  abstract upload(id: string, stream: Readable): Promise<void>;
+export abstract class AbstractBlobProvider {
+  abstract download(id: string): Promise<FileInfo>;
+
+  abstract upload(id: string, stream: Buffer, filename: string): Promise<void>;
 }
