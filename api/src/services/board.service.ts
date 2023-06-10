@@ -1,13 +1,13 @@
 import Post from '../models/post.model';
 import _ from 'lodash';
-import { Injectable } from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import PostService from './posts.service';
 import { nanoid } from 'nanoid';
 import CreatePostDto from 'src/dto/create.post.dto';
 import User from 'src/models/users.model';
 import { DateTime } from 'luxon';
 import { Readable } from 'stream';
-import { AbstractBlobProvider } from 'src/abstracts/abstract.file.provider';
+import { AbstractBlobProvider, FileInfo } from 'src/abstracts/abstract.file.provider';
 
 @Injectable()
 export default class BoardService {
@@ -41,7 +41,7 @@ export default class BoardService {
   async createPost(user: User, post: CreatePostDto, file: Express.Multer.File): Promise<Post> {
 
     const recordingId = nanoid();
-    this.blobServiceClient.upload(recordingId, file.stream);
+    this.blobServiceClient.upload(recordingId, file.buffer, file.originalname);
 
     return await this.postService.save({
       user,
@@ -51,8 +51,7 @@ export default class BoardService {
     });
   }
 
-  async downloadRecording(recordingId: string): Promise<Readable> {
+  async downloadRecording(recordingId: string): Promise<FileInfo> {
     return this.blobServiceClient.download(recordingId);
   }
-
 }

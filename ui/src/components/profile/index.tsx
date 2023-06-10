@@ -23,7 +23,6 @@ const schema = yup.object({
     .required(),
   description: yup
     .string()
-    .min(3, "should be at least 3 characters long")
     .max(300, "should have maximum of 280 characters long")
     .notRequired(),
 }).required();
@@ -57,7 +56,7 @@ const ProfileForm = (arg: ProfilePropType) => {
         {errors.name ? <Form.Control.Feedback type="invalid">{errors.name.message}</Form.Control.Feedback> : null}
       </FormGroup>
       <FormGroup className='mb-3' controlId="location">
-        <Form.Label>Location</Form.Label>
+        <Form.Label>Bio</Form.Label>
         <Form.Control
           as="textarea"
           rows={3}

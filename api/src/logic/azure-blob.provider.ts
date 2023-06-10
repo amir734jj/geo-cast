@@ -1,4 +1,4 @@
-import { AbstractBlobProvider } from "src/abstracts/abstract.file.provider";
+import { AbstractBlobProvider, FileInfo } from "src/abstracts/abstract.file.provider";
 import { Readable } from "stream";
 import { Injectable } from "@nestjs/common";
 import { BlobServiceClient } from "@azure/storage-blob";
@@ -14,19 +14,20 @@ export class AzureBlobProvider extends AbstractBlobProvider {
     super();
   }
 
-  async download(id: string): Promise<Readable> {
+  async download(id: string): Promise<FileInfo> {
     const containerClient = this.blobServiceClient.getContainerClient("recordings");
     const blockBlobClient = containerClient.getBlockBlobClient(id);
 
-    return Readable.from(await blockBlobClient.downloadToBuffer());
+    return { 
+      readable: Readable.from(await blockBlobClient.downloadToBuffer()),
+      filename: (await blockBlobClient.getProperties()).metadata["filename"]
+    }
   }
 
-
-  async upload(id: string, stream: Readable): Promise<void> {
+  async upload(id: string, stream: Buffer, filename: string): Promise<void> {
     const containerClient = this.blobServiceClient.getContainerClient("recordings");
     const blockBlobClient = containerClient.getBlockBlobClient(id);
-
-    await blockBlobClient.uploadStream(stream);
+    await blockBlobClient.uploadData(stream);
+    await blockBlobClient.setMetadata({ filename });
   }
-
 }

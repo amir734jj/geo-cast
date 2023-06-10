@@ -2,19 +2,23 @@ import { useEffect, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import _ from "lodash";
 
-export type PlayerInfoPropType = {
+export type PlayerControlsPropType = {
   play: () => Promise<void>,
-  pause: () => Promise<void>,
+  pause: () => Promise<void>
+};
+
+export type PlayerInfoPropType = {
   playing: boolean,
   duration: number
 };
 
 export type PlayerPropType = {
   mediaBlobUrl: string,
-  render: (info: PlayerInfoPropType) => JSX.Element
+  render: (info: PlayerControlsPropType & PlayerInfoPropType) => React.JSX.Element,
+  onchange: (info: PlayerInfoPropType) => void
 };
 
-const Player = ({ mediaBlobUrl, render }: PlayerPropType) => {
+const Player = ({ mediaBlobUrl, render, onchange }: PlayerPropType) => {
 
   const playerDomId = _.uniqueId("player-container");
   const [player, setPlayer] = useState<WaveSurfer | null>(null);
@@ -51,6 +55,10 @@ const Player = ({ mediaBlobUrl, render }: PlayerPropType) => {
     return () => wavesurfer.destroy();
   }, [mediaBlobUrl]);
 
+  useEffect(() => {
+    onchange({ duration, playing });
+  }, [duration, playing]);
+
   return <>
     <div id={playerDomId} style={{ display: 'none' }}>player</div>
     {render({
@@ -64,8 +72,8 @@ const Player = ({ mediaBlobUrl, render }: PlayerPropType) => {
           await player?.play();
         }
       },
-      playing,
       duration,
+      playing
     })}
   </>;
 };

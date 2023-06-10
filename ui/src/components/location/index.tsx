@@ -1,13 +1,17 @@
 import { Spinner } from "react-bootstrap";
-import { AlertDismissible } from "../common";
 import { useGeolocated } from "react-geolocated";
-import { ReactChildrenArg } from "../../types";
-import { Container } from "react-bootstrap";
-import { useLocationStore } from "../../stores";
+import { CoordinateType } from "../../types";
 import { useEffect } from "react";
+import React from "react";
 
-const Location = ({ children }: ReactChildrenArg) => {
-  const locationContext = useLocationStore();
+export type LocationPropType = {
+  render: () => React.JSX.Element,
+  onload: (l: CoordinateType) => void,
+  onNotAvailable: () => React.JSX.Element,
+  onNotSupported: () => React.JSX.Element
+}
+
+const Location = ({ render, onload, onNotAvailable, onNotSupported }: LocationPropType) => {
 
   const { coords, isGeolocationAvailable, isGeolocationEnabled } =
     useGeolocated({
@@ -19,17 +23,19 @@ const Location = ({ children }: ReactChildrenArg) => {
 
   useEffect(() => {
     if (isGeolocationAvailable && coords) {
-      locationContext.setCoordinate({ latitude: coords?.latitude!, longitude: coords?.longitude! })
+      onload({ latitude: coords?.latitude!, longitude: coords?.longitude! });
     }
-  }, [coords])
+  }, [coords]);
 
-  return (!isGeolocationAvailable ? (
-    <AlertDismissible variant="danger" header="recording not possible" message="Your browser does not support Geolocation." />
-  ) : !isGeolocationEnabled ? (
-    <AlertDismissible variant="danger" header="recording not possible" message="Geolocation is not enabled. Please try again by refreshing the page." />
-  ) : coords ? <Container>{children}</Container> : (
-    <Spinner />
-  ));
+  if (!isGeolocationAvailable) {
+    return onNotAvailable();
+  } else if (!isGeolocationEnabled) {
+    return onNotSupported();
+  } else if (!coords) {
+    return <Spinner />;
+  } else {
+    return render();
+  }
 };
 
 export default Location;

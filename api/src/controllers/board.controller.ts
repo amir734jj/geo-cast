@@ -10,25 +10,44 @@ import {
   ParseFilePipeBuilder,
   Param,
   UseInterceptors,
+  StreamableFile,
+  Header,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiConsumes,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import CreatePostDto from 'src/dto/create.post.dto';
+import CreatePostDto, { CreatePostDtoType } from 'src/dto/create.post.dto';
 import bytes from 'bytes';
 import BoardService from 'src/services/board.service';
 import JwtAuthGuard from 'src/guards/jwt-auth.guard';
 import RecordingPost from 'src/models/post.model';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { FormDataBody, FormDataDtoValidator } from 'src/decorators/form-data.decorator';
+import CreateUserDto from 'src/dto/create.user.dto';
+import { TypeTransformer } from 'src/decorators/type-transformer.decorator';
 
 @ApiTags('board')
 @Controller('board')
 @ApiBearerAuth()
 export default class BoardController {
   constructor(private readonly boardService: BoardService) { }
+
+  @Get('download/:recordingId')
+  @ApiOkResponse({
+    description: 'Successfully returned the recording file',
+    type: StreamableFile
+  })
+  @ApiBadRequestResponse({ description: 'Bad request.' })
+  @Header('Cache-Control', 'none')
+  @Header('Content-Disposition', 'attachment; filename=voice.wav')
+  async download(@Param('recordingId') recordingId: string) {
+    const { readable } = await this.boardService.downloadRecording(recordingId)
+    return new StreamableFile(readable);
+  }
 
   @Get('query')
   @ApiOkResponse({
@@ -65,23 +84,24 @@ export default class BoardController {
 
   @UseGuards(JwtAuthGuard)
   @Post('recording')
+  @ApiConsumes('multipart/form-data')
   @ApiOkResponse({
     description: 'Successfully unlike the post',
     type: CreatePostDto
   })
   @UseInterceptors(FileInterceptor('file'))
+  @FormDataDtoValidator()
   async createPost(
-    @Body() post: CreatePostDto,
+    @FormDataBody(CreateUserDto)
+    @Body(new TypeTransformer(CreatePostDto)) post: CreatePostDtoType,
     @UploadedFile(
       new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'mp3',
-        })
         .addMaxSizeValidator({
           maxSize: bytes("5mb")
         })
         .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          fileIsRequired: true
         }),
     )
     recording: Express.Multer.File,
