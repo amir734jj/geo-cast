@@ -6,3 +6,5 @@ export const createPost = (user: CreatePostType & { file: File }) => axios.postF
 export const downloadBlob = (blobUrl: string, filename: string) => axios.get(blobUrl, { responseType: 'blob' }).then(response => {
   return new File([response.data], filename);
 });
+
+export const queryPosts = () => axios.get<PostInfoType[]>('/board/query');
