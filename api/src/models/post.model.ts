@@ -36,4 +36,8 @@ export default class Post implements IEntity {
   @Exclude()
   @ManyToMany(() => User, (user) => user.likes)
   likedBy: User[];
+
+  @ApiProperty()
+  @Column({ type: 'decimal' })
+  likes: number;
 }

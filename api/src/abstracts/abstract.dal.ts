@@ -1,4 +1,4 @@
-import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
+import { FindOneOptions, FindOptionsOrder, FindOptionsWhere, Repository } from 'typeorm';
 import IBasicCrud from '../interfaces/crud.interface';
 import IEntity from 'src/interfaces/entity.interface';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
@@ -10,11 +10,13 @@ export abstract class AbstractDal<T extends IEntity> implements IBasicCrud<T> {
 
   includes: string[] = [];
 
-  public async all(count?: number): Promise<T[]> {
+  public async all(count: number = 10, page: number = 1, order: FindOptionsOrder<T> = {}): Promise<T[]> {
     return await this.repository.find({
       relations: this.includes,
       cache: true,
-      take: count
+      take: count,
+      skip: (page - 1) * count,
+      order
     });
   }
 

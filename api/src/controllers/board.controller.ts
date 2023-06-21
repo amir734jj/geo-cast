@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   StreamableFile,
   Header,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -56,8 +57,8 @@ export default class BoardController {
     isArray: true
   })
   @ApiBadRequestResponse({ description: 'Bad request.' })
-  async query(): Promise<RecordingPost[]> {
-    return this.boardService.query();
+  async query(@Query('count') count: number, @Query('page') page: number): Promise<RecordingPost[]> {
+    return this.boardService.query(count, page);
   }
 
   @UseGuards(JwtAuthGuard)
