@@ -7,4 +7,4 @@ export const downloadBlob = (blobUrl: string, filename: string) => axios.get(blo
   return new File([response.data], filename);
 });
 
-export const queryPosts = () => axios.get<PostInfoType[]>('/board/query');
+export const queryPosts = (count = 5, page = 1) => axios.get<PostInfoType[]>('/board/query', { params: { count, page } });

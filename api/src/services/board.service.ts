@@ -18,8 +18,8 @@ export default class BoardService {
   ) {
   }
 
-  async query(): Promise<Post[]> {
-    return this.postService.all(10)
+  async query(count: number, page: number, coordinate: Coordinate): Promise<Post[]> {
+    return this.postService.all(count, page, { likes: 'desc' })
   }
 
   async like(user: User, postId: number): Promise<Post> {
