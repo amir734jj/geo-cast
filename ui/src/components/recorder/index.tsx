@@ -2,7 +2,7 @@ import { ReactMediaRecorder } from "react-media-recorder";
 import { Button, ButtonGroup, Container } from "react-bootstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMicrophone, faPlay, faPause, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Player from "../player";
 import { createPost, downloadBlob } from "../../actions";
 import { AlertDismissible, Spinner } from "../common";
@@ -16,14 +16,12 @@ const Recorder = () => {
   const [playing, setPlaying] = useState(false);
   const [duration, setDuration] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [mediaBlobUrl, setMediaBlobUrl] = useState<string | null>(null);
 
-  const uploadRecordingHandler = async (
-    mediaBlobUrl: string,
-    clearBlobUrl: () => void
-  ) => {
+  const uploadRecordingHandler = async () => {
     try {
       setUploading(true);
-      const audioBlob = await downloadBlob(mediaBlobUrl, 'voice.wav');
+      const audioBlob = await downloadBlob(mediaBlobUrl!, 'voice.wav');
 
       await createPost({
         ...locationContext.coordinate!,
@@ -31,9 +29,10 @@ const Recorder = () => {
         file: audioBlob
       });
 
-      clearBlobUrl();
       setUploading(false);
       setDuration(null);
+      setMediaBlobUrl(null);
+      setError(null);
     } catch (e) {
       setError((e as AxiosError).message);
     } finally {
@@ -48,7 +47,13 @@ const Recorder = () => {
   return <>
     {error ? <AlertDismissible header='uploading recording failed' variant='danger' message={error} /> : null}
     <ReactMediaRecorder
-      render={({ startRecording, stopRecording, mediaBlobUrl, clearBlobUrl }) => {
+      render={({ startRecording, stopRecording, mediaBlobUrl: inputMediaBlobUrl }) => {
+        useEffect(() => {
+          if (inputMediaBlobUrl) {
+            setMediaBlobUrl(inputMediaBlobUrl);
+          }
+        }, [inputMediaBlobUrl]);
+
         return (
           <Container>
             <ButtonGroup size="lg" >
@@ -83,7 +88,7 @@ const Recorder = () => {
                   );
                 }} /> : null}
               {mediaBlobUrl ? <Button variant="outline-dark" title="share" disabled={recording || playing} onClick={async () => {
-                await uploadRecordingHandler(mediaBlobUrl, clearBlobUrl);
+                await uploadRecordingHandler();
               }}>
                 <FontAwesomeIcon icon={faCloudArrowUp} />
               </Button> : null}

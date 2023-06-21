@@ -61,7 +61,7 @@ const Player = ({ mediaBlobUrl, render, onchange }: PlayerPropType) => {
 
   return <>
     <div id={playerDomId} style={{ display: 'none' }}>player</div>
-    {render({
+    {playerReady ? render({
       play: async () => {
         if (playerReady && player) {
           await player?.play();
@@ -74,7 +74,7 @@ const Player = ({ mediaBlobUrl, render, onchange }: PlayerPropType) => {
       },
       duration,
       playing
-    })}
+    }) : null}
   </>;
 };
 
