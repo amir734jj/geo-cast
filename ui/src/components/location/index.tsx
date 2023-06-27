@@ -1,12 +1,12 @@
 import { Spinner } from "react-bootstrap";
 import { useGeolocated } from "react-geolocated";
-import { CoordinateType } from "../../types";
 import { useEffect } from "react";
 import React from "react";
+import {Coordinate} from "@geo-cast/lib/dto/board/common";
 
 export type LocationPropType = {
   render: () => React.JSX.Element,
-  onload: (l: CoordinateType) => void,
+  onload: (l: Coordinate) => void,
   onNotAvailable: () => React.JSX.Element,
   onNotSupported: () => React.JSX.Element
 }
@@ -23,9 +23,9 @@ const Location = ({ render, onload, onNotAvailable, onNotSupported }: LocationPr
 
   useEffect(() => {
     if (isGeolocationAvailable && coords) {
-      onload({ latitude: coords?.latitude!, longitude: coords?.longitude! });
+      onload({ latitude: coords.latitude!, longitude: coords!.longitude! });
     }
-  }, [coords]);
+  }, [coords, isGeolocationAvailable]);
 
   if (!isGeolocationAvailable) {
     return onNotAvailable();

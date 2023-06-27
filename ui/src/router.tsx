@@ -7,8 +7,9 @@ import Home from "./components/home";
 import Error from "./components/error";
 import About from "./components/about";
 import { Login, Logout, Register } from "./components/account";
-import { useAuthStore } from "./stores/auth.store";
+import { useAuthStore } from "./stores";
 import Profile from "./components/profile";
+import Manage from "./components/manage";
 
 const Router = () => {
   const authContext = useAuthStore();
@@ -29,6 +30,12 @@ const Router = () => {
             <Route path="/login" element={<Login />} />,
             <Route path="/register" element={<Register />} />
           </>
+      }
+      {
+        authenticated ?
+          <>
+            <Route path="/manage" element={<Manage />} />,
+          </> : null
       }
       <Route path="*" element={<Error />} />
     </Routes>

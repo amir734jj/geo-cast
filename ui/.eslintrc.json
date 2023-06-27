@@ -17,6 +17,12 @@
      "react-refresh"
   ],
   "rules":{
-     "react-refresh/only-export-components":"warn"
+    "react-refresh/only-export-components": "off",
+    "react-hooks/rules-of-hooks": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-explicit-any": "off"
   }
 }

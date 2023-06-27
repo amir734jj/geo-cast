@@ -29,15 +29,10 @@ export default class Post implements IEntity {
   @Column({})
   created_at: Date;
 
-  @Exclude()
   @ManyToOne(() => User, (user) => user.posts)
   user: User;
 
   @Exclude()
   @ManyToMany(() => User, (user) => user.likes)
   likedBy: User[];
-
-  @ApiProperty()
-  @Column({ type: 'decimal' })
-  likes: number;
 }

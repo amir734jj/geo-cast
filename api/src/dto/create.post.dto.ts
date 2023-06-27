@@ -1,6 +1,6 @@
 import { IsNumber, IsPositive, IsLongitude, IsLatitude } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreatePostType } from "@geo-cast/lib/dto/board";
+import { CreatePostType } from "@geo-cast/lib/dto/board/post";
 
 export type CreatePostDtoType = InstanceType<typeof CreatePostDto>;
 

@@ -1,17 +1,21 @@
 import { create } from "zustand";
-import { CoordinateType } from "../types";
+import {Coordinate} from "@geo-cast/lib/dto/board/common";
 
 export type LocationState = {
-  coordinate: CoordinateType | null;
+  coordinate: Coordinate | null;
 };
 
 export type LocationActions = {
-  setCoordinate: (coordinate: CoordinateType) => void
+  setCoordinate: (coordinate: Coordinate) => void,
+  clearCoordinates: () => void
 };
 
 export const useLocationStore = create<LocationState & LocationActions>()((set) => ({
   coordinate: null,
-  setCoordinate: (coordinate: CoordinateType) => {
+  setCoordinate: (coordinate: Coordinate) => {
     set({ coordinate });
+  },
+  clearCoordinates: () => {
+    set({ coordinate: null });
   }
 }));
