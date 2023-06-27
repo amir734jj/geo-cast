@@ -1,4 +1,4 @@
-import { useAuthStore } from "../../../stores/auth.store";
+import { useAuthStore } from "../../../stores";
 import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import { DateTime } from "luxon";
@@ -6,7 +6,7 @@ import { accountInfo as accountInfoAction, refreshToken as refreshTokenAction } 
 
 const JWT = () => {
   const [recoverAuth, setRecoverAuth] = useState(false);
-  const [scheduledTokenRenew, setScheduleTokenRenew] = useState(false);
+  const [scheduledTokenRenew, setScheduledTokenRenew] = useState(false);
 
   const authContext = useAuthStore();
 
@@ -27,10 +27,10 @@ const JWT = () => {
     }
   }, []);
 
-  // schedule token refresh 
+  // schedule token refresh
   useEffect(() => {
     if (authContext.auth && !scheduledTokenRenew) {
-      setScheduleTokenRenew(true);
+      setScheduledTokenRenew(true);
       const renewAt = 10 * 60000; // renew in 10 minutes
 
       const { exp } = jwt_decode<{ exp: number }>(authContext.token!);

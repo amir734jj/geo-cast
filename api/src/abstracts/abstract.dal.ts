@@ -16,7 +16,7 @@ export abstract class AbstractDal<T extends IEntity> implements IBasicCrud<T> {
       cache: true,
       take: count,
       skip: (page - 1) * count,
-      order
+      order,
     });
   }
 

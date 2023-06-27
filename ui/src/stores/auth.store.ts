@@ -1,4 +1,4 @@
-import { UserType } from "../../../lib/dto/account";
+import { UserType } from "@geo-cast/lib/dto/account";
 import store from 'store';
 import { create } from "zustand";
 

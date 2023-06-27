@@ -1,5 +1,5 @@
-import { BadRequestException } from "@nestjs/common";
-import { validateSync } from "class-validator";
+import {BadRequestException} from "@nestjs/common";
+import {validateSync} from "class-validator";
 import _ from 'lodash';
 
 export const FormDataBody: (_: any) => ParameterDecorator = (ty: any) => (target: any, propertyKey: string, parameterIndex: number) => {
@@ -10,8 +10,7 @@ export const FormDataDtoValidator: () => MethodDecorator = () => (target: any, p
   let originalMethod = descriptor.value;
   descriptor.value = function (...args: any[]) {
     FormDataValidator.performValidation(target, propertyKey, args);
-    let result = originalMethod.apply(this, args);
-    return result;
+    return originalMethod.apply(this, args);
   }
 }
 

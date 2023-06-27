@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { Button, Form, FormGroup } from 'react-bootstrap';
 import { useAuthStore } from "../../../stores";
 import { useEffect, useState } from "react";
-import { LoginType } from "../../../../../lib/dto/account";
+import { LoginType } from "@geo-cast/lib/dto/account";
 import { login as LoginAction, accountInfo as accountInfoAction } from '../../../actions';
 import { useNavigate } from "react-router-dom";
 import { AlertDismissible, Spinner } from '../../common';

@@ -1,9 +1,12 @@
-import { Repository } from 'typeorm';
+import {FindOptionsUtils, Repository} from 'typeorm';
 import Post from '../models/post.model';
 import _ from 'lodash';
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { AbstractDal } from '../abstracts/abstract.dal';
+import {Injectable} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {AbstractDal} from '../abstracts/abstract.dal';
+import {Coordinate} from '@geo-cast/lib/dto/board/common'
+import SqlString from "sqlstring";
+import User from "../models/users.model";
 
 @Injectable()
 export default class PostService extends AbstractDal<Post> {
@@ -13,6 +16,21 @@ export default class PostService extends AbstractDal<Post> {
     @InjectRepository(Post) private readonly connection: Repository<Post>,
   ) {
     super();
+  }
+
+  public async query(count: number = 10, page: number = 1, coordinate: Coordinate): Promise<Post[]> {
+    return await this.repository.createQueryBuilder("post")
+      .addSelect(SqlString.format('((post.latitude - (?)) * (post.latitude - (?))) + ((post.longitude - (?)) * (post.longitude - (?)))', [
+        coordinate.latitude,
+        coordinate.latitude,
+        coordinate.longitude,
+        coordinate.longitude
+      ]), "distance")
+      .innerJoinAndMapOne("post.user", User, "user")
+      .take(count)
+      .skip(count * (page - 1))
+      .orderBy("distance", "ASC")
+      .getMany();
   }
 
   resolver(partial: Partial<Post>): Post {
