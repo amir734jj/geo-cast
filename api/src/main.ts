@@ -1,13 +1,13 @@
-import { NestFactory, Reflector } from '@nestjs/core';
+import {NestFactory, Reflector} from '@nestjs/core';
 import AppModule from './modules/app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
 import 'reflect-metadata';
 import {
   ClassSerializerInterceptor,
   Logger,
   ValidationPipe,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {ConfigService} from '@nestjs/config';
 import compression from 'compression';
 
 async function bootstrap() {
@@ -15,7 +15,13 @@ async function bootstrap() {
   const config = app.get(ConfigService);
 
   app.use(compression());
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    transform: true,
+    transformOptions: {
+      enableImplicitConversion: true
+    },
+  }));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.setGlobalPrefix('api');
 

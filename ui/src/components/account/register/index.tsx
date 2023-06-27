@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, Form, FormGroup } from 'react-bootstrap';
-import { RegisterType } from "../../../../../lib/dto/account";
+import { RegisterType } from "@geo-cast/lib/dto/account";
 import { register as registerAction } from "../../../actions";
 import { useNavigate } from "react-router-dom";
 import { PasswordType } from '../../../types';

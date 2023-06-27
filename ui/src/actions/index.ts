@@ -1,2 +1,3 @@
 export * from './account.action';
-export * from './board.actions';
+export * from './board.action';
+export * from './users.action';

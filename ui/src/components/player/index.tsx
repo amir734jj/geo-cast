@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import _ from "lodash";
 
@@ -15,10 +15,10 @@ export type PlayerInfoPropType = {
 export type PlayerPropType = {
   mediaBlobUrl: string,
   render: (info: PlayerControlsPropType & PlayerInfoPropType) => React.JSX.Element,
-  onchange: (info: PlayerInfoPropType) => void
+  onchange?: (info: PlayerInfoPropType) => void
 };
 
-const Player = ({ mediaBlobUrl, render, onchange }: PlayerPropType) => {
+const Player = ({ mediaBlobUrl, render, onchange = () => ({}) }: PlayerPropType) => {
 
   const playerDomId = _.uniqueId("player-container");
   const [player, setPlayer] = useState<WaveSurfer | null>(null);
@@ -27,7 +27,7 @@ const Player = ({ mediaBlobUrl, render, onchange }: PlayerPropType) => {
   const [duration, setDuration] = useState(0);
 
   useEffect(() => {
-    var wavesurfer = WaveSurfer.create({
+    const wavesurfer = WaveSurfer.create({
       container: `#${playerDomId}`
     });
 
