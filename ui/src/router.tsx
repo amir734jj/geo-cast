@@ -14,6 +14,7 @@ import Manage from "./components/manage";
 const Router = () => {
   const authContext = useAuthStore();
   const authenticated = !!authContext?.auth;
+  const admin = authContext?.auth && authContext.auth.roles.filter(x => x.name === 'admin').length;
 
   return (
     <Routes>
@@ -32,7 +33,7 @@ const Router = () => {
           </>
       }
       {
-        authenticated ?
+        authenticated && admin ?
           <>
             <Route path="/manage" element={<Manage />} />,
           </> : null

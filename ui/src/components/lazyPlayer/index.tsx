@@ -1,28 +1,18 @@
 import {useEffect, useState} from "react";
 import Player, {PlayerPropType} from "../player";
 
-const LazyPlayer = (props: PlayerPropType) => {
+const LazyPlayer = (props: PlayerPropType & { play?: boolean }) => {
 
   const [playRequested, setPlayRequested] = useState(false);
 
-  const renderProxy = {
-    play: async () => {
+  useEffect(() => {
+    if (props.play && !playRequested) {
       setPlayRequested(true);
-    },
-    pause: async () => {
-    },
-    playing: false,
-    duration: 0
-  };
+    }
+  }, [props.play])
 
   return <>
-    {playRequested ? <Player {...props} render={controls => {
-      useEffect(() => {
-        controls.play();
-      }, []);
-      return props.render(controls);
-    }} /> : null}
-    {props.render(renderProxy)}
+    {playRequested ? <Player {...props} /> : null}
   </>;
 };
 

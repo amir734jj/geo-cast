@@ -1,27 +1,25 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import _ from "lodash";
-
-export type PlayerControlsPropType = {
-  play: () => Promise<void>,
-  pause: () => Promise<void>
-};
 
 export type PlayerInfoPropType = {
   playing: boolean,
   duration: number
 };
 
+type EventType = 'ready' | 'pause' | 'finish' | 'play';
+
 export type PlayerPropType = {
+  play: boolean,
+  repeat?: boolean,
   mediaBlobUrl: string,
-  render: (info: PlayerControlsPropType & PlayerInfoPropType) => React.JSX.Element,
-  onchange?: (info: PlayerInfoPropType) => void
+  onchange?: (info: PlayerInfoPropType, event: EventType) => void
 };
 
-const Player = ({ mediaBlobUrl, render, onchange = () => ({}) }: PlayerPropType) => {
+const Player = ({ mediaBlobUrl, onchange = () => {}, play }: PlayerPropType) => {
 
   const playerDomId = _.uniqueId("player-container");
-  const [player, setPlayer] = useState<WaveSurfer | null>(null);
+  const [playerCtrl, setPlayerCtrlCtrl] = useState<WaveSurfer | null>(null);
   const [playerReady, setPlayerReady] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -36,45 +34,43 @@ const Player = ({ mediaBlobUrl, render, onchange = () => ({}) }: PlayerPropType)
     wavesurfer.on('ready', () => {
       setPlayerReady(true);
       setDuration(wavesurfer.getDuration());
+      onchange({ duration: wavesurfer.getDuration(), playing: false }, 'ready');
     });
 
     wavesurfer.on('play', () => {
       setPlaying(true);
+      onchange({ duration, playing: true }, 'play');
     });
 
-    wavesurfer.on('paused', () => {
+    wavesurfer.on('pause', () => {
       setPlaying(false);
+      onchange({ duration, playing: false }, 'pause');
     });
 
     wavesurfer.on('finish', () => {
       setPlaying(false);
+      onchange({ duration, playing: false }, 'finish');
     });
 
-    setPlayer(wavesurfer);
+    setPlayerCtrlCtrl(wavesurfer);
 
     return () => wavesurfer.destroy();
   }, [mediaBlobUrl]);
 
   useEffect(() => {
-    onchange({ duration, playing });
-  }, [duration, playing]);
+    if (playerReady && playerCtrl) {
+      if (play) {
+        playerCtrl.play();
+      } else {
+        if (playing) {
+          playerCtrl.pause();
+        }
+      }
+    }
+  }, [play, playerReady, playing]);
 
   return <>
     <div id={playerDomId} style={{ display: 'none' }}>player</div>
-    {playerReady ? render({
-      play: async () => {
-        if (playerReady && player) {
-          await player?.play();
-        }
-      },
-      pause: async () => {
-        if (playerReady && player) {
-          await player?.play();
-        }
-      },
-      duration,
-      playing
-    }) : null}
   </>;
 };
 

@@ -6,5 +6,8 @@ export const useMapFocusStore = create<LocationState & LocationActions>()((set) 
   coordinate: null,
   setCoordinate: (coordinate: Coordinate) => {
     set({ coordinate });
+  },
+  clearCoordinates: () => {
+    set({ coordinate: null });
   }
 }));
