@@ -3,25 +3,25 @@ import { PostInfoType } from "@geo-cast/lib/dto/board/post";
 import {immer} from "zustand/middleware/immer";
 
 export type PostsState = {
-  posts: PostInfoType[][];
+  posts: PostInfoType[];
 };
 
 export type PostsActions = {
-  setPosts: (posts: PostInfoType[], page: number) => void,
+  appendPosts: (posts: PostInfoType[]) => void,
   clearPosts: () => void
 };
 
 export const usePostsStore = create<PostsState & PostsActions>()(immer((set) => ({
   posts: [],
-  setPosts: (posts, page) => {
+  appendPosts: (posts) => {
     set((state) => {
-      state.posts[page] = posts
-    })
+      state.posts.push(...posts);
+    });
   },
   clearPosts: () => {
     set((state) => {
       state.posts = [];
-    })
+    });
   }
 })));
 
