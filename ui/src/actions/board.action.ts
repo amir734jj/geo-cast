@@ -8,7 +8,7 @@ export const createPost = (post: CreatePostType & {
 
 export const downloadBlob = async (blobUrl: string) =>  await fetch(blobUrl).then(r => r.blob());
 
-export const queryPosts = (count: number, page: number, coordinate?: Coordinate) => axios.get<PostInfoType[]>('/board/query', {
+export const queryPosts = (count: number, page: number, coordinate?: Coordinate) => axios.get<(PostInfoType & { id: number })[]>('/board/query', {
   params: {
     count,
     page,

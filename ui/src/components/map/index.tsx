@@ -5,6 +5,7 @@ import {Button, ButtonGroup} from "react-bootstrap";
 import {faPlus, faMinus, faRotateLeft} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useMapFocusStore} from "../../stores";
+import _ from "lodash";
 
 const geoUrl =
   "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json";
@@ -16,17 +17,25 @@ export type MapPropType = {
   coordinates: CoordinateInfoType[]
 };
 
+const minZoom = 1;
+const maxZoom = 8;
+const defaultPosition = {coordinates: [0, 0], zoom: 1};
+
 const Map = ({coordinates}: MapPropType) => {
-  const [position, setPosition] = useState({coordinates: [0, 0], zoom: 1});
+  const [position, setPosition] = useState(defaultPosition);
   const mapFocusContext = useMapFocusStore();
 
   const handleZoomIn = () => {
-    if (position.zoom >= 5) return;
+    if (position.zoom >= maxZoom) {
+      return;
+    }
     setPosition((pos) => ({...pos, zoom: pos.zoom * 2}));
   };
 
   const handleZoomOut = () => {
-    if (position.zoom <= 1) return;
+    if (position.zoom <= minZoom) {
+      return;
+    }
     setPosition((pos) => ({...pos, zoom: pos.zoom / 2}));
   };
 
@@ -34,6 +43,22 @@ const Map = ({coordinates}: MapPropType) => {
     setPosition(position);
     mapFocusContext.setCoordinate({latitude: position.coordinates[1]!, longitude: position.coordinates[0]!});
   };
+
+  const graphDot = (coordinate: CoordinateInfoType) => {
+    const ratio = maxZoom + 1 - position.zoom;
+
+    return (<>
+      <circle r={ratio} fill="darkgrey"/>
+      <circle r={3 * ratio} fill={coordinate.color}>
+        <animate attributeType="SVG" attributeName="r" begin="0s" dur="1.5s" repeatCount="indefinite" from={1}
+                 to={3 * ratio}/>
+        <animate attributeType="CSS" attributeName="stroke-width" begin="0s" dur="1.5s" repeatCount="indefinite"
+                 from={3 * ratio} to={0}/>
+        <animate attributeType="CSS" attributeName="opacity" begin="0s" dur="1.5s" repeatCount="indefinite"
+                 from={3 * ratio} to={0}/>
+      </circle>
+    </>);
+  }
 
   return (
     <div>
@@ -43,6 +68,8 @@ const Map = ({coordinates}: MapPropType) => {
           // @ts-ignore
           center={position.coordinates}
           onMoveEnd={handleMoveEnd}
+          maxZoom={maxZoom}
+          minZoom={minZoom}
           color="red">
           <Geographies
             geography={geoUrl}
@@ -62,29 +89,28 @@ const Map = ({coordinates}: MapPropType) => {
             coordinates.map((coordinate, index) => <Marker
               coordinates={[coordinate.longitude, coordinate.latitude]}
               key={index}>
-              <circle r={3} fill="darkgrey"/>
-              <circle r="15%" fill={coordinate.color}>
-                <animate attributeType="SVG" attributeName="r" begin="0s" dur="1.5s" repeatCount="indefinite" from="1%"
-                         to="3%"/>
-                <animate attributeType="CSS" attributeName="stroke-width" begin="0s" dur="1.5s" repeatCount="indefinite"
-                         from="3%" to="0%"/>
-                <animate attributeType="CSS" attributeName="opacity" begin="0s" dur="1.5s" repeatCount="indefinite"
-                         from="1" to="0"/>
-              </circle>
+              {graphDot(coordinate)}
             </Marker>)
           }
         </ZoomableGroup>
       </ComposableMap>
       <div className="mt-3">
         <ButtonGroup aria-label="manual zoom">
-          <Button onClick={handleZoomIn} variant="outline-secondary" disabled={position.zoom === 4} title="zoom in">
+          <Button onClick={handleZoomIn} variant="outline-secondary" disabled={position.zoom === maxZoom}
+                  title="zoom in">
             <FontAwesomeIcon icon={faPlus}/>
           </Button>
-          <Button onClick={handleZoomOut} variant="outline-secondary" disabled={position.zoom === 1} title="zoom out">
+          <Button onClick={handleZoomOut} variant="outline-secondary" disabled={position.zoom === minZoom}
+                  title="zoom out">
             <FontAwesomeIcon icon={faMinus}/>
           </Button>
-          <Button onClick={() => mapFocusContext.clearCoordinates()} variant="outline-secondary"
-                  disabled={!!mapFocusContext.coordinate} title="clear map coordinate">
+          <Button
+            onClick={() => {
+              setPosition(defaultPosition);
+              mapFocusContext.clearCoordinates()
+            }} variant="outline-secondary"
+            disabled={!mapFocusContext.coordinate && _.eq(defaultPosition, position)}
+            title="clear map coordinate">
             <FontAwesomeIcon icon={faRotateLeft}/>
           </Button>
         </ButtonGroup>

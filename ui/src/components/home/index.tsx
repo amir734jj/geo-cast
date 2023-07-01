@@ -1,11 +1,12 @@
 import {Row, Col, Container} from "react-bootstrap";
 import Map from '../map';
 import Location from '../location';
-import Recorder from "../recorder";
 import {useAuthStore, useLocationStore, usePostsStore} from "../../stores";
-import {AlertDismissible} from "../common";
+import {AlertDismissible, Spinner} from "../common";
 import Posts from "../posts";
 import _ from "lodash";
+import {useState} from "react";
+import Recorder from "../recorder";
 
 const Board = () => {
   const authContext = useAuthStore();
@@ -13,9 +14,38 @@ const Board = () => {
   const locationContext = useLocationStore();
   const {posts} = usePostsStore();
 
-  const coordinates = _.flatten(posts).filter(_.identity).map(({ latitude, longitude}) => ({latitude, longitude, color: "lightyellow"}));
+  const coordinates = _.flatten(posts).filter(_.identity).map(({latitude, longitude}) => ({
+    latitude,
+    longitude,
+    color: "lightyellow"
+  }));
+
   if (locationContext.coordinate) {
-    coordinates.push({ ...locationContext.coordinate, color: 'red'});
+    coordinates.push({...locationContext.coordinate, color: 'red'});
+  }
+
+  const [locationStatus, setLocationStatus] = useState<'not-available' | 'not-supported' | 'not-ready' | 'ready'>('not-ready');
+  let location = null;
+  if (authenticated) {
+    switch (locationStatus) {
+      case "not-available":
+        location = <AlertDismissible
+          variant="danger"
+          header="recording not possible"
+          message="Geolocation is not enabled. Please try again by refreshing the page."/>
+        break;
+      case "not-supported":
+        location = <AlertDismissible
+          variant="danger"
+          header="recording not possible"
+          message="Your browser does not support Geolocation."/>;
+        break;
+      case "not-ready":
+        location = <Spinner/>
+        break;
+      default:
+        break;
+    }
   }
 
   return (
@@ -28,18 +58,20 @@ const Board = () => {
           <Row>
             <Col sm={12}>
               <Container className="mt-1 mb-3 p-0">
-                {
-                  authenticated ?
-                    <Location
-                      onload={location => locationContext.setCoordinate(location)}
-                      onNotSupported={() => <AlertDismissible variant="danger" header="recording not possible"
-                                                              message="Your browser does not support Geolocation."/>}
-                      onNotAvailable={() => <AlertDismissible variant="danger" header="recording not possible"
-                                                              message="Geolocation is not enabled. Please try again by refreshing the page."/>}
-                      render={() => <Recorder/>}/> :
-                    <AlertDismissible variant="info" header="recording not available"
-                                      message="Recording feature is only available to authenticated users."/>
-                }
+                {authenticated ?
+                  <Location
+                    onNotAvailable={() => setLocationStatus('not-available')}
+                    onNotSupported={() => setLocationStatus("not-supported")}
+                    onload={location => {
+                      setLocationStatus("ready");
+                      locationContext.setCoordinate(location);
+                    }}/> :
+                  <AlertDismissible
+                    variant="info"
+                    header="recording not available"
+                    message="Recording feature is only available to authenticated users."/>}
+                {location}
+                {authenticated && locationStatus === "ready" ? <Recorder/> : null}
               </Container>
             </Col>
           </Row>
