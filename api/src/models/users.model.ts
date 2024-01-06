@@ -5,54 +5,54 @@ import {
   OneToMany,
   Unique,
   ManyToMany,
-  JoinTable,
-} from 'typeorm';
-import Token from './token.model';
-import Post from './post.model';
-import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
-import IEntity from 'src/interfaces/entity.interface';
-import Role from './roles.model';
-import { ProfileType, UserType } from '@geo-cast/lib/dto/account';
+  JoinTable
+} from 'typeorm'
+import Token from './token.model'
+import Post from './post.model'
+import { ApiProperty } from '@nestjs/swagger'
+import { Exclude } from 'class-transformer'
+import Role from './roles.model'
+import { type EntityType, type ProfileType, type UserType } from '@geo-cast/lib/dto/account'
 
 @Entity()
 @Unique(['email'])
-export default class User implements IEntity, UserType, ProfileType {
+export default class User implements EntityType, UserType, ProfileType {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  id: number;
+    id: number
 
   @ApiProperty()
   @Column()
-  active: boolean;
+    active: boolean
 
   @ApiProperty()
-  @Column({ type: "text", default: '' })
-  description: string;
-
-  @ApiProperty()
-  @Column({ length: 256, default: '' })
-  name: string;
+  @Column({ type: 'text', default: '' })
+    description: string
 
   @ApiProperty()
   @Column({ length: 256, default: '' })
-  email: string;
+    name: string
+
+  @ApiProperty()
+  @Column({ length: 256, default: '' })
+    email: string
 
   @Exclude()
   @Column({ length: 256 })
-  password: string;
+    password: string
 
+  @Exclude()
   @OneToMany(() => Token, (token) => token.user)
-  tokens: Token[];
+    tokens: Token[]
 
   @JoinTable({ name: 'user-role-relationship' })
   @ManyToMany(() => Role, (role) => role.users)
-  roles: Role[];
+    roles: Role[]
 
   @OneToMany(() => Post, (post) => post.user)
-  posts: Post[];
+    posts: Post[]
 
   @JoinTable({ name: 'user-post-like-relationship' })
   @ManyToMany(() => Post, (post) => post.likedBy)
-  likes: Post[];
+    likes: Post[]
 }

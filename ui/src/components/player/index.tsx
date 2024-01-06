@@ -4,25 +4,25 @@ import _ from "lodash";
 
 export type PlayerInfoPropType = {
   playing: boolean,
-  duration: number
+  duration: number,
+  currentTime: number,
 };
 
-type EventType = 'ready' | 'pause' | 'finish' | 'play';
+export type EventType = 'ready' | 'pause' | 'finish' | 'play' | 'timeupdate';
 
 export type PlayerPropType = {
   play: boolean,
   repeat?: boolean,
   mediaBlobUrl: string,
-  onchange?: (info: PlayerInfoPropType, event: EventType) => void
+  onchange?: (info: Partial<PlayerInfoPropType>, event: EventType) => void
 };
 
 const Player = ({ mediaBlobUrl, onchange = () => {}, play }: PlayerPropType) => {
 
   const playerDomId = _.uniqueId("player-container");
-  const [playerCtrl, setPlayerCtrlCtrl] = useState<WaveSurfer | null>(null);
+  const [playerCtrl, setPlayerCtrl] = useState<WaveSurfer | null>(null);
   const [playerReady, setPlayerReady] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     const wavesurfer = WaveSurfer.create({
@@ -33,45 +33,48 @@ const Player = ({ mediaBlobUrl, onchange = () => {}, play }: PlayerPropType) => 
 
     wavesurfer.on('ready', () => {
       setPlayerReady(true);
-      setDuration(wavesurfer.getDuration());
       onchange({ duration: wavesurfer.getDuration(), playing: false }, 'ready');
     });
 
     wavesurfer.on('play', () => {
       setPlaying(true);
-      onchange({ duration, playing: true }, 'play');
+      onchange({ playing: true }, 'play');
     });
 
     wavesurfer.on('pause', () => {
       setPlaying(false);
-      onchange({ duration, playing: false }, 'pause');
+      onchange({ playing: false }, 'pause');
     });
 
     wavesurfer.on('finish', () => {
       setPlaying(false);
-      onchange({ duration, playing: false }, 'finish');
+      onchange({ playing: false, currentTime: 0 }, 'finish');
     });
 
-    setPlayerCtrlCtrl(wavesurfer);
+    wavesurfer.on('audioprocess', (time: number) => {
+      onchange({ currentTime: time }, 'timeupdate');
+    });
 
-    return () => wavesurfer.destroy();
+    setPlayerCtrl(wavesurfer);
+
+    return () =>  {
+      wavesurfer.destroy();
+    };
   }, [mediaBlobUrl]);
 
   useEffect(() => {
     if (playerReady && playerCtrl) {
       if (play) {
-        playerCtrl.play();
-      } else {
-        if (playing) {
-          playerCtrl.pause();
+        if (!playing) {
+          playerCtrl.play();
         }
+      } else if (playing) {
+        playerCtrl.pause();
       }
     }
-  }, [play, playerReady, playing]);
+  }, [play, playerReady, playing, playerCtrl]);
 
-  return <>
-    <div id={playerDomId} style={{ display: 'none' }}>player</div>
-  </>;
+  return <div id={playerDomId} style={{ display: 'none' }}>player</div>;
 };
 
 export default Player;

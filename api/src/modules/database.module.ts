@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 
 @Module({
   imports: [
@@ -14,8 +14,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           migrationsRun: false,
           logging: false,
           autoLoadEntities: true,
-          cache: true,
-        };
+          cache: true
+        }
 
         if (configService.get<string>('ENV') === 'Production') {
           return {
@@ -23,18 +23,18 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
             type: 'postgres',
             url: configService.getOrThrow<string>('DATABASE_URL'),
             extra: {
-              ssl: true,
-            },
-          };
+              ssl: true
+            }
+          }
         } else {
           return {
             ...defaultOptions,
             type: 'sqlite',
-            database: 'database.sqlite',
-          };
+            database: 'database.sqlite'
+          }
         }
-      },
-    }),
-  ],
+      }
+    })
+  ]
 })
 export default class DatabaseModule {}

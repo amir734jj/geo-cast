@@ -1,6 +1,6 @@
-import { UserRole } from '../enums/role.enum';
+import { UserRole } from '../enums/role.enum'
 
-export const USER_ROLES = 'roles';
+export const USER_ROLES = 'roles'
 
-export const ADMIN_ROLE = UserRole.ADMIN.toString();
-export const BASIC_ROLE = UserRole.BASIC.toString();
+export const ADMIN_ROLE = UserRole.ADMIN.toString()
+export const BASIC_ROLE = UserRole.BASIC.toString()

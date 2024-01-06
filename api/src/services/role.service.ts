@@ -1,21 +1,21 @@
-import { Repository } from 'typeorm';
-import _ from 'lodash';
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { AbstractDal } from '../abstracts/abstract.dal';
-import Role from '../models/roles.model';
+import { Repository } from 'typeorm'
+import _ from 'lodash'
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { AbstractDal } from '../abstracts/abstract.dal'
+import Role from '../models/roles.model'
 
 @Injectable()
 export default class RoleService extends AbstractDal<Role> {
-  repository: Repository<Role> = this.connection;
+  repository: Repository<Role> = this.connection
 
-  constructor(
-    @InjectRepository(Role) private readonly connection: Repository<Role>,
+  constructor (
+    @InjectRepository(Role) private readonly connection: Repository<Role>
   ) {
-    super();
+    super()
   }
 
-  resolver(partial: Partial<Role>): Role {
-    return _.extend(new Role(), partial);
+  resolver (partial: Partial<Role>): Role {
+    return _.extend(new Role(), partial)
   }
 }
