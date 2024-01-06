@@ -11,6 +11,7 @@ import _ from "lodash";
 import Player, {EventType, PlayerInfoPropType} from "../player";
 import {LinkContainer} from "react-router-bootstrap";
 import {EntityType} from '@geo-cast/lib/dto/account';
+import { combine } from '../../utilities';
 
 type PlayerInfoType = Record<number, PlayerInfoPropType & {
   play: boolean,
@@ -64,10 +65,6 @@ const playNextPost = (board: BoardType): BoardType => {
 };
 
 const getProgressPercentage = (info: PlayerInfoPropType) => Math.round(100 * info.currentTime / info.duration);
-
-function combine<T>(...updater: ((board: T) => T)[]) {
-  return (board: T): T => updater.reduce((acc, x) => x(acc), board);
-}
 
 const Posts = () => {
   const locationContext = useLocationStore();
