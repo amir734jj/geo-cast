@@ -14,7 +14,9 @@ RUN cd ui && \
 
 RUN cd api && \
     npm install && \
-    cp -r ../ui/dist client
+    npm run build && \
+    mkdir -p dist/client && \
+    cp -rf ../ui/dist/* dist/client
 
 EXPOSE 80 443
 
