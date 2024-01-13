@@ -1,130 +1,151 @@
-import {ReactMediaRecorder} from "react-media-recorder";
+import {useReactMediaRecorder} from "react-media-recorder";
 import {Button, ButtonGroup, Col, Container, Row} from "react-bootstrap";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faMicrophone, faPlay, faPause, faCloudArrowUp} from '@fortawesome/free-solid-svg-icons';
-import {useEffect, useState} from "react";
-import Player from "../player";
+import {useState} from "react";
+import Player, {PlayerInfoPropType} from "../player";
 import {createPost, downloadBlob} from "../../actions";
 import {AlertDismissible, Spinner} from "../common";
 import {AxiosError} from "axios";
 import {useLocationStore} from "../../stores";
 
+type BoardType = {
+  play: boolean,
+  recording: boolean,
+  error: string | null,
+  upload: boolean,
+  mediaBlobUrl: string | null,
+  playerInfo: Partial<PlayerInfoPropType>
+};
+
 const Recorder = () => {
   const locationContext = useLocationStore();
-  const [error, setError] = useState<string | null>(null);
-  const [recording, setRecording] = useState(false);
-  const [playing, setPlaying] = useState(false);
-  const [duration, setDuration] = useState<number | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [mediaBlobUrl, setMediaBlobUrl] = useState<string | null>(null);
+  const [board, setBoard] = useState<BoardType>({
+    play: false,
+    recording: false,
+    error: null,
+    upload: false,
+    mediaBlobUrl: null,
+    playerInfo: {},
+  });
+  const {startRecording, stopRecording, mediaBlobUrl} = useReactMediaRecorder({
+    video: false,
+  });
 
   const uploadRecordingHandler = async () => {
     try {
-      setUploading(true);
+      setBoard(x => ({
+        ...x,
+        upload: true
+      }));
       const audioBlob = await downloadBlob(mediaBlobUrl!);
 
       await createPost({
         ...locationContext.coordinate!,
-        duration: duration!,
+        duration: board.playerInfo.duration!,
         file: new File([audioBlob], 'voice.wav')
       });
 
-      setUploading(false);
-      setDuration(null);
-      setMediaBlobUrl(null);
-      setError(null);
+      setBoard(x => ({
+        ...x,
+        upload: false,
+        duration: null,
+        mediaBlobUrl: null,
+        error: null,
+      }));
     } catch (e) {
-      setError((e as AxiosError).message);
+      setBoard(x => ({
+        ...x,
+        error: (e as AxiosError).message,
+      }))
     } finally {
-      setUploading(false);
+      setBoard(x => ({
+        ...x,
+        upload: false
+      }));
     }
   }
 
-  if (uploading) {
+  if (board.upload) {
     return <Spinner/>
   }
 
   return <>
-    {error ? <AlertDismissible header='uploading recording failed' variant='danger' message={error}/> : null}
+    {board.error ? <AlertDismissible header='uploading recording failed' variant='danger' message={board.error}/> : null}
     <Row>
       <Col sm={12}>
-        {mediaBlobUrl && duration && duration < 5 ?
+        {mediaBlobUrl && board.playerInfo.duration && board.playerInfo?.duration < 5 ?
           <AlertDismissible header='uploading recording failed' variant='danger'
                             message={'recording is too short to post (less than 5 seconds)'}/> : null}
-        {mediaBlobUrl && duration && duration >= 30 ?
+        {mediaBlobUrl && board.playerInfo.duration && board.playerInfo?.duration >= 30 ?
           <AlertDismissible header='uploading recording failed' variant='danger'
                             message={'recording is too long to post (more than 30 seconds)'}/> : null}
       </Col>
       <Col sm={12}>
-        <ReactMediaRecorder
-          render={({startRecording, stopRecording, mediaBlobUrl: inputMediaBlobUrl}) => {
-            useEffect(() => {
-              if (inputMediaBlobUrl) {
-                setMediaBlobUrl(inputMediaBlobUrl);
-              }
-            }, [inputMediaBlobUrl]);
-
-            return (
-              <Container fluid={true}>
-                <ButtonGroup size="lg">
-                  {recording ?
-                    <Button variant="outline-danger" title="start-recording" onClick={() => {
-                      setRecording(false);
-                      stopRecording();
-                    }}>
-                      <FontAwesomeIcon icon={faMicrophone} beatFade/>
-                    </Button> :
-                    <Button
-                      variant="outline-success"
-                      disabled={playing || uploading}
-                      title={recording ? "stop-recording" : "start-recording"}
-                      onClick={() => {
-                        setRecording(true);
-                        startRecording();
-                      }}>
-                      <FontAwesomeIcon icon={faMicrophone}/>
-                    </Button>}
-                  {mediaBlobUrl ?
-                    <Player
-                      mediaBlobUrl={mediaBlobUrl}
-                      onchange={(controls) => {
-                        setDuration(controls.duration);
-                        setPlaying(controls.playing);
-                      }}
-                      render={(controls) => {
-                        return controls.playing ? (
-                          <Button variant="outline-secondary" title="pauseRecording"
-                                  disabled={recording} onClick={async () => {
-                            await controls.pause();
-                          }}>
-                            <FontAwesomeIcon icon={faPause} beatFade/>
-                          </Button>) : (
-                          <Button
-                            variant="outline-primary"
-                            title="play-recording"
-                            disabled={recording}
-                            onClick={async () => {
-                              await controls.play();
-                            }}>
-                            <FontAwesomeIcon icon={faPlay}/>
-                          </Button>
-                        );
-                      }}/> : null}
-                  {(mediaBlobUrl && duration) ?
-                    <Button
-                      variant="outline-dark" title="share"
-                      disabled={!!(recording || playing || (duration && duration! < 5))}
-                      onClick={async () => {
-                        await uploadRecordingHandler();
-                      }}>
-                      <FontAwesomeIcon icon={faCloudArrowUp}/>
-                    </Button> : null}
-                </ButtonGroup>
-                {duration ? <p>{duration} seconds</p> : null}
-              </Container>
-            );
-          }}
-        />
+        <Container fluid={true} className="px-0">
+          <ButtonGroup size="lg">
+            {board.recording ?
+              <Button variant="outline-danger" title="stop-recording" onClick={() => {
+                setBoard(board => ({
+                  ...board,
+                  recording: false,
+                }));
+                stopRecording();
+              }}>
+                <FontAwesomeIcon icon={faMicrophone} beatFade/>
+              </Button> :
+              <Button
+                variant="outline-success"
+                disabled={board.playerInfo.playing || board.upload}
+                title={"start-recording"}
+                onClick={() => {
+                  setBoard(board => ({
+                    ...board,
+                    recording: true,
+                  }));
+                  startRecording();
+                }}>
+                <FontAwesomeIcon icon={faMicrophone}/>
+              </Button>}
+            {mediaBlobUrl ?
+              <Player
+                play={board.play}
+                mediaBlobUrl={mediaBlobUrl}
+                onchange={(info, event) => {
+                  setBoard(board => ({
+                    ...board,
+                    play: event === "finish" ? false : board.play,
+                    playerInfo: {
+                      ...board.playerInfo,
+                      ...info,
+                    }
+                  }))
+                }}/> : null}
+            {mediaBlobUrl ? (board.playerInfo.playing ? (
+              <Button variant="outline-secondary" title="pauseRecording"
+                      disabled={board.recording} onClick={() => setBoard(x => ({...x, play: false}))}>
+                <FontAwesomeIcon icon={faPause} beatFade/>
+              </Button>) : (
+              <Button
+                variant="outline-primary"
+                title="play-recording"
+                disabled={board.recording}
+                onClick={() => setBoard(board => ({...board, play: true}))}>
+                <FontAwesomeIcon icon={faPlay}/>
+              </Button>
+            )) : null}
+            {(mediaBlobUrl && board.playerInfo.duration) ?
+              <Button
+                variant="outline-dark" title="share"
+                disabled={!!(board.recording || board.playerInfo.playing || (board.playerInfo.duration && board.playerInfo.duration! < 5))}
+                onClick={async () => {
+                  await uploadRecordingHandler();
+                }}>
+                <FontAwesomeIcon icon={faCloudArrowUp}/>
+              </Button> : null}
+          </ButtonGroup>
+          {board.playerInfo.duration ? <p>{board.playerInfo.duration.toFixed(2)} seconds</p> : null}
+        </Container>
       </Col>
     </Row>
   </>

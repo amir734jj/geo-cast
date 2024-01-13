@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common';
-import DatabaseModule from './database.module';
-import UserModule from './user.module';
-import AuthService from '../services/auth.service';
-import LocalStrategy from '../logic/local-strategy.passport';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import AccountController from '../controllers/account.controller';
-import ManageAccountController from '../controllers/account.manage.controller';
+import { Module } from '@nestjs/common'
+import DatabaseModule from './database.module'
+import UserModule from './user.module'
+import AuthService from '../services/auth.service'
+import LocalStrategy from '../logic/local-strategy.passport'
+import { JwtModule } from '@nestjs/jwt'
+import { PassportModule } from '@nestjs/passport'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import AccountController from '../controllers/account.controller'
+import ManageAccountController from '../controllers/account.manage.controller'
 
 @Module({
   imports: [
@@ -21,12 +21,12 @@ import ManageAccountController from '../controllers/account.manage.controller';
       useFactory: async (configService: ConfigService) => {
         return {
           secret: configService.get<string>('JWT_SECRET'),
-          signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES') },
-        };
-      },
-    }),
+          signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES') }
+        }
+      }
+    })
   ],
   controllers: [AccountController, ManageAccountController],
-  providers: [AuthService, LocalStrategy],
+  providers: [AuthService, LocalStrategy]
 })
 export default class AuthModule {}

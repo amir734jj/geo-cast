@@ -1,155 +1,253 @@
 import {useEffect, useState} from 'react';
 import Card from 'react-bootstrap/Card';
 import {queryPosts} from '../../actions';
-import {useLocationStore, useMapFocusStore, usePostsStore} from "../../stores";
+import {useAuthStore, useLocationStore, useMapFocusStore, usePostsStore} from "../../stores";
 import InfiniteScroll from 'react-infinite-scroller';
-import {Button, ButtonGroup, Spinner} from 'react-bootstrap';
+import {Button, ButtonGroup, ProgressBar, Spinner} from 'react-bootstrap';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPause, faPlay} from "@fortawesome/free-solid-svg-icons";
 import {DateTime} from "luxon";
 import _ from "lodash";
-import LazyPlayer from "../lazyPlayer";
-import {PlayerInfoPropType} from "../player";
+import Player, {EventType, PlayerInfoPropType} from "../player";
+import {LinkContainer} from "react-router-bootstrap";
+import {EntityType} from '@geo-cast/lib/dto/account';
+import {combine} from "../../utilities";
+import {PostInfoType} from '@geo-cast/lib/dto/board/post';
+
+type PlayerInfoType = Record<number, PlayerInfoPropType & {
+  play: boolean,
+  page: number,
+} & EntityType & PostInfoType>;
+
+type BoardType = {
+  page: number,
+  more: boolean,
+  error: boolean,
+  autoPlay: boolean,
+  currentAutoPlaying: number,
+  playerInfos: PlayerInfoType,
+}
+
+const stopAutoPlay = (board: BoardType): BoardType => {
+  return {
+    ...board,
+    autoPlay: false,
+    currentAutoPlaying: -1
+  }
+};
+
+const hardStopPlaying = (board: BoardType): BoardType => {
+  return {
+    ...board,
+    playerInfos: _.reduce(_.values(board.playerInfos), (acc, x) => ({...acc, [x.id]: {...x, play: false}}), {})
+  }
+};
+
+const startAutoPlay = (board: BoardType): BoardType => {
+  return combine(
+    (x: BoardType) => ({...x, autoPlay: true}),
+    playNextPost
+  )(board);
+};
+
+const playNextPost = (board: BoardType): BoardType => {
+  if (board.autoPlay && board.currentAutoPlaying + 1 === _.values(board.playerInfos).length) {
+    return stopAutoPlay(board);
+  } else {
+    return {
+      ...board,
+      currentAutoPlaying: board.currentAutoPlaying + 1,
+      playerInfos: _.reduce(_.values(board.playerInfos), (acc, x) => ({
+        ...acc,
+        [x.id]: {...x, play: orderPosts(board).at(board.currentAutoPlaying + 1)!.id === x.id}
+      }), {})
+    }
+  }
+};
+
+const orderPosts = (board: BoardType) => _.orderBy(board.playerInfos, ["page", "id"]);
+
+
+const getProgressPercentage = (info: PlayerInfoPropType) => Math.round(100 * info.currentTime / info.duration);
 
 const Posts = () => {
   const locationContext = useLocationStore();
   const mapFocusContext = useMapFocusStore();
+  const authContext = useAuthStore();
 
   const count = 2;
-  const [page, setPage] = useState(0);
   const {posts, appendPosts, clearPosts} = usePostsStore();
-  const [more, setMore] = useState(true);
-  const [error, setError] = useState(true);
-  const [scrollRef, setScrollRef] = useState<any>(null);
-  const [autoPlay, setAutoPlay] = useState<boolean>(false);
-  const [currentAutoPlaying, setCurrentAutoPlaying] = useState<number>(-1);
-  const [playerInfos, setPlayersInfo] = useState<(PlayerInfoPropType & { play: boolean })[]>([]);
 
-  const nextPage = async (currentPage: number | null = null) => {
-    currentPage = _.isNull(currentPage) ? page : currentPage;
+  const [scroll, setScrollRef] = useState<any>(null);
+  const [board, setBoard] = useState<BoardType>({
+    page: 0,
+    more: true,
+    error: false,
+    autoPlay: false,
+    currentAutoPlaying: -1,
+    playerInfos: {}
+  });
+
+  const nextPage = async (page: number | null = null) => {
     try {
-      const {data} = await queryPosts(count, currentPage + 1, mapFocusContext.coordinate ?? locationContext.coordinate ?? {
+      const queryPage = page ?? board.page;
+      const {data} = await queryPosts(count, queryPage + 1, mapFocusContext.coordinate ?? locationContext.coordinate ?? {
         latitude: 0,
         longitude: 0
       });
       appendPosts(data);
-      setPage(currentPage + 1);
-      setMore(data.length === count);
-      setError(false);
-      setPlayersInfo([...playerInfos, ...data.map(() => ({} as any))]);
+      setBoard(board => ({
+        ...board,
+        page: queryPage + 1,
+        more: data.length < count,
+        error: false,
+        playerInfos: _.merge({}, board.playerInfos, _.reduce(data, (acc, x) => ({
+          ...acc,
+          [x.id]: { ...x, page: queryPage + 1}
+        }), {}))
+      }))
     } catch (e) {
-      setError(true);
+      setBoard(board => ({...board, error: true}));
     }
   };
-
-  useEffect(() => {
-    nextPage();
-  }, [locationContext.coordinate]);
 
   useEffect(() => {
     if (mapFocusContext.coordinate) {
       clearPosts();
-      setPage(0);
       nextPage(0);
     }
   }, [mapFocusContext.coordinate]);
 
-  const stopAutoPlay = () => {
-    setAutoPlay(false);
-    setCurrentAutoPlaying(-1);
-  };
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await Promise.all(_.range(1, board.page).map(x => nextPage(x)));
+    }, 1000 * 10);
 
-  const hardStopPlaying = () => {
-    setPlayersInfo(infos => infos.map(info => ({...info, play: false})));
-  };
+    return () => clearInterval(interval);
+  }, []);
 
-  const startAutoPlay = () => {
-    setCurrentAutoPlaying(0);
-    setAutoPlay(true);
-    playNextPost();
-  };
-
-  const playNextPost = () => {
-    if (autoPlay && currentAutoPlaying! + 1 === posts.length) {
-      stopAutoPlay();
-    } else {
-      setCurrentAutoPlaying(currentAutoPlaying! + 1);
-      playerInfos[currentAutoPlaying! + 1].play = true;
+  const mapEventToPlay = (event: EventType, prevPlay: boolean) => {
+    switch (event) {
+      case "pause":
+      case "finish":
+        return false;
+      case "play":
+        return true;
+      default:
+        return prevPlay;
     }
   };
 
   return (
     <>
       <ButtonGroup className="mb-2 mt-1">
-        {autoPlay ?
-          <Button variant="outline-danger" onClick={() => {
-            stopAutoPlay();
-            hardStopPlaying();
-          }}> stop playlist </Button> :
-          <Button variant="outline-success" disabled={!!(_.values(playerInfos).filter(x => x.play).length)} onClick={() => {
-            startAutoPlay();
-          }}> start playlist </Button>}
+        {posts.length && board.autoPlay ?
+          <>
+            <Button
+              variant="outline-danger"
+              onClick={() => {
+                setBoard(
+                  combine(
+                    stopAutoPlay,
+                    hardStopPlaying));
+              }}> stop playlist </Button> :
+            <Button
+              variant="outline-success"
+              disabled={!!(_.find(_.values(board.playerInfos), {play: true}))}
+              onClick={() => {
+                setBoard(startAutoPlay);
+              }}> start playlist </Button>
+          </> : null}
       </ButtonGroup>
       <div style={{height: '37rem', overflowY: 'auto'}} ref={(ref) => setScrollRef(ref)}>
         <InfiniteScroll
           pageStart={0}
           loadMore={() => nextPage()}
-          hasMore={more && !error}
+          hasMore={board.more && !board.error}
           loader={<Spinner key="spinner-post"/>}
           useWindow={false}
-          getScrollParent={() => scrollRef}
+          getScrollParent={() => scroll}
         >
-          {posts.map((post, i) => (
-            <Card key={`post-${i}`} style={{marginBottom: '0.5rem'}}>
+          {_.map(orderPosts(board)).map((post) => (
+            <Card key={`post-${post.id}`} style={{marginBottom: '0.5rem'}}>
               <Card.Body style={{padding: '0.5rem 0.5rem'}}>
-                <Card.Title as="p">{post.user.name}</Card.Title>
+                <Card.Title as="p">
+                  {authContext.auth ?
+                    <LinkContainer to={`/profile/${post.user.id}`}>
+                      <a>{post.user.name}</a>
+                    </LinkContainer> : post.user.name}
+                </Card.Title>
                 <Card.Subtitle
                   className="mb-2 text-muted">
-                  {post.duration}sec - {DateTime.fromISO(post.created_at).toLocaleString(DateTime.DATETIME_MED)}
+                  {post.duration.toFixed(2)}sec
+                  - {DateTime.fromISO(post.created_at.toString()).toLocaleString(DateTime.DATETIME_MED)}
                 </Card.Subtitle>
-                <LazyPlayer
+                <Player
                   mediaBlobUrl={`/api/board/download/${post.recordingId}`}
-                  play={playerInfos[i] && playerInfos[i].play}
-                  onchange={(info, event) => {
-                    playerInfos[i] = {...playerInfos[i], ...info };
-                    switch (event) {
-                      case "pause":
-                      case "finish":
-                        playerInfos[i].play = false;
-                        if (event === 'finish' && autoPlay) {
-                          playNextPost();
+                  play={board.playerInfos[post.id]?.play}
+                  onchange={(playerInfo: Partial<PlayerInfoPropType>, event: EventType) => {
+                    setBoard(
+                      combine(
+                        (x: BoardType) => ({
+                          ...x,
+                          playerInfos: _.reduce(_.values(x.playerInfos), (acc, {play, ...info}) => {
+                            if (info.id === post.id) {
+                              return {
+                                ...acc,
+                                [info.id]: {
+                                  ...info,
+                                  ...playerInfo,
+                                  play: mapEventToPlay(event, play)
+                                },
+                              };
+                            } else {
+                              return ({
+                                ...acc,
+                                [info.id]: {
+                                  ...info,
+                                  play
+                                },
+                              });
+                            }
+                          }, {})
+                        }),
+                        (x: BoardType) => {
+                          if (event === "finish" && x.autoPlay) {
+                            return playNextPost(x);
+                          } else {
+                            return x
+                          }
                         }
-                        break;
-                      case "play":
-                        playerInfos[i].play = true;
-                        break;
-                      default:
-                        break;
-                    }
-
-                    setPlayersInfo(_.clone(playerInfos));
+                      )
+                    );
                   }}/>
-                {playerInfos[i] && playerInfos[i].playing ? (
-                  <Button variant="outline-secondary" title="pauseRecording" onClick={() => {
-                    playerInfos[i] = {...playerInfos[i], play: false};
-                    setPlayersInfo(_.clone(playerInfos));
-                    stopAutoPlay();
-                    hardStopPlaying();
+                {board.playerInfos[post.id]?.playing
+                  ? <Button variant="outline-secondary" title="pauseRecording" onClick={() => {
+                    setBoard(
+                      combine(
+                        stopAutoPlay,
+                        hardStopPlaying))
                   }}>
                     <FontAwesomeIcon icon={faPause} beatFade/>
-                  </Button>) : (<Button variant="outline-primary" title="play-recording" onClick={() => {
-                    stopAutoPlay();
-                    setPlayersInfo(playerInfos.map((info, index) => {
-                      if (index === i) {
-                        return {...info, play: true};
-                      } else {
-                        return {...info, play: false};
-                      }
-                    }));
+                  </Button> : <Button variant="outline-primary" title="play-recording" onClick={() => {
+                    setBoard(
+                      combine(
+                        stopAutoPlay,
+                        (x: BoardType) => ({
+                          ...x,
+                          playerInfos: _.reduce(_.values(x.playerInfos), (acc, y) => ({
+                            ...acc,
+                            [y.id]: {...y, play: y.id === post.id}
+                          }), {})
+                        })))
                   }}>
                     <FontAwesomeIcon icon={faPlay}/>
-                  </Button>
-                )}
+                  </Button>}
+                {board.playerInfos[post.id]?.playing ?
+                  <ProgressBar
+                    now={getProgressPercentage(board.playerInfos[post.id])}
+                    className="mt-2"
+                    animated/> : null}
               </Card.Body>
             </Card>
           ))}

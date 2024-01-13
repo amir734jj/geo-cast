@@ -3,23 +3,23 @@ import {
   PrimaryGeneratedColumn,
   Column,
   Unique,
-  ManyToMany,
-} from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
-import IEntity from 'src/interfaces/entity.interface';
-import User from './users.model';
+  ManyToMany
+} from 'typeorm'
+import { ApiProperty } from '@nestjs/swagger'
+import { type EntityType } from '@geo-cast/lib/dto/account'
+import User from './users.model'
 
 @Entity()
 @Unique(['name'])
-export default class Role implements IEntity {
+export default class Role implements EntityType {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  id: number;
+    id: number
 
   @ApiProperty()
   @Column({ length: 256, default: '' })
-  name: string;
+    name: string
 
   @ManyToMany(() => User, (user) => user.roles)
-  users: User[];
+    users: User[]
 }

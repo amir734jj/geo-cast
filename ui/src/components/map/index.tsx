@@ -6,10 +6,7 @@ import {faPlus, faMinus, faRotateLeft} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useMapFocusStore} from "../../stores";
 import _ from "lodash";
-
-const geoUrl =
-  "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json";
-
+import worldCountries from './world-countries.json';
 
 type CoordinateInfoType = Coordinate & { color?: string };
 
@@ -72,7 +69,7 @@ const Map = ({coordinates}: MapPropType) => {
           minZoom={minZoom}
           color="red">
           <Geographies
-            geography={geoUrl}
+            geography={worldCountries}
             fill="lightgrey"
             stroke="DarkMagenta">
             {({geographies}) =>
