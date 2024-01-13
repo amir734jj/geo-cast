@@ -22,7 +22,7 @@ docker-build:
   stage: deploy
   resource_group: azure
   only:
-    - master
+    - main
   allow_failure: false
   before_script:
     - apk --no-cache add curl py3-pip
