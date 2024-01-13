@@ -1,19 +1,23 @@
-FROM node:lts
+FROM node:lts-alpine
 
-# Create app directory
+ENV PORT=80
+
 WORKDIR /usr/src/app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
-COPY tsconfig*.json ./
-
-RUN npm install
-RUN npm run build
-
-# Bundle app source
 COPY . .
 
+RUN npm install
+
+RUN cd ui && \
+    npm install && \
+    npm run build
+
+RUN cd api && \
+    npm install && \
+    cp -r ../ui/dist client
+
 EXPOSE 80 443
-CMD [ "npm", "run", "start:prod"]
+
+WORKDIR /usr/src/app/api
+
+ENTRYPOINT [ "npm", "run", "start:prod"]
