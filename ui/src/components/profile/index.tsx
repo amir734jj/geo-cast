@@ -10,11 +10,6 @@ import { useAuthStore } from "../../stores";
 import _ from 'lodash';
 import { AxiosError } from 'axios';
 
-type ProfilePropType = {
-  profile: ProfileType,
-  updateProfileHandler: (arg: ProfileType) => void;
-};
-
 const schema = yup.object({
   name: yup
     .string()
@@ -27,7 +22,12 @@ const schema = yup.object({
     .notRequired(),
 }).required();
 
-type SchemaType = yup.InferType<typeof schema> & ProfileType;
+type SchemaType = yup.InferType<typeof schema>;
+
+type ProfilePropType = {
+  profile: ProfileType,
+  updateProfileHandler: (arg: SchemaType) => void;
+};
 
 const ProfileForm = (arg: ProfilePropType) => {
   const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<SchemaType>({
@@ -80,10 +80,10 @@ const Profile = () => {
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
 
-  const updateProfileHandler = async (arg: ProfileType) => {
+  const updateProfileHandler = async (arg: SchemaType) => {
     try {
       setUpdating(true);
-      const { data: user } = await updateProfileAction(arg);
+      const { data: user } = await updateProfileAction(arg as ProfileType);
       authContext.setUser(user);
     } catch (e) {
       setError((e as AxiosError).message);
@@ -99,7 +99,7 @@ const Profile = () => {
   return (
     <>
       {error ? <AlertDismissible header='updating profile failed' variant='danger' message={error} /> : null}
-      <ProfileForm {...{ profile: _.pick(authContext.auth!, ['name', 'location']) as ProfileType, updateProfileHandler }} />
+      <ProfileForm {...{ profile: _.pick(authContext.auth!, ['name', 'location', 'description', 'id']) as ProfileType, updateProfileHandler }} />
     </>
   );
 }

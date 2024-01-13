@@ -1,9 +1,9 @@
 export interface DataStoredInToken {
-  tokenId: number;
+  tokenId: number
 
-  userId: number;
+  userId: number
 
-  email: string;
+  email: string
 
-  token: string;
+  token: string
 }
