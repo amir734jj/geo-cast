@@ -13,6 +13,9 @@ import compression from 'compression'
 async function bootstrap () {
   const app = await NestFactory.create(AppModule)
   const config = app.get(ConfigService)
+  const port = config.get<number>('PORT') || 5000;
+
+  Logger.log(`Starting the app in port ${port}`);
 
   app.use(compression())
   app.useGlobalPipes(new ValidationPipe({
@@ -33,12 +36,10 @@ async function bootstrap () {
     .addBearerAuth()
     .build()
 
-  const port = config.get<number>('PORT') || 5000
-
   const document = SwaggerModule.createDocument(app, options)
   SwaggerModule.setup('swagger', app, document)
 
-  Logger.log(`Starting the app in port ${port}`)
+  Logger.log(`Started the app in port ${port}`)
 
   await app.listen(port)
 }
