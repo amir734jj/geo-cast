@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {Fragment, useEffect, useState} from 'react';
 import Card from 'react-bootstrap/Card';
 import {queryPosts} from '../../actions';
 import {useAuthStore, useLocationStore, useMapFocusStore, usePostsStore} from "../../stores";
@@ -13,6 +13,7 @@ import {LinkContainer} from "react-router-bootstrap";
 import {EntityType} from '@geo-cast/lib/dto/account';
 import {combine} from "../../utilities";
 import {PostInfoType} from '@geo-cast/lib/dto/board/post';
+import ms from 'ms';
 
 type PlayerInfoType = Record<number, PlayerInfoPropType & {
   play: boolean,
@@ -67,7 +68,6 @@ const playNextPost = (board: BoardType): BoardType => {
 
 const orderPosts = (board: BoardType) => _.orderBy(board.playerInfos, ["page", "id"]);
 
-
 const getProgressPercentage = (info: PlayerInfoPropType) => Math.round(100 * info.currentTime / info.duration);
 
 const Posts = () => {
@@ -80,26 +80,25 @@ const Posts = () => {
 
   const [scroll, setScrollRef] = useState<any>(null);
   const [board, setBoard] = useState<BoardType>({
-    page: 0,
-    more: true,
+    page: 1,
+    more: false,
     error: false,
     autoPlay: false,
     currentAutoPlaying: -1,
     playerInfos: {}
   });
 
-  const nextPage = async (page: number | null = null) => {
+  const nextPage = async (queryPage: number) => {
     try {
-      const queryPage = page ?? board.page;
-      const {data} = await queryPosts(count, queryPage + 1, mapFocusContext.coordinate ?? locationContext.coordinate ?? {
+      const {data} = await queryPosts(count, queryPage, mapFocusContext.coordinate ?? locationContext.coordinate ?? {
         latitude: 0,
         longitude: 0
       });
       appendPosts(data);
       setBoard(board => ({
         ...board,
-        page: queryPage + 1,
-        more: data.length < count,
+        page: queryPage,
+        more: data.length === count,
         error: false,
         playerInfos: _.merge({}, board.playerInfos, _.reduce(data, (acc, x) => ({
           ...acc,
@@ -114,14 +113,18 @@ const Posts = () => {
   useEffect(() => {
     if (mapFocusContext.coordinate) {
       clearPosts();
-      nextPage(0);
+      nextPage(1);
     }
   }, [mapFocusContext.coordinate]);
 
   useEffect(() => {
+    nextPage(1);
+  }, []);
+
+  useEffect(() => {
     const interval = setInterval(async () => {
-      await Promise.all(_.range(1, board.page).map(x => nextPage(x)));
-    }, 1000 * 10);
+      await Promise.all(_.range(1, board.page + 1).map(x => nextPage(x)));
+    }, ms("2s"));
 
     return () => clearInterval(interval);
   }, []);
@@ -139,10 +142,10 @@ const Posts = () => {
   };
 
   return (
-    <>
+    <Fragment>
       <ButtonGroup className="mb-2 mt-1">
         {posts.length && board.autoPlay ?
-          <>
+          <Fragment>
             <Button
               variant="outline-danger"
               onClick={() => {
@@ -157,12 +160,12 @@ const Posts = () => {
               onClick={() => {
                 setBoard(startAutoPlay);
               }}> start playlist </Button>
-          </> : null}
+          </Fragment> : null}
       </ButtonGroup>
       <div style={{height: '37rem', overflowY: 'auto'}} ref={(ref) => setScrollRef(ref)}>
         <InfiniteScroll
           pageStart={0}
-          loadMore={() => nextPage()}
+          loadMore={(page) => nextPage(page)}
           hasMore={board.more && !board.error}
           loader={<Spinner key="spinner-post"/>}
           useWindow={false}
@@ -253,7 +256,7 @@ const Posts = () => {
           ))}
         </InfiniteScroll>
       </div>
-    </>
+    </Fragment>
   );
 }
 

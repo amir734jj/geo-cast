@@ -33,6 +33,7 @@ export default class PostService extends AbstractDal<Post> {
       .skip(count * (page - 1))
       .where('user.active = :active', { active: true })
       .orderBy('distance', 'ASC')
+      .orderBy('post.created_at', 'DESC')
       .getMany())
       .map(({ user = {}, likedBy = [], ...row }) => ({
         ...row,
