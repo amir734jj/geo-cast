@@ -100,7 +100,7 @@ export default class BoardController {
       @UploadedFile(
         new ParseFilePipeBuilder()
           .addMaxSizeValidator({
-            maxSize: bytes('5mb')
+            maxSize: bytes('5mb') as number
           })
           .build({
             errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,

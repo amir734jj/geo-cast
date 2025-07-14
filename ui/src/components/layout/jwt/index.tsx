@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import { DateTime } from "luxon";
 import { accountInfo as accountInfoAction, refreshToken as refreshTokenAction } from '../../../actions';
+import ms from 'ms';
 
 const JWT = () => {
   const [recoverAuth, setRecoverAuth] = useState(false);
@@ -22,6 +23,10 @@ const JWT = () => {
         accountInfoAction()
           .then(({ data: user }) => {
             authContext.setUser(user);
+          })
+          .catch((error) => {
+            console.error('Failed to recover account info:', error);
+            authContext.logout();
           });
       }
     }
@@ -31,30 +36,40 @@ const JWT = () => {
   useEffect(() => {
     if (authContext.auth && !scheduledTokenRenew) {
       setScheduledTokenRenew(true);
-      const renewAt = 10 * 60000; // renew in 10 minutes
-
+      
       const { exp } = jwt_decode<{ exp: number }>(authContext.token!);
       const expiredAt = new Date(0);
       expiredAt.setUTCSeconds(exp);
-
-      // if token will expire before we even get to scheduled renew
-      if (DateTime.fromJSDate(expiredAt).diffNow().milliseconds <= renewAt) {
-        refreshTokenAction()
-          .then(({ data: user }) => {
-            authContext.setToken(user);
-          });
+      
+      // Calculate refresh time as 75% of token lifetime or 5 minutes before expiry
+      const timeToExpiry = DateTime.fromJSDate(expiredAt).diffNow().milliseconds;
+      const refreshTime = Math.min(timeToExpiry * 0.75, timeToExpiry - ms("5min"));
+      
+      if (refreshTime <= 0) {
+        // Token already expired or about to expire
+        handleTokenRefresh();
+        return;
       }
-
-      const interval = setInterval(() => {
-        refreshTokenAction()
-          .then(({ data: user }) => {
-            authContext.setToken(user);
-          });
-      }, renewAt);
-
-      return () => clearInterval(interval);
+      
+      const timeoutId = setTimeout(() => {
+        handleTokenRefresh();
+      }, refreshTime);
+      
+      return () => clearTimeout(timeoutId);
     }
-  }, [authContext]);
+  }, [authContext.auth, scheduledTokenRenew]);
+
+  const handleTokenRefresh = async () => {
+    try {
+      const { data: user } = await refreshTokenAction();
+      authContext.setToken(user);
+      setScheduledTokenRenew(false); // Allow rescheduling
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      // Handle refresh failure - maybe redirect to login
+      authContext.logout();
+    }
+  };
 
   return <div style={{ display: 'none' }}>
     {authContext.token}

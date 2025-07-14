@@ -19,7 +19,7 @@ import bytes from 'bytes'
       useFactory: async (configService: ConfigService) => ({
         dest: configService.get<string>('MULTER_DEST'),
         limits: {
-          fieldSize: bytes('10mb') // hard max file size
+          fieldSize: bytes('10mb') as number // hard max file size
         }
       }),
       inject: [ConfigService]
