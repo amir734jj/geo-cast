@@ -224,6 +224,7 @@ const Recorder = () => {
             </ButtonGroup>
             { board.recording ? <p>
               {(board.recordingDuration ?? 0).toFixed(2)} seconds
+              {(board.recordingDuration ?? 0) >= 25 ? <span className="text-danger ms-2">(max 30 seconds)</span> : null}
             </p> : (board.playerInfo.duration ?? board.recordingDuration) ? (
               <p>{Number(board.playerInfo.duration ?? board.recordingDuration).toFixed(2)} seconds</p>
             ) : null}
