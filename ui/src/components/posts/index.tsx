@@ -83,7 +83,7 @@ const Posts = () => {
   const {confirmAction, ConfirmModal} = useConfirmModal();
 
   const count = 2;
-  const {appendPosts, clearPosts, removePost, refreshTrigger} = usePostsStore();
+  const {appendPosts, clearPosts, removePost, refreshTrigger, triggerRefresh} = usePostsStore();
 
   const [scroll, setScrollRef] = useState<any>(null);
   const [board, setBoard] = useState<BoardType>({
@@ -161,7 +161,7 @@ const Posts = () => {
 
   return (
     <Fragment>
-      {Object.keys(board.playerInfos).length > 1 ?
+      {Object.keys(board.playerInfos).length >= 3 ?
         <ButtonGroup className="mb-2 mt-1">
           {board.autoPlay ?
             <Button
@@ -272,6 +272,7 @@ const Posts = () => {
                   </Button>}
                 {isAdmin ?
                   <Button variant="outline-danger" size="sm" className="ms-2" title="delete-recording"
+                    disabled={board.autoPlay || !!(_.find(_.values(board.playerInfos), {play: true}))}
                     onClick={async () => {
                       if (await confirmAction('This will permanently delete the recording.')) {
                         await deletePostAction(post.id);
@@ -280,6 +281,7 @@ const Posts = () => {
                           const { [post.id]: _, ...rest } = prev.playerInfos;
                           return { ...prev, playerInfos: rest };
                         });
+                        triggerRefresh();
                       }
                     }}>
                     <FontAwesomeIcon icon={faTrash}/>
