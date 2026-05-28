@@ -20,4 +20,4 @@ export const deletePost = (postId: number) => axios.delete(`/board/${postId}`);
 
 export const getUserPosts = (userId: string | number) => axios.get<(PostInfoType & { id: number })[]>(`/board/user/${userId}`);
 
-export const getStats = () => axios.get<{latitude: number; longitude: number}[]>('/board/stats');
+export const getStats = () => axios.get<{country: string; count: number}[]>('/board/stats');

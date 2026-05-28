@@ -89,11 +89,11 @@ export default class BoardController {
 
   @Get('stats')
   @ApiOkResponse({
-    description: 'Successfully returned post coordinates for stats'
+    description: 'Successfully returned recording statistics per country'
   })
   @ApiBadRequestResponse({ description: 'Bad request.' })
-  async stats (): Promise<{latitude: number; longitude: number}[]> {
-    return await this.boardService.getCoordinates();
+  async stats (): Promise<{country: string; count: number}[]> {
+    return await this.boardService.getStats();
   }
 
   @Get('user/:userId')

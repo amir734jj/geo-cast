@@ -7,6 +7,7 @@ import type User from 'src/models/users.model';
 import { DateTime } from 'luxon';
 import { AbstractBlobProvider, type FileInfo } from 'src/abstracts/abstract.file.provider';
 import { type Coordinate } from '@geo-cast/lib/dto/board/common';
+import * as worldCountries from '../data/world-countries.json';
 
 @Injectable()
 export default class BoardService {
@@ -56,8 +57,44 @@ export default class BoardService {
     return await this.blobServiceClient.download(recordingId);
   }
 
-  async getCoordinates (): Promise<{latitude: number; longitude: number}[]> {
-    return await this.postService.getCoordinates();
+  async getStats (): Promise<{country: string; count: number}[]> {
+    const coordinates = await this.postService.getCoordinates();
+    const countryMap = new Map<string, number>();
+    for (const { latitude, longitude } of coordinates) {
+      const country = this.getCountryForCoordinate(longitude, latitude);
+      countryMap.set(country, (countryMap.get(country) || 0) + 1);
+    }
+    return Array.from(countryMap.entries())
+      .map(([country, count]) => ({ country, count }))
+      .sort((a, b) => b.count - a.count);
+  }
+
+  private getCountryForCoordinate (lng: number, lat: number): string {
+    for (const feature of (worldCountries as any).features) {
+      const geom = feature.geometry;
+      const rings = geom.type === 'MultiPolygon'
+        ? geom.coordinates.flat()
+        : geom.coordinates;
+      for (const ring of rings) {
+        if (this.pointInPolygon([lng, lat], ring)) {
+          return feature.properties.name;
+        }
+      }
+    }
+    return 'Unknown';
+  }
+
+  private pointInPolygon (point: [number, number], polygon: number[][]): boolean {
+    const [x, y] = point;
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const [xi, yi] = polygon[i];
+      const [xj, yj] = polygon[j];
+      if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) {
+        inside = !inside;
+      }
+    }
+    return inside;
   }
 
   async isPostOwner (userId: number, postId: number): Promise<boolean> {
