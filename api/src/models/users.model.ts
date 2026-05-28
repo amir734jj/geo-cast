@@ -10,7 +10,7 @@ import {
 import Token from './token.model'
 import Post from './post.model'
 import { ApiProperty } from '@nestjs/swagger'
-import { Exclude } from 'class-transformer'
+import { Exclude, Expose } from 'class-transformer'
 import Role from './roles.model'
 import { type EntityType, type ProfileType, type UserType } from '@geo-cast/lib/dto/account'
 
@@ -34,6 +34,7 @@ export default class User implements EntityType, UserType, ProfileType {
     name: string
 
   @Exclude()
+  @Expose({ groups: ['admin'] })
   @Column({ length: 256, default: '' })
     email: string
 

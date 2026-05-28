@@ -73,7 +73,7 @@ const PublicProfile = () => {
       <h3>
         {profile?.name} { _.find(profile?.roles, { name: "admin"}) ? <span style={{ fontSize: "1.25rem"}}>(admin)</span> : null }
       </h3>
-      <p>{profile?.description || "No profile description"}</p>
+      <p style={{whiteSpace: 'pre-line'}}>{profile?.description || "No profile description"}</p>
 
       <h5 className="mt-4">{posts.length ? `Recordings (${posts.length})` : 'No recordings yet'}</h5>
       {posts.length >= 3 ?

@@ -1,4 +1,4 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Controller, SerializeOptions, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type User from '../models/users.model';
 import { AbstractController } from '../abstracts/abstract.controller';
@@ -13,6 +13,7 @@ import { UserRole } from '../enums/role.enum';
 @Controller('user')
 @Roles(UserRole.ADMIN)
 @UseGuards(JwtAuthGuard, RolesGuard)
+@SerializeOptions({ groups: ['admin'] })
 @ApiBearerAuth()
 export default class UserController extends AbstractController<User> {
   constructor (private readonly usersService: UsersService) {
