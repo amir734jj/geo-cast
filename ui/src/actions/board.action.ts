@@ -15,3 +15,5 @@ export const queryPosts = (count: number, page: number, coordinate?: Coordinate)
     ...coordinate
   }
 });
+
+export const deletePost = (postId: number) => axios.delete(`/board/${postId}`);

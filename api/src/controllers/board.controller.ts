@@ -3,6 +3,7 @@ import {
   Get,
   Request,
   Post,
+  Delete,
   UseGuards,
   Body,
   HttpStatus,
@@ -31,6 +32,9 @@ import { FormDataBody, FormDataDtoValidator } from 'src/decorators/form-data.dec
 import CreateUserDto from 'src/dto/create.user.dto';
 import { TypeTransformer } from 'src/decorators/type-transformer.decorator';
 import QueryPostDto from '../dto/query.post.dto';
+import { Roles } from 'src/decorators/roles.decorator';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { UserRole } from 'src/enums/role.enum';
 
 @ApiTags('board')
 @Controller('board')
@@ -83,6 +87,17 @@ export default class BoardController {
   @ApiBadRequestResponse({ description: 'Bad request.' })
   async unlike (@Param('postId') postId: number, @Request() req): Promise<RecordingPost> {
     return await this.boardService.unlike(req.user, postId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Delete(':postId')
+  @ApiOkResponse({
+    description: 'Successfully deleted the post'
+  })
+  @ApiBadRequestResponse({ description: 'Bad request.' })
+  async deletePost (@Param('postId') postId: number): Promise<void> {
+    await this.boardService.deletePost(postId);
   }
 
   @UseGuards(JwtAuthGuard)

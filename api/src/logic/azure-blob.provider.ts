@@ -29,4 +29,10 @@ export class AzureBlobProvider extends AbstractBlobProvider {
     await blockBlobClient.uploadData(stream);
     await blockBlobClient.setMetadata({ filename });
   }
+
+  async delete (id: string): Promise<void> {
+    const containerClient = this.blobServiceClient.getContainerClient('recordings');
+    const blockBlobClient = containerClient.getBlockBlobClient(id);
+    await blockBlobClient.deleteIfExists();
+  }
 }

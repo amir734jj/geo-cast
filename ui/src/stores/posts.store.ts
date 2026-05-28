@@ -8,8 +8,9 @@ export type PostsState = {
 };
 
 export type PostsActions = {
-  appendPosts: (posts: PostInfoType[]) => void,
-  clearPosts: () => void
+  appendPosts: (posts: PostInfoType[]) => void;
+  clearPosts: () => void;
+  removePost: (postId: number) => void;
 };
 
 export const usePostsStore = create<PostsState & PostsActions>()(immer((set) => ({
@@ -22,6 +23,11 @@ export const usePostsStore = create<PostsState & PostsActions>()(immer((set) => 
   clearPosts: () => {
     set((state) => {
       state.posts = [];
+    });
+  },
+  removePost: (postId) => {
+    set((state) => {
+      state.posts = state.posts.filter(p => p.id !== postId);
     });
   }
 })));

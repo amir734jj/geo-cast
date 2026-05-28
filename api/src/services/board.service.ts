@@ -51,4 +51,16 @@ export default class BoardService {
   async downloadRecording (recordingId: string): Promise<FileInfo> {
     return await this.blobServiceClient.download(recordingId);
   }
+
+  async deletePost (postId: number): Promise<void> {
+    const post = await this.postService.get(postId);
+    if (post) {
+      await this.postService.delete(postId);
+      try {
+        await this.blobServiceClient.delete(post.recordingId);
+      } catch {
+        // blob may already be gone
+      }
+    }
+  }
 }

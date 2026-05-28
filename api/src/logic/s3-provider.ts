@@ -5,7 +5,8 @@ import {
   S3Client,
   GetObjectCommand,
   PutObjectCommand,
-  HeadObjectCommand
+  HeadObjectCommand,
+  DeleteObjectCommand
 } from '@aws-sdk/client-s3';
 
 @Injectable()
@@ -34,6 +35,13 @@ export class S3BlobProvider extends AbstractBlobProvider {
       Key: id,
       Body: stream,
       Metadata: { filename }
+    }));
+  }
+
+  async delete (id: string): Promise<void> {
+    await this.s3Client.send(new DeleteObjectCommand({
+      Bucket: this.bucket,
+      Key: id
     }));
   }
 }

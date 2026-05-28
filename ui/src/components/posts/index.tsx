@@ -1,11 +1,11 @@
 import {Fragment, useEffect, useRef, useState} from 'react';
 import Card from 'react-bootstrap/Card';
-import {queryPosts} from '../../actions';
+import {queryPosts, deletePost as deletePostAction} from '../../actions';
 import {useAuthStore, useLocationStore, useMapFocusStore, usePostsStore} from "../../stores";
 import InfiniteScroll from 'react-infinite-scroller';
 import {Button, ButtonGroup, ProgressBar, Spinner} from 'react-bootstrap';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPause, faPlay} from "@fortawesome/free-solid-svg-icons";
+import {faPause, faPlay, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {DateTime} from "luxon";
 import _ from "lodash";
 import Player, {EventType, PlayerInfoPropType} from "../player";
@@ -77,9 +77,10 @@ const Posts = () => {
   const locationContext = useLocationStore();
   const mapFocusContext = useMapFocusStore();
   const authContext = useAuthStore();
+  const isAdmin = authContext?.auth?.roles?.some(r => r.name === 'admin');
 
   const count = 2;
-  const {posts, appendPosts, clearPosts} = usePostsStore();
+  const {posts, appendPosts, clearPosts, removePost} = usePostsStore();
 
   const [scroll, setScrollRef] = useState<any>(null);
   const [board, setBoard] = useState<BoardType>({
@@ -258,6 +259,20 @@ const Posts = () => {
                     now={getProgressPercentage(board.playerInfos[post.id])}
                     className="mt-2"
                     animated/> : null}
+                {isAdmin ?
+                  <Button variant="outline-danger" size="sm" className="ms-2" title="delete recording"
+                    onClick={async () => {
+                      if (confirm('Delete this recording?')) {
+                        await deletePostAction(post.id);
+                        removePost(post.id);
+                        setBoard(prev => {
+                          const { [post.id]: _, ...rest } = prev.playerInfos;
+                          return { ...prev, playerInfos: rest };
+                        });
+                      }
+                    }}>
+                    <FontAwesomeIcon icon={faTrash}/>
+                  </Button> : null}
               </Card.Body>
             </Card>
           ))}
