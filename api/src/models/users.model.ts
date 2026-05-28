@@ -48,7 +48,7 @@ export default class User implements EntityType, UserType, ProfileType {
 
   @Exclude()
   @Expose({ groups: ['admin'] })
-  @Column({ name: 'last_login_at', type: 'datetime', nullable: true })
+  @Column({ name: 'last_login_at', type: 'timestamp', nullable: true })
     lastLoginAt: Date | null
 
   @Exclude()
