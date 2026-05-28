@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button, Form, FormGroup } from 'react-bootstrap';
+import { Button, Form, FormGroup, Spinner as BsSpinner } from 'react-bootstrap';
 import { RegisterType } from "@geo-cast/lib/dto/account";
 import { register as registerAction } from "../../../actions";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { AxiosError } from 'axios';
 
 type RegisterFormPropType = {
-  registerHandler: (arg: RegisterType) => void
+  registerHandler: (arg: RegisterType) => void;
+  loading: boolean;
 };
 
 const schema = yup.object({
@@ -41,7 +42,7 @@ const schema = yup.object({
 
 type SchemaType = yup.InferType<typeof schema> & RegisterType & PasswordType;
 
-const RegisterForm = ({ registerHandler }: RegisterFormPropType) => {
+const RegisterForm = ({ registerHandler, loading }: RegisterFormPropType) => {
   const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<SchemaType>({
     resolver: yupResolver(schema)
   });
@@ -104,7 +105,9 @@ const RegisterForm = ({ registerHandler }: RegisterFormPropType) => {
         </Form.Text>
         {errors.password_confirmation ? <Form.Control.Feedback type="invalid">{errors.password_confirmation.message}</Form.Control.Feedback> : null}
       </FormGroup>
-      <Button type="submit">Submit</Button>
+      <Button type="submit" disabled={loading}>
+        {loading ? <><BsSpinner as="span" animation="border" size="sm" role="status" className="me-1" />Submitting...</> : 'Submit'}
+      </Button>
     </Form>
   );
 };
@@ -113,14 +116,18 @@ const Register = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [registered, setRegistered] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const registerHandler = async (arg: RegisterType) => {
+    setLoading(true);
     try {
       await registerAction(arg);
       setRegistered(true);
       navigate("/login");
     } catch (e) {
       setError((e as AxiosError).message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -130,7 +137,7 @@ const Register = () => {
 
   return <>
     {error ? <AlertDismissible header='registering failed' variant='danger' message={error} /> : null}
-    <RegisterForm registerHandler={registerHandler} />
+    <RegisterForm registerHandler={registerHandler} loading={loading} />
   </>;
 };
 
