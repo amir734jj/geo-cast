@@ -52,8 +52,8 @@ const Manage = () => {
           <td>{user.lastLoginAt ? DateTime.fromISO(String(user.lastLoginAt)).toLocaleString(DateTime.DATETIME_MED) : 'Never'}</td>
           <td>
             {user.active ?
-              <Button variant="danger" onClick={() => setUserActive(user, false)} disabled={authContext.auth?.id === user.id}>Disable</Button> :
-              <Button variant="success" onClick={() => setUserActive(user, true)} disabled={authContext.auth?.id === user.id}>Enable</Button>}
+              <Button variant="danger" onClick={() => setUserActive(user, false)} disabled={authContext.auth?.id === user.id} title={authContext.auth?.id === user.id ? 'You cannot disable yourself' : undefined}>Disable</Button> :
+              <Button variant="success" onClick={() => setUserActive(user, true)} disabled={authContext.auth?.id === user.id} title={authContext.auth?.id === user.id ? 'You cannot enable yourself' : undefined}>Enable</Button>}
           </td>
         </tr>)}
       </tbody>
