@@ -17,6 +17,7 @@ export type MapPropType = {
 const minZoom = 1;
 const maxZoom = 8;
 const defaultPosition: { coordinates: [number, number]; zoom: number } = {coordinates: [0, 0], zoom: 1};
+const usStatesUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
 const Map = ({coordinates}: MapPropType) => {
   const [position, setPosition] = useState(defaultPosition);
@@ -71,6 +72,21 @@ const Map = ({coordinates}: MapPropType) => {
             geography={worldCountries}
             fill="lightgrey"
             stroke="DarkMagenta">
+            {({geographies}) =>
+              geographies.map((geo) => (
+                <Geography key={geo.rsmKey} geography={geo} style={{
+                  default: {outline: "none"},
+                  hover: {outline: "none"},
+                  pressed: {outline: "none"},
+                }}/>
+              ))
+            }
+          </Geographies>
+          <Geographies
+            geography={usStatesUrl}
+            fill="none"
+            stroke="DarkMagenta"
+            strokeWidth={0.4}>
             {({geographies}) =>
               geographies.map((geo) => (
                 <Geography key={geo.rsmKey} geography={geo} style={{
