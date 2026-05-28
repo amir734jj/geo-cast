@@ -8,6 +8,7 @@ import {useMapFocusStore, useThemeStore} from "../../stores";
 import _ from "lodash";
 import worldCountries from '@geo-cast/lib/data/world-countries.json';
 import {useMediaQuery} from '../../utilities';
+import chroma from 'chroma-js';
 
 type CoordinateInfoType = Coordinate & { color?: string };
 
@@ -35,26 +36,22 @@ const Map = ({coordinates, countryStats}: MapPropType) => {
     return Math.max(...countryStats.values());
   }, [countryStats]);
 
+  const colorScale = useMemo(() => {
+    const baseColor = isDark ? '#4a6274' : '#d3d3d3';
+    const peakColor = isDark ? '#00b464' : '#28a745';
+    return chroma.scale([baseColor, peakColor]).mode('lab');
+  }, [isDark]);
+
   const getCountryFill = (countryName: string): string => {
     if (!countryStats || maxCount === 0) {
-      return isDark ? '#4a6274' : 'lightgrey';
+      return isDark ? '#4a6274' : '#d3d3d3';
     }
     const count = countryStats.get(countryName);
     if (!count) {
-      return isDark ? '#4a6274' : 'lightgrey';
+      return isDark ? '#4a6274' : '#d3d3d3';
     }
     const intensity = Math.min(count / maxCount, 1);
-    if (isDark) {
-      const r = Math.round(74 + intensity * (0 - 74));
-      const g = Math.round(98 + intensity * (180 - 98));
-      const b = Math.round(116 + intensity * (100 - 116));
-      return `rgb(${r}, ${g}, ${b})`;
-    } else {
-      const r = Math.round(211 + intensity * (40 - 211));
-      const g = Math.round(211 + intensity * (167 - 211));
-      const b = Math.round(211 + intensity * (69 - 211));
-      return `rgb(${r}, ${g}, ${b})`;
-    }
+    return colorScale(intensity).hex();
   };
 
   const handleZoomIn = () => {
