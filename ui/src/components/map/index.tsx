@@ -16,7 +16,7 @@ export type MapPropType = {
 
 const minZoom = 1;
 const maxZoom = 8;
-const defaultPosition = {coordinates: [0, 0], zoom: 1};
+const defaultPosition: { coordinates: [number, number]; zoom: number } = {coordinates: [0, 0], zoom: 1};
 
 const Map = ({coordinates}: MapPropType) => {
   const [position, setPosition] = useState(defaultPosition);
@@ -36,7 +36,7 @@ const Map = ({coordinates}: MapPropType) => {
     setPosition((pos) => ({...pos, zoom: pos.zoom / 2}));
   };
 
-  const handleMoveEnd = (position: { coordinates: number[]; zoom: number; }) => {
+  const handleMoveEnd = (position: { coordinates: [number, number]; zoom: number; }) => {
     setPosition(position);
     mapFocusContext.setCoordinate({latitude: position.coordinates[1]!, longitude: position.coordinates[0]!});
   };
@@ -62,7 +62,6 @@ const Map = ({coordinates}: MapPropType) => {
       <ComposableMap projection="geoMercator">
         <ZoomableGroup
           zoom={position.zoom}
-          // @ts-ignore
           center={position.coordinates}
           onMoveEnd={handleMoveEnd}
           maxZoom={maxZoom}

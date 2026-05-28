@@ -24,7 +24,7 @@ export default class BoardService {
     const post = await this.postService.get(postId)
     return await this.postService.save({
       ...post,
-      likedBy: post?.likedBy.filter(u => u.id !== user.id)
+      likedBy: post?.likedBy.concat([user])
     })
   }
 
@@ -32,7 +32,7 @@ export default class BoardService {
     const post = await this.postService.get(postId)
     return await this.postService.save({
       ...post,
-      likedBy: post?.likedBy.concat([user])
+      likedBy: post?.likedBy.filter(u => u.id !== user.id)
     })
   }
 

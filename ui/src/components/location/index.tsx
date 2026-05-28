@@ -19,12 +19,12 @@ const Location = ({ onload, onNotAvailable, onNotSupported }: LocationPropType) 
     });
 
   useEffect(() => {
-    if (isGeolocationAvailable && coords) {
-      onload({ latitude: coords.latitude!, longitude: coords!.longitude! });
-    } else if (!isGeolocationAvailable) {
-      onNotAvailable();
-    } else if (!isGeolocationEnabled) {
+    if (!isGeolocationAvailable) {
       onNotSupported();
+    } else if (!isGeolocationEnabled) {
+      onNotAvailable();
+    } else if (coords) {
+      onload({ latitude: coords.latitude, longitude: coords.longitude });
     }
   }, [coords, isGeolocationAvailable, isGeolocationEnabled]);
 

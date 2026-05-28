@@ -63,7 +63,7 @@ const LoginForm = ({ loginHandler }: LoginFormPropType) => {
           {...formRegister("password")}
         />
         <Form.Text className="text-muted">
-          Password has to be between 8 to 20 characters log
+          Password has to be between 8 to 30 characters long
         </Form.Text>
         {errors.password ? <Form.Control.Feedback type="invalid">{errors.password.message}</Form.Control.Feedback> : null}
       </FormGroup>

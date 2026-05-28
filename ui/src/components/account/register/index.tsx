@@ -62,7 +62,7 @@ const RegisterForm = ({ registerHandler }: RegisterFormPropType) => {
           {...formRegister("name")}
         />
         <Form.Text className="text-muted">
-          Password has to be at least 3 characters log
+          Name has to be at least 3 characters long
         </Form.Text>
         {errors.name ? <Form.Control.Feedback type="invalid">{errors.name.message}</Form.Control.Feedback> : null}
       </FormGroup>
@@ -87,7 +87,7 @@ const RegisterForm = ({ registerHandler }: RegisterFormPropType) => {
           {...formRegister("password")}
         />
         <Form.Text className="text-muted">
-          Password has to be between 8 to 20 characters log
+          Password has to be between 8 to 30 characters long
         </Form.Text>
         {errors.password ? <Form.Control.Feedback type="invalid">{errors.password.message}</Form.Control.Feedback> : null}
       </FormGroup>

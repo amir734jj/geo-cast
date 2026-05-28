@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import _ from "lodash";
 
@@ -19,17 +19,16 @@ export type PlayerPropType = {
 
 const Player = ({ mediaBlobUrl, onchange = () => {}, play }: PlayerPropType) => {
 
-  const playerDomId = _.uniqueId("player-container");
+  const playerDomId = useRef(_.uniqueId("player-container"));
   const [playerCtrl, setPlayerCtrl] = useState<WaveSurfer | null>(null);
   const [playerReady, setPlayerReady] = useState(false);
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const wavesurfer = WaveSurfer.create({
-      container: `#${playerDomId}`
+      container: `#${playerDomId.current}`,
+      url: mediaBlobUrl,
     });
-
-    wavesurfer.load(mediaBlobUrl);
 
     wavesurfer.on('ready', () => {
       setPlayerReady(true);
@@ -51,7 +50,7 @@ const Player = ({ mediaBlobUrl, onchange = () => {}, play }: PlayerPropType) => 
       onchange({ playing: false, currentTime: 0 }, 'finish');
     });
 
-    wavesurfer.on('audioprocess', (time: number) => {
+    wavesurfer.on('timeupdate', (time: number) => {
       onchange({ currentTime: time }, 'timeupdate');
     });
 
@@ -74,7 +73,7 @@ const Player = ({ mediaBlobUrl, onchange = () => {}, play }: PlayerPropType) => 
     }
   }, [play, playerReady, playing, playerCtrl]);
 
-  return <div id={playerDomId} style={{ display: 'none' }}>player</div>;
+  return <div id={playerDomId.current} style={{ display: 'none' }}>player</div>;
 };
 
 export default Player;

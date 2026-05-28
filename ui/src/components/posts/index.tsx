@@ -124,7 +124,7 @@ const Posts = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       await Promise.all(_.range(1, board.page + 1).map(x => nextPage(x)));
-    }, ms("2s"));
+    }, ms("30s"));
 
     return () => clearInterval(interval);
   }, []);
@@ -162,7 +162,7 @@ const Posts = () => {
               }}> start playlist </Button>
           </Fragment> : null}
       </ButtonGroup>
-      <div style={{height: '37rem', overflowY: 'auto'}} ref={(ref) => setScrollRef(ref)}>
+      <div style={{height: '60vh', maxHeight: '37rem', overflowY: 'auto'}} ref={(ref) => setScrollRef(ref)}>
         <InfiniteScroll
           pageStart={0}
           loadMore={(page) => nextPage(page)}

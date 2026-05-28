@@ -19,9 +19,9 @@ const About = () => {
   }, []);
 
   return (
-    <Container className='m-5'>
+    <Container className='my-4 mx-auto px-3'>
       <Row>
-        <Col xs={8}>
+        <Col xs={12} md={8}>
           <h3>Mission</h3>
           <p>
             The mission of this website is to quickly hear what people in a region are talking about
@@ -43,7 +43,7 @@ const About = () => {
             Seyedamirhossein Hesamian (<a href="mailto:hesamian@uwm.edu">hesamian@uwm.edu</a>)
           </p>
         </Col>
-        <Col xs={4}>
+        <Col xs={12} md={4}>
           <div className='d-flex align-items-center justify-content-center mt-5'>
             <span className="fa-layers fa-fw mx-auto">
               <FontAwesomeIcon icon={faTowerCell} size="5x" color='grey' pulse={fade} onMouseOver={() => animateIcon()} />
