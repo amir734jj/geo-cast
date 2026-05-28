@@ -26,7 +26,13 @@ export class FileSystemBlobProvider extends AbstractBlobProvider {
     }
   }
 
-  async upload (id: string, stream: Buffer, filename: string): Promise<void> {
+  async upload (id: string, stream: Buffer, filename: string, _userId?: number): Promise<void> {
     await fsAsync.writeFile(path.join(process.cwd(), this.folder_name, `${id}-${filename}`), stream)
+  }
+
+  async delete (id: string): Promise<void> {
+    const pattern = path.join(process.cwd(), this.folder_name, `${id}*`).replace(/\\/g, '/')
+    const files = await glob(pattern)
+    await Promise.all(files.map(file => fsAsync.unlink(file)))
   }
 }

@@ -5,7 +5,8 @@ import {
   S3Client,
   GetObjectCommand,
   PutObjectCommand,
-  HeadObjectCommand
+  HeadObjectCommand,
+  DeleteObjectCommand
 } from '@aws-sdk/client-s3'
 
 @Injectable()
@@ -28,12 +29,16 @@ export class S3BlobProvider extends AbstractBlobProvider {
     }
   }
 
-  async upload (id: string, stream: Buffer, filename: string): Promise<void> {
+  async upload (id: string, stream: Buffer, filename: string, userId?: number): Promise<void> {
     await this.s3Client.send(new PutObjectCommand({
       Bucket: this.bucket,
       Key: id,
       Body: stream,
-      Metadata: { filename }
+      Metadata: { filename, ...(userId != null && { userId: String(userId) }) }
     }))
+  }
+
+  async delete (id: string): Promise<void> {
+    await this.s3Client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: id }))
   }
 }

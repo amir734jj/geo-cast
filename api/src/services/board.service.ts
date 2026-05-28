@@ -59,7 +59,7 @@ export default class BoardService {
 
   async createPost (user: User, post: CreatePostDto, file: Express.Multer.File): Promise<Post> {
     const recordingId = nanoid();
-    await this.blobServiceClient.upload(recordingId, file.buffer, file.originalname);
+    await this.blobServiceClient.upload(recordingId, file.buffer, file.originalname, user.id);
 
     return await this.postService.save({
       user,

@@ -23,10 +23,16 @@ export class AzureBlobProvider extends AbstractBlobProvider {
     }
   }
 
-  async upload (id: string, stream: Buffer, filename: string): Promise<void> {
+  async upload (id: string, stream: Buffer, filename: string, userId?: number): Promise<void> {
     const containerClient = this.blobServiceClient.getContainerClient('recordings')
     const blockBlobClient = containerClient.getBlockBlobClient(id)
     await blockBlobClient.uploadData(stream)
-    await blockBlobClient.setMetadata({ filename })
+    await blockBlobClient.setMetadata({ filename, ...(userId != null && { userid: String(userId) }) })
+  }
+
+  async delete (id: string): Promise<void> {
+    const containerClient = this.blobServiceClient.getContainerClient('recordings')
+    const blockBlobClient = containerClient.getBlockBlobClient(id)
+    await blockBlobClient.deleteIfExists()
   }
 }
