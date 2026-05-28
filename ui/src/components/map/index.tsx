@@ -18,7 +18,7 @@ export type MapPropType = {
 const minZoom = 1;
 const maxZoom = 8;
 const defaultPosition: { coordinates: [number, number]; zoom: number } = {coordinates: [0, 0], zoom: 1};
-const usStatesUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
+const statesProvincesUrl = "https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_110m_admin_1_states_provinces_lines.geojson";
 
 const Map = ({coordinates, countryStats}: MapPropType) => {
   const [position, setPosition] = useState(defaultPosition);
@@ -114,10 +114,10 @@ const Map = ({coordinates, countryStats}: MapPropType) => {
             }
           </Geographies>
           <Geographies
-            geography={usStatesUrl}
-            fill={getCountryFill('United States of America')}
-            stroke={isDark ? '#7fb3d3' : 'DarkMagenta'}
-            strokeWidth={0.4}>
+            geography={statesProvincesUrl}
+            fill="none"
+            stroke={isDark ? 'rgba(127,179,211,0.4)' : 'rgba(139,0,139,0.3)'}
+            strokeWidth={0.3}>
             {({geographies}) =>
               geographies.map((geo) => (
                 <Geography key={geo.rsmKey} geography={geo} style={{
