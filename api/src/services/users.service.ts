@@ -1,9 +1,9 @@
 import { Repository } from 'typeorm';
 import _ from 'lodash';
-import User from '../../models/users.model';
+import User from '../models/users.model';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AbstractDal } from '../../abstracts/abstract.dal';
+import { AbstractDal } from '../abstracts/abstract.dal';
 
 @Injectable()
 export default class UsersService extends AbstractDal<User> {

@@ -1,6 +1,6 @@
-import type Post from '../../models/post.model';
+import type Post from '../models/post.model';
 import { Injectable } from '@nestjs/common';
-import PostService from '../posts.service';
+import PostService from './posts.service';
 import { nanoid } from 'nanoid';
 import type CreatePostDto from 'src/dto/create.post.dto';
 import type User from 'src/models/users.model';

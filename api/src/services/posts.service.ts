@@ -1,12 +1,12 @@
 import { Repository } from 'typeorm';
-import Post from '../../models/post.model';
+import Post from '../models/post.model';
 import _ from 'lodash';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AbstractDal } from '../../abstracts/abstract.dal';
+import { AbstractDal } from '../abstracts/abstract.dal';
 import { type Coordinate } from '@geo-cast/lib/dto/board/common';
 import SqlString from 'sqlstring';
-import User from '../../models/users.model';
+import User from '../models/users.model';
 
 @Injectable()
 export default class PostService extends AbstractDal<Post> {

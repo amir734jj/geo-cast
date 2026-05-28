@@ -1,22 +1,22 @@
 import * as bcrypt from 'bcrypt';
-import type LoginUserDto from '../../dto/login.user.dto';
-import { type DataStoredInToken } from '../../interfaces/auth.interface';
+import type LoginUserDto from '../dto/login.user.dto';
+import { type DataStoredInToken } from '../interfaces/auth.interface';
 import { DateTime } from 'luxon';
-import UserService from '../users.service';
-import type CreateUserDto from '../../dto/create.user.dto';
-import type User from '../../models/users.model';
-import TokenService from '../token.service';
+import UserService from './users.service';
+import type CreateUserDto from '../dto/create.user.dto';
+import type User from '../models/users.model';
+import TokenService from './token.service';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import _ from 'lodash';
-import type Token from '../../models/token.model';
+import type Token from '../models/token.model';
 import ms from 'ms';
 import { nanoid } from 'nanoid';
-import RoleService from '../role.service';
-import type Role from '../../models/roles.model';
-import { ADMIN_ROLE, BASIC_ROLE } from '../../constants/role.constant';
-import { UserRole } from '../../enums/role.enum';
+import RoleService from './role.service';
+import type Role from '../models/roles.model';
+import { ADMIN_ROLE, BASIC_ROLE } from '../constants/role.constant';
+import { UserRole } from '../enums/role.enum';
 import type ProfileDto from 'src/dto/profile.user.dto';
 
 @Injectable()
