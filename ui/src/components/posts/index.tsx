@@ -3,7 +3,7 @@ import Card from 'react-bootstrap/Card';
 import {queryPosts, deletePost as deletePostAction} from '../../actions';
 import {useAuthStore, useLocationStore, useMapFocusStore, usePostsStore} from "../../stores";
 import InfiniteScroll from 'react-infinite-scroller';
-import {Button, ButtonGroup, ProgressBar, Spinner} from 'react-bootstrap';
+import {Button, ButtonGroup, Spinner} from 'react-bootstrap';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPause, faPlay, faStop, faTrash, faForward} from "@fortawesome/free-solid-svg-icons";
 import {DateTime} from "luxon";
@@ -71,8 +71,6 @@ const playNextPost = (board: BoardType): BoardType => {
 };
 
 const orderPosts = (board: BoardType) => _.orderBy(board.playerInfos, ["page", "id"]);
-
-const getProgressPercentage = (info: PlayerInfoPropType) => Math.round(100 * info.currentTime / info.duration);
 
 const Posts = () => {
   const locationContext = useLocationStore();
@@ -203,6 +201,7 @@ const Posts = () => {
                 <Player
                   mediaBlobUrl={`/api/board/download/${post.recordingId}`}
                   play={board.playerInfos[post.id]?.play}
+                  showWaveform={true}
                   onchange={(playerInfo: Partial<PlayerInfoPropType>, event: EventType) => {
                     setBoard(
                       combine(
@@ -275,11 +274,6 @@ const Posts = () => {
                     }}>
                     <FontAwesomeIcon icon={faTrash}/>
                   </Button> : null}
-                {board.playerInfos[post.id]?.playing ?
-                  <ProgressBar
-                    now={getProgressPercentage(board.playerInfos[post.id])}
-                    className="mt-2"
-                    animated/> : null}
               </Card.Body>
             </Card>
           ))}

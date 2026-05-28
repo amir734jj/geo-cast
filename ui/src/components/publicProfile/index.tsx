@@ -6,7 +6,7 @@ import {getUserPosts, deletePost as deletePostAction} from "../../actions/board.
 import {Spinner, useConfirmModal} from "../common";
 import {useAuthStore} from "../../stores";
 import _ from "lodash";
-import {Card, Button, ProgressBar} from "react-bootstrap";
+import {Card, Button} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPlay, faPause, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {DateTime} from "luxon";
@@ -59,6 +59,7 @@ const PublicProfile = () => {
             <Player
               mediaBlobUrl={`/api/board/download/${post.recordingId}`}
               play={post.play}
+              showWaveform={true}
               onchange={(playerInfo: Partial<PlayerInfoPropType>, event: EventType) => {
                 setPosts(prev => prev.map(p => p.id === post.id ? {
                   ...p,
@@ -87,11 +88,6 @@ const PublicProfile = () => {
                 }}>
                 <FontAwesomeIcon icon={faTrash}/>
               </Button> : null}
-            {post.playing ?
-              <ProgressBar
-                now={post.currentTime && post.duration ? Math.round(100 * post.currentTime / post.duration) : 0}
-                className="mt-2"
-                animated/> : null}
           </Card.Body>
         </Card>
       ))}

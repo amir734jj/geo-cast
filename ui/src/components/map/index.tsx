@@ -1,6 +1,6 @@
 import {ComposableMap, ZoomableGroup, Geographies, Geography, Marker} from "react-simple-maps";
 import {Coordinate} from "@geo-cast/lib/dto/board/common";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {Button, ButtonGroup} from "react-bootstrap";
 import {faPlus, faMinus, faRotateLeft} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -11,7 +11,8 @@ import worldCountries from '@geo-cast/lib/data/world-countries.json';
 type CoordinateInfoType = Coordinate & { color?: string };
 
 export type MapPropType = {
-  coordinates: CoordinateInfoType[]
+  coordinates: CoordinateInfoType[],
+  countryStats?: Map<string, number>,
 };
 
 const minZoom = 1;
@@ -19,11 +20,38 @@ const maxZoom = 8;
 const defaultPosition: { coordinates: [number, number]; zoom: number } = {coordinates: [0, 0], zoom: 1};
 const usStatesUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
-const Map = ({coordinates}: MapPropType) => {
+const Map = ({coordinates, countryStats}: MapPropType) => {
   const [position, setPosition] = useState(defaultPosition);
   const mapFocusContext = useMapFocusStore();
   const { theme } = useThemeStore();
   const isDark = theme === 'dark';
+
+  const maxCount = useMemo(() => {
+    if (!countryStats || countryStats.size === 0) return 0;
+    return Math.max(...countryStats.values());
+  }, [countryStats]);
+
+  const getCountryFill = (countryName: string): string => {
+    if (!countryStats || maxCount === 0) {
+      return isDark ? '#4a6274' : 'lightgrey';
+    }
+    const count = countryStats.get(countryName);
+    if (!count) {
+      return isDark ? '#4a6274' : 'lightgrey';
+    }
+    const intensity = Math.min(count / maxCount, 1);
+    if (isDark) {
+      const r = Math.round(74 + intensity * (0 - 74));
+      const g = Math.round(98 + intensity * (180 - 98));
+      const b = Math.round(116 + intensity * (100 - 116));
+      return `rgb(${r}, ${g}, ${b})`;
+    } else {
+      const r = Math.round(211 + intensity * (40 - 211));
+      const g = Math.round(211 + intensity * (167 - 211));
+      const b = Math.round(211 + intensity * (69 - 211));
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+  };
 
   const handleZoomIn = () => {
     if (position.zoom >= maxZoom) {
@@ -72,15 +100,16 @@ const Map = ({coordinates}: MapPropType) => {
           color="red">
           <Geographies
             geography={worldCountries}
-            fill={isDark ? '#4a6274' : 'lightgrey'}
             stroke={isDark ? '#7fb3d3' : 'DarkMagenta'}>
             {({geographies}) =>
               geographies.map((geo) => (
-                <Geography key={geo.rsmKey} geography={geo} style={{
-                  default: {outline: "none"},
-                  hover: {outline: "none"},
-                  pressed: {outline: "none"},
-                }}/>
+                <Geography key={geo.rsmKey} geography={geo}
+                  fill={getCountryFill(geo.properties.name)}
+                  style={{
+                    default: {outline: "none"},
+                    hover: {outline: "none", opacity: 0.8},
+                    pressed: {outline: "none"},
+                  }}/>
               ))
             }
           </Geographies>

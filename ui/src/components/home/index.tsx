@@ -1,18 +1,28 @@
 import {Row, Col, Container} from "react-bootstrap";
-import Map from '../map';
+import GeoMap from '../map';
 import Location from '../location';
 import {useAuthStore, useLocationStore, usePostsStore} from "../../stores";
 import {AlertDismissible, Spinner} from "../common";
 import Posts from "../posts";
 import _ from "lodash";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Recorder from "../recorder";
+import {getStats} from "../../actions/board.action";
 
 const Board = () => {
   const authContext = useAuthStore();
   const authenticated = !!authContext?.auth;
   const locationContext = useLocationStore();
   const {posts} = usePostsStore();
+  const [countryStats, setCountryStats] = useState<Map<string, number>>(new Map());
+
+  useEffect(() => {
+    getStats()
+      .then(({data}) => {
+        setCountryStats(new Map(data.map(s => [s.country, s.count])));
+      })
+      .catch(() => {});
+  }, []);
 
   const coordinates = _.flatten(posts).filter(_.identity).map(({latitude, longitude}) => ({
     latitude,
@@ -52,7 +62,7 @@ const Board = () => {
     <Container fluid className="px-0">
       <Row>
         <Col sm={12} md={6} lg={8}>
-          <Map coordinates={coordinates}/>
+          <GeoMap coordinates={coordinates} countryStats={countryStats}/>
         </Col>
         <Col sm={12} md={6} lg={4} style={{maxHeight: '100vh', overflowY: 'auto'}}>
           <Row>

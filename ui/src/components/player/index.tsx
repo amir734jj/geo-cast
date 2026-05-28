@@ -14,10 +14,12 @@ export type PlayerPropType = {
   play: boolean,
   repeat?: boolean,
   mediaBlobUrl: string,
-  onchange?: (info: Partial<PlayerInfoPropType>, event: EventType) => void
+  onchange?: (info: Partial<PlayerInfoPropType>, event: EventType) => void,
+  showWaveform?: boolean,
+  waveformHeight?: number,
 };
 
-const Player = ({ mediaBlobUrl, onchange = () => {}, play }: PlayerPropType) => {
+const Player = ({ mediaBlobUrl, onchange = () => {}, play, showWaveform = false, waveformHeight = 32 }: PlayerPropType) => {
 
   const playerDomId = useRef(_.uniqueId("player-container"));
   const [playerCtrl, setPlayerCtrl] = useState<WaveSurfer | null>(null);
@@ -28,6 +30,14 @@ const Player = ({ mediaBlobUrl, onchange = () => {}, play }: PlayerPropType) => 
     const wavesurfer = WaveSurfer.create({
       container: `#${playerDomId.current}`,
       url: mediaBlobUrl,
+      height: waveformHeight,
+      barWidth: 2,
+      barGap: 1,
+      barRadius: 2,
+      cursorWidth: 1,
+      waveColor: '#6c757d',
+      progressColor: '#0d6efd',
+      cursorColor: '#0d6efd',
     });
 
     wavesurfer.on('ready', () => {
@@ -73,7 +83,7 @@ const Player = ({ mediaBlobUrl, onchange = () => {}, play }: PlayerPropType) => 
     }
   }, [play, playerReady, playing, playerCtrl]);
 
-  return <div id={playerDomId.current} style={{ display: 'none' }}>player</div>;
+  return <div id={playerDomId.current} style={showWaveform ? { marginBottom: '0.25rem' } : { display: 'none' }}>player</div>;
 };
 
 export default Player;
