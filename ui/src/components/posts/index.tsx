@@ -72,7 +72,7 @@ const playNextPost = (board: BoardType): BoardType => {
   }
 };
 
-const orderPosts = (board: BoardType) => _.orderBy(board.playerInfos, ["page", "id"]);
+const orderPosts = (board: BoardType) => _.orderBy(board.playerInfos, ["page", "id"], ["asc", "desc"]);
 
 const Posts = () => {
   const locationContext = useLocationStore();
@@ -83,7 +83,7 @@ const Posts = () => {
   const {confirmAction, ConfirmModal} = useConfirmModal();
 
   const count = 2;
-  const {appendPosts, clearPosts, removePost} = usePostsStore();
+  const {appendPosts, clearPosts, removePost, refreshTrigger} = usePostsStore();
 
   const [scroll, setScrollRef] = useState<any>(null);
   const [board, setBoard] = useState<BoardType>({
@@ -131,6 +131,13 @@ const Posts = () => {
   useEffect(() => {
     nextPage(1);
   }, []);
+
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      clearPosts();
+      nextPage(1);
+    }
+  }, [refreshTrigger]);
 
   useEffect(() => {
     const interval = setInterval(async () => {

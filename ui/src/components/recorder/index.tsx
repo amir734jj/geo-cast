@@ -12,7 +12,7 @@ import Player, { PlayerInfoPropType } from "../player";
 import { createPost, downloadBlob } from "../../actions";
 import { AlertDismissible, Spinner } from "../common";
 import { AxiosError } from "axios";
-import { useLocationStore } from "../../stores";
+import { useLocationStore, usePostsStore } from "../../stores";
 import { DateTime } from "luxon";
 import ms from "ms";
 import { MIN_RECORDING_DURATION, MAX_RECORDING_DURATION, RECORDING_WARNING_THRESHOLD } from '@geo-cast/lib/constants';
@@ -30,6 +30,7 @@ type BoardType = {
 
 const Recorder = () => {
   const locationContext = useLocationStore();
+  const { triggerRefresh } = usePostsStore();
   const [board, setBoard] = useState<BoardType>({
     play: false,
     recording: false,
@@ -78,6 +79,7 @@ const Recorder = () => {
         mediaBlobUrl: null,
         error: null,
       }));
+      triggerRefresh();
     } catch (e) {
       setBoard((x) => ({
         ...x,
