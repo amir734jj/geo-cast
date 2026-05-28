@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import DatabaseModule from '../database.module';
-import UserModule from '../user.module';
-import AuthModule from '../auth.module';
+import DatabaseModule from './database.module';
+import UserModule from './user.module';
+import AuthModule from './auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import HealthModule from '../health.module';
+import HealthModule from './health.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import BoardModule from '../board.module';
+import BoardModule from './board.module';
 import { MulterModule } from '@nestjs/platform-express';
 import bytes from 'bytes';
 
@@ -29,7 +29,7 @@ import bytes from 'bytes';
     BoardModule,
     HealthModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'client')
+      rootPath: join(__dirname, '..', 'client')
     })
   ],
   controllers: [],
