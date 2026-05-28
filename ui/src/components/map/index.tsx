@@ -115,7 +115,7 @@ const Map = ({coordinates, countryStats}: MapPropType) => {
           </Geographies>
           <Geographies
             geography={usStatesUrl}
-            fill="none"
+            fill={getCountryFill('United States of America')}
             stroke={isDark ? '#7fb3d3' : 'DarkMagenta'}
             strokeWidth={0.4}>
             {({geographies}) =>
