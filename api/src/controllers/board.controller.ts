@@ -138,7 +138,7 @@ export default class BoardController {
       @UploadedFile(
         new ParseFilePipeBuilder()
           .addFileTypeValidator({
-            fileType: /^audio\/(wav|wave|mpeg|mp3|ogg|webm|x-wav)$/
+            fileType: /^(audio\/(wav|wave|mpeg|mp3|ogg|webm|x-wav)|application\/octet-stream)$/
           })
           .addMaxSizeValidator({
             maxSize: bytes('5mb') as number
