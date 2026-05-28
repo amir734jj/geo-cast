@@ -18,7 +18,7 @@ export type MapPropType = {
 const minZoom = 1;
 const maxZoom = 8;
 const defaultPosition: { coordinates: [number, number]; zoom: number } = {coordinates: [0, 0], zoom: 1};
-const statesProvincesUrl = "https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_110m_admin_1_states_provinces_lines.geojson";
+const statesProvincesUrl = "https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_50m_admin_1_states_provinces_lines.geojson";
 
 const Map = ({coordinates, countryStats}: MapPropType) => {
   const [position, setPosition] = useState(defaultPosition);
