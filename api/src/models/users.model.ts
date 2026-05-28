@@ -33,7 +33,7 @@ export default class User implements EntityType, UserType, ProfileType {
   @Column({ length: 256, default: '' })
     name: string
 
-  @ApiProperty()
+  @Exclude()
   @Column({ length: 256, default: '' })
     email: string
 

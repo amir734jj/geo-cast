@@ -109,8 +109,7 @@ export default class AccountController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden.',
   })
-  async getProfile(@Request() req): Promise<Partial<User>> {
-    const { email, ...rest } = req.user;
-    return rest;
+  async getProfile(@Request() req): Promise<User> {
+    return req.user;
   }
 }
