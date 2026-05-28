@@ -95,9 +95,10 @@ const PublicProfile = () => {
         </ButtonGroup> : null}
       {posts.map((post) => (
         <Card key={`profile-post-${post.id}`} className="mb-2">
-          <Card.Body style={{padding: '0.5rem'}}>
+          <Card.Body style={{padding: '0.75rem'}}>
             <Card.Subtitle className="mb-2 text-muted">
               {Number(post.duration).toFixed(2)}sec - {DateTime.fromISO(post.created_at.toString()).toLocaleString(DateTime.DATETIME_MED)}
+              {post.country ? ` - ${post.country}` : ''}
             </Card.Subtitle>
             <Player
               mediaBlobUrl={`/api/board/download/${post.recordingId}`}

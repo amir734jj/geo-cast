@@ -17,8 +17,9 @@ export default class BoardService {
   ) {
   }
 
-  async query (count: number, page: number, coordinate: Coordinate): Promise<Post[]> {
-    return await this.postService.query(count, page, coordinate);
+  async query (count: number, page: number, coordinate: Coordinate): Promise<(Post & { country: string })[]> {
+    const posts = await this.postService.query(count, page, coordinate);
+    return posts.map(p => ({ ...p, country: this.getCountryForCoordinate(p.longitude, p.latitude) }));
   }
 
   async like (user: User, postId: number): Promise<Post> {
@@ -49,8 +50,9 @@ export default class BoardService {
     });
   }
 
-  async getUserPosts (userId: number): Promise<Post[]> {
-    return await this.postService.queryByUser(userId);
+  async getUserPosts (userId: number): Promise<(Post & { country: string })[]> {
+    const posts = await this.postService.queryByUser(userId);
+    return posts.map(p => ({ ...p, country: this.getCountryForCoordinate(p.longitude, p.latitude) }));
   }
 
   async downloadRecording (recordingId: string): Promise<FileInfo> {
