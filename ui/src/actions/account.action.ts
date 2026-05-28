@@ -5,7 +5,7 @@ export const login = (user: LoginType) => axios.post<string>('/account/login', u
 
 export const register = (user: RegisterType) => axios.post<UserType>('/account/register', user);
 
-export const logout = () => axios.post('/account/logout', {});
+export const logout = () => axios.post('/account/logout');
 
 export const accountInfo = () => axios.get<UserType>('/account/profile');
 

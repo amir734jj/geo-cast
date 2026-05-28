@@ -43,7 +43,7 @@ const JWT = () => {
       
       // Calculate refresh time as 75% of token lifetime or 5 minutes before expiry
       const timeToExpiry = DateTime.fromJSDate(expiredAt).diffNow().milliseconds;
-      const refreshTime = Math.min(timeToExpiry * 0.75, timeToExpiry - ms("5min"));
+      const refreshTime = Math.max(0, Math.min(timeToExpiry * 0.75, timeToExpiry - ms("5min")));
       
       if (refreshTime <= 0) {
         // Token already expired or about to expire

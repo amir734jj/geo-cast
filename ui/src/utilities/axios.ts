@@ -10,7 +10,10 @@ export const axios = axiosClient.create({
 });
 
 axios.interceptors.request.use((config) => {
-  config.headers.Authorization = `Bearer ${store.get('token', '<missing>')}`;
+  const token = store.get('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
   return config;
 });

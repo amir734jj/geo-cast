@@ -99,7 +99,7 @@ const Profile = () => {
   return (
     <>
       {error ? <AlertDismissible header='updating profile failed' variant='danger' message={error} /> : null}
-      <ProfileForm {...{ profile: _.pick(authContext.auth!, ['name', 'location', 'description', 'id']) as ProfileType, updateProfileHandler }} />
+      <ProfileForm {...{ profile: _.pick(authContext.auth!, ['name', 'description']) as ProfileType, updateProfileHandler }} />
     </>
   );
 }

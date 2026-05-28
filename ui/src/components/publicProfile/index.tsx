@@ -10,9 +10,12 @@ const PublicProfile = () => {
   const [profile, setProfile] = useState<ExtendedProfileType>();
 
   useEffect(() => {
-    getUserPublicProfile(userId!)
-      .then(x => setProfile(x.data));
-  }, []);
+    if (userId) {
+      getUserPublicProfile(userId)
+        .then(x => setProfile(x.data))
+        .catch(() => setProfile(undefined));
+    }
+  }, [userId]);
 
   return (
     <>

@@ -1,4 +1,4 @@
-import {Fragment, useEffect, useState} from 'react';
+import {Fragment, useEffect, useRef, useState} from 'react';
 import Card from 'react-bootstrap/Card';
 import {queryPosts} from '../../actions';
 import {useAuthStore, useLocationStore, useMapFocusStore, usePostsStore} from "../../stores";
@@ -52,15 +52,18 @@ const startAutoPlay = (board: BoardType): BoardType => {
 };
 
 const playNextPost = (board: BoardType): BoardType => {
-  if (board.autoPlay && board.currentAutoPlaying + 1 === _.values(board.playerInfos).length) {
+  const ordered = orderPosts(board);
+  const nextIndex = board.currentAutoPlaying + 1;
+  if (board.autoPlay && nextIndex >= ordered.length) {
     return stopAutoPlay(board);
   } else {
+    const nextPostId = ordered[nextIndex]?.id;
     return {
       ...board,
-      currentAutoPlaying: board.currentAutoPlaying + 1,
+      currentAutoPlaying: nextIndex,
       playerInfos: _.reduce(_.values(board.playerInfos), (acc, x) => ({
         ...acc,
-        [x.id]: {...x, play: orderPosts(board).at(board.currentAutoPlaying + 1)!.id === x.id}
+        [x.id]: {...x, play: nextPostId != null && nextPostId === x.id}
       }), {})
     }
   }
@@ -87,6 +90,7 @@ const Posts = () => {
     currentAutoPlaying: -1,
     playerInfos: {}
   });
+  const pageRef = useRef(board.page);
 
   const nextPage = async (queryPage: number) => {
     try {
@@ -95,16 +99,19 @@ const Posts = () => {
         longitude: 0
       });
       appendPosts(data);
-      setBoard(board => ({
-        ...board,
-        page: queryPage,
-        more: data.length === count,
-        error: false,
-        playerInfos: _.merge({}, board.playerInfos, _.reduce(data, (acc, x) => ({
-          ...acc,
-          [x.id]: { ...x, page: queryPage + 1}
-        }), {}))
-      }))
+      setBoard(board => {
+        pageRef.current = queryPage;
+        return {
+          ...board,
+          page: queryPage,
+          more: data.length === count,
+          error: false,
+          playerInfos: _.merge({}, board.playerInfos, _.reduce(data, (acc, x) => ({
+            ...acc,
+            [x.id]: { ...x, page: queryPage + 1}
+          }), {}))
+        };
+      })
     } catch (e) {
       setBoard(board => ({...board, error: true}));
     }
@@ -123,7 +130,7 @@ const Posts = () => {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      await Promise.all(_.range(1, board.page + 1).map(x => nextPage(x)));
+      await Promise.all(_.range(1, pageRef.current + 1).map(x => nextPage(x)));
     }, ms("30s"));
 
     return () => clearInterval(interval);

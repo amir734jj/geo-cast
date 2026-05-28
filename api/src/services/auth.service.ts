@@ -104,6 +104,11 @@ export default class AuthService {
   }
 
   public async refreshToken(user: User): Promise<string> {
+    // auto-cleanup expired tokens before checking limit
+    if (await this.cleanUpUniqueTokens(user.tokens)) {
+      user = (await this.userService.get(user.id))!;
+    }
+
     if (user.tokens.length >= 20) {
       throw new BadRequestException(
         'UserAccount cannot have more than 20 active JWT tokens.'

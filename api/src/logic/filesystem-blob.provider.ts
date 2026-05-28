@@ -27,6 +27,7 @@ export class FileSystemBlobProvider extends AbstractBlobProvider {
   }
 
   async upload (id: string, stream: Buffer, filename: string): Promise<void> {
-    await fsAsync.writeFile(path.join(process.cwd(), this.folder_name, `${id}-${filename}`), stream)
+    const sanitizedFilename = path.basename(filename)
+    await fsAsync.writeFile(path.join(process.cwd(), this.folder_name, `${id}-${sanitizedFilename}`), stream)
   }
 }

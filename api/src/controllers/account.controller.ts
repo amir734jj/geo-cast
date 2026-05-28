@@ -59,7 +59,7 @@ export default class AccountController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('logout')
+  @Post('logout')
   @ApiOkResponse({
     description: 'Successfully logged out',
   })

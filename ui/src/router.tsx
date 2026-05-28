@@ -15,7 +15,7 @@ import PublicProfile from "./components/publicProfile";
 const Router = () => {
   const authContext = useAuthStore();
   const authenticated = !!authContext?.auth;
-  const admin = authContext?.auth && authContext.auth.roles.filter(x => x.name === 'admin').length;
+  const admin = authContext?.auth?.roles?.some(r => r.name === 'admin');
 
   return (
     <Routes>

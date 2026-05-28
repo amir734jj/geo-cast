@@ -73,7 +73,7 @@ const Recorder = () => {
       setBoard((x) => ({
         ...x,
         upload: false,
-        duration: null,
+        recordingDuration: undefined,
         mediaBlobUrl: null,
         error: null,
       }));

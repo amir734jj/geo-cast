@@ -1,4 +1,4 @@
-import { Controller, Param, Post, UseGuards } from '@nestjs/common'
+import { Controller, Param, ParseBoolPipe, Post, UseGuards } from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
@@ -50,7 +50,7 @@ export default class ManageAccountController {
   })
   async setUserActive (
     @Param('id') userId: number,
-      @Param('active') active: boolean
+      @Param('active', ParseBoolPipe) active: boolean
   ): Promise<User | null> {
     return await this.authService.setUserActive(userId, active)
   }
