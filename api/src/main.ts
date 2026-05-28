@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import compression from 'compression';
+import helmet from 'helmet';
 
 async function bootstrap () {
   const app = await NestFactory.create(AppModule);
@@ -17,6 +18,7 @@ async function bootstrap () {
 
   Logger.log(`Starting the app in port ${port}`);
 
+  app.use(helmet());
   app.use(compression());
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,

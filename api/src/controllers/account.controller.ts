@@ -8,6 +8,7 @@ import {
   BadRequestException,
   HttpStatus,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -29,6 +30,7 @@ export default class AccountController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @ApiOkResponse({
     description: 'Successfully logged out',
   })
@@ -44,6 +46,7 @@ export default class AccountController {
   }
 
   @Post('register')
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @ApiOkResponse({
     description: 'Successfully registered',
   })
