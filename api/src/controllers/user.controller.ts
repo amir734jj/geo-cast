@@ -1,4 +1,4 @@
-import { Controller, Get, Param, SerializeOptions, UseGuards } from '@nestjs/common';
+import { Controller, SerializeOptions, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type User from '../models/users.model';
 import { AbstractController } from '../abstracts/abstract.controller';
@@ -13,6 +13,7 @@ import { UserRole } from '../enums/role.enum';
 @Controller('user')
 @Roles(UserRole.ADMIN)
 @UseGuards(JwtAuthGuard, RolesGuard)
+@SerializeOptions({ groups: ['admin'] })
 @ApiBearerAuth()
 export default class UserController extends AbstractController<User> {
   constructor (private readonly usersService: UsersService) {
@@ -20,16 +21,4 @@ export default class UserController extends AbstractController<User> {
   }
 
   service: IBasicCrud<User> = this.usersService;
-
-  @Get()
-  @SerializeOptions({ groups: ['admin'] })
-  override async getAll (): Promise<User[]> {
-    return super.getAll();
-  }
-
-  @Get(':id')
-  @SerializeOptions({ groups: ['admin'] })
-  override async get (@Param('id') id: number): Promise<User> {
-    return super.get(id);
-  }
 }

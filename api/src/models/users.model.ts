@@ -34,7 +34,6 @@ export default class User implements EntityType, UserType, ProfileType {
   @Column({ length: 256, default: '' })
     name: string
 
-  @Exclude()
   @Expose({ groups: ['admin'] })
   @Column({ length: 256, default: '' })
     email: string
@@ -46,7 +45,6 @@ export default class User implements EntityType, UserType, ProfileType {
   @CreateDateColumn({ name: 'created_at' })
     createdAt: Date
 
-  @Exclude()
   @Expose({ groups: ['admin'] })
   @Column({ name: 'last_login_at', type: 'timestamp', nullable: true })
     lastLoginAt: Date | null
