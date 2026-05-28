@@ -4,6 +4,7 @@ import { getUsers, setUserActive as setUserActiveAction } from "../../actions";
 import { Button, Table } from "react-bootstrap";
 import {useAuthStore} from "../../stores";
 import { Spinner } from "../common";
+import { DateTime } from "luxon";
 
 const Manage = () => {
   const authContext = useAuthStore();
@@ -37,6 +38,7 @@ const Manage = () => {
           <th>Name</th>
           <th>Email</th>
           <th>Roles</th>
+          <th>Last Login</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -47,6 +49,7 @@ const Manage = () => {
           </td>
           <td>{user.email}</td>
           <td>{user.roles.map(x => x.name).join(",")}</td>
+          <td>{user.last_login_at ? DateTime.fromISO(String(user.last_login_at)).toLocaleString(DateTime.DATETIME_MED) : 'Never'}</td>
           <td>
             {user.active ?
               <Button variant="danger" onClick={() => setUserActive(user, false)} disabled={authContext.auth?.id === user.id}>Disable</Button> :

@@ -5,7 +5,8 @@ import {
   OneToMany,
   Unique,
   ManyToMany,
-  JoinTable
+  JoinTable,
+  CreateDateColumn
 } from 'typeorm'
 import Token from './token.model'
 import Post from './post.model'
@@ -41,6 +42,14 @@ export default class User implements EntityType, UserType, ProfileType {
   @Exclude()
   @Column({ length: 256 })
     password: string
+
+  @CreateDateColumn()
+    created_at: Date
+
+  @Exclude()
+  @Expose({ groups: ['admin'] })
+  @Column({ type: 'datetime', nullable: true })
+    last_login_at: Date | null
 
   @Exclude()
   @OneToMany(() => Token, (token) => token.user)

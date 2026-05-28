@@ -22,6 +22,6 @@ export default class UsersService extends AbstractDal<User> {
   override includes = ['tokens', 'roles'];
 
   async getUserPublicProfile (id: number) {
-    return _.pick(await this.get(id), ['roles', 'active', 'name', 'description']);
+    return _.pick(await this.get(id), ['roles', 'active', 'name', 'description', 'created_at']);
   }
 }

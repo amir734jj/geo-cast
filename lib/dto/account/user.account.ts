@@ -7,4 +7,6 @@ export type UserType = {
   name: string;
   roles: RoleType[];
   active: boolean;
+  created_at?: string | Date;
+  last_login_at?: string | Date | null;
 } & ProfileType & EntityType;

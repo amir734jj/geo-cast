@@ -7,5 +7,7 @@ export type ProfileType = {
 
 export type ExtendedProfileType = ProfileType & {
   email: string;
-  roles: RoleType[]
+  roles: RoleType[];
+  created_at?: string | Date;
+  last_login_at?: string | Date | null;
 };

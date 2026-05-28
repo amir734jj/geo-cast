@@ -66,6 +66,8 @@ export default class AuthService {
         user = (await this.userService.get(user.id))!;
       }
 
+      await this.userService.save({ ...user, last_login_at: DateTime.now().toJSDate() });
+
       return await this.refreshToken(user);
     }
     return null;
