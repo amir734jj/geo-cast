@@ -23,7 +23,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
             type: 'postgres',
             url: configService.getOrThrow<string>('DATABASE_URL'),
             extra: {
-              ssl: true
+              ssl: {
+                rejectUnauthorized: false
+              }
             }
           }
         } else {
