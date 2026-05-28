@@ -138,9 +138,6 @@ export default class BoardController {
     @Body(new TypeTransformer(CreatePostDto)) post: CreatePostDtoType,
       @UploadedFile(
         new ParseFilePipeBuilder()
-          .addFileTypeValidator({
-            fileType: /^(audio\/(wav|wave|mpeg|mp3|ogg|webm|x-wav)|application\/octet-stream)$/
-          })
           .addMaxSizeValidator({
             maxSize: bytes(MAX_RECORDING_SIZE) as number
           })
