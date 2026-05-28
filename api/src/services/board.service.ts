@@ -73,7 +73,7 @@ export default class BoardService {
     return await this.postService.save({
       user,
       recordingId,
-      created_at: DateTime.now().toJSDate(),
+      createdAt: DateTime.now().toJSDate(),
       ...post
     });
   }

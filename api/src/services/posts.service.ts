@@ -33,7 +33,7 @@ export default class PostService extends AbstractDal<Post> {
       .skip(count * (page - 1))
       .where('user.active = :active', { active: true })
       .orderBy('distance', 'ASC')
-      .addOrderBy('post.created_at', 'DESC')
+      .addOrderBy('post.createdAt', 'DESC')
       .getMany())
       .map(({ user = {}, likedBy = [], ...row }) => ({
         ...row,
@@ -48,7 +48,7 @@ export default class PostService extends AbstractDal<Post> {
     return (await this.repository.find({
       where: { user: { id: userId } },
       relations: ['user'],
-      order: { created_at: 'DESC' },
+      order: { createdAt: 'DESC' },
     })).map(({ user = {}, likedBy = [], ...row }) => ({
       ...row,
       user: cleanUser(user),

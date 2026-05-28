@@ -43,13 +43,13 @@ export default class User implements EntityType, UserType, ProfileType {
   @Column({ length: 256 })
     password: string
 
-  @CreateDateColumn()
-    created_at: Date
+  @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date
 
   @Exclude()
   @Expose({ groups: ['admin'] })
-  @Column({ type: 'datetime', nullable: true })
-    last_login_at: Date | null
+  @Column({ name: 'last_login_at', type: 'datetime', nullable: true })
+    lastLoginAt: Date | null
 
   @Exclude()
   @OneToMany(() => Token, (token) => token.user)

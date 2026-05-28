@@ -74,7 +74,7 @@ const PublicProfile = () => {
         {profile?.name} { _.find(profile?.roles, { name: "admin"}) ? <span style={{ fontSize: "1.25rem"}}>(admin)</span> : null }
       </h3>
       <p style={{whiteSpace: 'pre-line'}}>{profile?.description || "No profile description"}</p>
-      {profile?.created_at ? <p className="text-muted">Member since {DateTime.fromISO(String(profile.created_at)).toLocaleString(DateTime.DATE_MED)}</p> : null}
+      {profile?.createdAt ? <p className="text-muted">Member since {DateTime.fromISO(String(profile.createdAt)).toLocaleString(DateTime.DATE_MED)}</p> : null}
 
       <h5 className="mt-4">{posts.length ? `Recordings (${posts.length})` : 'No recordings yet'}</h5>
       {posts.length >= 3 ?
@@ -98,7 +98,7 @@ const PublicProfile = () => {
         <Card key={`profile-post-${post.id}`} className="mb-2">
           <Card.Body style={{padding: '0.75rem'}}>
             <Card.Subtitle className="mb-2 text-muted">
-              {Number(post.duration).toFixed(2)}sec - {DateTime.fromISO(post.created_at.toString()).toLocaleString(DateTime.DATETIME_MED)}
+              {Number(post.duration).toFixed(2)}sec - {DateTime.fromISO(post.createdAt.toString()).toLocaleString(DateTime.DATETIME_MED)}
               {post.country ? ` - ${post.country}` : ''}
             </Card.Subtitle>
             <Player

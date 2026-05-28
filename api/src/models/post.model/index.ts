@@ -28,8 +28,8 @@ export default class Post implements EntityType {
 
   @ApiProperty()
   @Index()
-  @Column({})
-    created_at: Date;
+  @Column({ name: 'created_at' })
+    createdAt: Date;
 
   @ManyToOne(() => User, (user) => user.posts)
     user: User;

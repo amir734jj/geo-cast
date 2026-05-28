@@ -206,7 +206,7 @@ const Posts = () => {
                 <Card.Subtitle
                   className="mb-2 text-muted">
                   {Number(post.duration).toFixed(2)}sec
-                  - {DateTime.fromISO(post.created_at.toString()).toLocaleString(DateTime.DATETIME_MED)}
+                  - {DateTime.fromISO(post.createdAt.toString()).toLocaleString(DateTime.DATETIME_MED)}
                 </Card.Subtitle>
                 <Player
                   mediaBlobUrl={`/api/board/download/${post.recordingId}`}

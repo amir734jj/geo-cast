@@ -26,8 +26,8 @@ export default class Post implements EntityType {
     recordingId: string
 
   @ApiProperty()
-  @Column({})
-    created_at: Date
+  @Column({ name: 'created_at' })
+    createdAt: Date
 
   @ManyToOne(() => User, (user) => user.posts)
     user: User

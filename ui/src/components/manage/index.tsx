@@ -49,7 +49,7 @@ const Manage = () => {
           </td>
           <td>{user.email}</td>
           <td>{user.roles.map(x => x.name).join(",")}</td>
-          <td>{user.last_login_at ? DateTime.fromISO(String(user.last_login_at)).toLocaleString(DateTime.DATETIME_MED) : 'Never'}</td>
+          <td>{user.lastLoginAt ? DateTime.fromISO(String(user.lastLoginAt)).toLocaleString(DateTime.DATETIME_MED) : 'Never'}</td>
           <td>
             {user.active ?
               <Button variant="danger" onClick={() => setUserActive(user, false)} disabled={authContext.auth?.id === user.id}>Disable</Button> :
