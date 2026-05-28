@@ -22,6 +22,9 @@ const Header = () => {
             <LinkContainer to="/about">
               <Nav.Link>About</Nav.Link>
             </LinkContainer>
+            <LinkContainer to="/stats">
+              <Nav.Link>Stats</Nav.Link>
+            </LinkContainer>
           </Nav>
           <Nav>
             {!authenticated ?

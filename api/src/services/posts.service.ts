@@ -56,6 +56,14 @@ export default class PostService extends AbstractDal<Post> {
     })) as Post[];
   }
 
+  public async getCoordinates (): Promise<{latitude: number; longitude: number}[]> {
+    return await this.repository.createQueryBuilder('post')
+      .select(['post.latitude', 'post.longitude'])
+      .innerJoin('post.user', 'user')
+      .where('user.active = :active', { active: true })
+      .getMany() as {latitude: number; longitude: number}[];
+  }
+
   resolver (partial: Partial<Post>): Post {
     return _.extend(new Post(), partial);
   }

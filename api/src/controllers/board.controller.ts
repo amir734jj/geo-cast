@@ -87,6 +87,15 @@ export default class BoardController {
     return await this.boardService.unlike(req.user, postId);
   }
 
+  @Get('stats')
+  @ApiOkResponse({
+    description: 'Successfully returned post coordinates for stats'
+  })
+  @ApiBadRequestResponse({ description: 'Bad request.' })
+  async stats (): Promise<{latitude: number; longitude: number}[]> {
+    return await this.boardService.getCoordinates();
+  }
+
   @Get('user/:userId')
   @ApiOkResponse({
     description: 'Successfully returned user posts',

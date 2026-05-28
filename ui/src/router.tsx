@@ -11,6 +11,7 @@ import { useAuthStore } from "./stores";
 import Profile from "./components/profile";
 import Manage from "./components/manage";
 import PublicProfile from "./components/publicProfile";
+import Stats from "./components/stats";
 
 const Router = () => {
   const authContext = useAuthStore();
@@ -22,6 +23,7 @@ const Router = () => {
       <Route path="/" element={<Home />} />
       <Route path="about" element={<About />} />
       <Route path="home" element={<Home />} />
+      <Route path="stats" element={<Stats />} />
       {
         authenticated ?
           <>

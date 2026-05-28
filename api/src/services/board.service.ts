@@ -56,6 +56,10 @@ export default class BoardService {
     return await this.blobServiceClient.download(recordingId);
   }
 
+  async getCoordinates (): Promise<{latitude: number; longitude: number}[]> {
+    return await this.postService.getCoordinates();
+  }
+
   async isPostOwner (userId: number, postId: number): Promise<boolean> {
     const post = await this.postService.get(postId);
     return post?.user?.id === userId;
