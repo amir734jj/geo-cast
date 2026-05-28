@@ -1,11 +1,11 @@
 import { useForm } from 'react-hook-form';
-import { Button, Form, FormGroup, Spinner as BsSpinner } from 'react-bootstrap';
+import { Form, FormGroup } from 'react-bootstrap';
 import { useAuthStore } from "../../../stores";
 import { useEffect, useState } from "react";
 import { LoginType } from "@geo-cast/lib/dto/account";
 import { login as LoginAction, accountInfo as accountInfoAction } from '../../../actions';
 import { useNavigate } from "react-router-dom";
-import { AlertDismissible, Spinner } from '../../common';
+import { AlertDismissible, SimpleButton, Spinner } from '../../common';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AxiosError } from 'axios';
@@ -68,9 +68,7 @@ const LoginForm = ({ loginHandler, loading }: LoginFormPropType) => {
         </Form.Text>
         {errors.password ? <Form.Control.Feedback type="invalid">{errors.password.message}</Form.Control.Feedback> : null}
       </FormGroup>
-      <Button variant="primary" type="submit" disabled={loading}>
-        {loading ? <><BsSpinner as="span" animation="border" size="sm" role="status" className="me-1" />Submitting...</> : 'Submit'}
-      </Button>
+      <SimpleButton variant="primary" type="submit" loading={loading}>Submit</SimpleButton>
     </Form>
   );
 };

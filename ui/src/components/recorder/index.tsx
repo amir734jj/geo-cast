@@ -10,7 +10,7 @@ import {
 import { Fragment, useEffect, useState } from "react";
 import Player, { PlayerInfoPropType } from "../player";
 import { createPost, downloadBlob } from "../../actions";
-import { AlertDismissible, Spinner } from "../common";
+import { AlertDismissible, SimpleButton, Spinner } from "../common";
 import { AxiosError } from "axios";
 import { useLocationStore } from "../../stores";
 import { DateTime } from "luxon";
@@ -210,16 +210,17 @@ const Recorder = () => {
                 )
               ) : null}
               {mediaBlobUrl && board.playerInfo.duration ? (
-                <Button
+                <SimpleButton
                   variant="outline-dark"
-                  title="share"
+                  tooltip="share"
                   disabled={!recordingIsValid()}
+                  loading={board.upload}
                   onClick={async () => {
                     await uploadRecordingHandler();
                   }}
                 >
                   <FontAwesomeIcon icon={faCloudArrowUp} />
-                </Button>
+                </SimpleButton>
               ) : null}
             </ButtonGroup>
             { board.recording ? <p>
