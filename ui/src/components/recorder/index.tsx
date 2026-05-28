@@ -223,9 +223,9 @@ const Recorder = () => {
               ) : null}
             </ButtonGroup>
             { board.recording ? <p>
-              {DateTime.now().diff(DateTime.fromJSDate(board.recordingStartedAt!), "seconds").seconds} seconds
-            </p> : board.playerInfo.duration ? (
-              <p>{Number(board.playerInfo.duration).toFixed(2)} seconds</p>
+              {(board.recordingDuration ?? 0).toFixed(2)} seconds
+            </p> : (board.playerInfo.duration ?? board.recordingDuration) ? (
+              <p>{Number(board.playerInfo.duration ?? board.recordingDuration).toFixed(2)} seconds</p>
             ) : null}
           </Container>
         </Col>
