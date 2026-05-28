@@ -32,7 +32,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FormDataBody, FormDataDtoValidator } from 'src/decorators/form-data.decorator';
 import CreateUserDto from 'src/dto/create.user.dto';
 import { TypeTransformer } from 'src/decorators/type-transformer.decorator';
-import QueryPostDto from '../../dto/query.post.dto';
+import QueryPostDto from '../dto/query.post.dto';
 
 @ApiTags('board')
 @Controller('board')

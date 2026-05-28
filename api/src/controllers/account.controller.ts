@@ -15,11 +15,11 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import LoginUserDto from '../../dto/login.user.dto';
-import CreateUserDto from '../../dto/create.user.dto';
-import AuthService from '../../services/auth.service';
-import JwtAuthGuard from '../../guards/jwt-auth.guard';
-import type User from '../../models/users.model';
+import LoginUserDto from '../dto/login.user.dto';
+import CreateUserDto from '../dto/create.user.dto';
+import AuthService from '../services/auth.service';
+import JwtAuthGuard from '../guards/jwt-auth.guard';
+import type User from '../models/users.model';
 import ProfileDto from 'src/dto/profile.user.dto';
 
 @ApiTags('account')

@@ -1,5 +1,5 @@
 import { IsString, IsNotEmpty } from 'class-validator';
-import LoginUserDto from '../login.user.dto';
+import LoginUserDto from './login.user.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { type RegisterType } from '@geo-cast/lib/dto/account';
 

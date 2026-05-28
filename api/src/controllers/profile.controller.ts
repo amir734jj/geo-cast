@@ -1,9 +1,9 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import type User from '../../models/users.model';
-import UsersService from '../../services/users.service';
-import JwtAuthGuard from '../../guards/jwt-auth.guard';
-import RecordingPost from '../../models/post.model';
+import type User from '../models/users.model';
+import UsersService from '../services/users.service';
+import JwtAuthGuard from '../guards/jwt-auth.guard';
+import RecordingPost from '../models/post.model';
 
 @ApiTags('profile')
 @Controller('profile')

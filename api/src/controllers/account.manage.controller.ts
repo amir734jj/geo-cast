@@ -6,12 +6,12 @@ import {
   ApiParam,
   ApiTags
 } from '@nestjs/swagger';
-import AuthService from '../../services/auth.service';
-import JwtAuthGuard from '../../guards/jwt-auth.guard';
-import type User from '../../models/users.model';
-import { RolesGuard } from '../../guards/roles.guard';
-import { Roles } from '../../decorators/roles.decorator';
-import { UserRole } from '../../enums/role.enum';
+import AuthService from '../services/auth.service';
+import JwtAuthGuard from '../guards/jwt-auth.guard';
+import type User from '../models/users.model';
+import { RolesGuard } from '../guards/roles.guard';
+import { Roles } from '../decorators/roles.decorator';
+import { UserRole } from '../enums/role.enum';
 
 @ApiTags('manage_account')
 @Controller('manage/account')
