@@ -30,6 +30,7 @@ import { S3Client } from '@aws-sdk/client-s3'
       if (spacesKey != null && spacesSecret != null && spacesEndpoint != null) {
         return new S3BlobProvider(new S3Client({
           endpoint: spacesEndpoint,
+          region: configService.get<string>('SPACES_REGION', 'us-east-1'),
           credentials: { accessKeyId: spacesKey, secretAccessKey: spacesSecret }
         }))
       }

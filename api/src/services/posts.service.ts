@@ -28,7 +28,7 @@ export default class PostService extends AbstractDal<Post> {
         coordinate.longitude,
         coordinate.longitude
       ]), 'distance')
-      .innerJoinAndMapOne('post.user', User, 'user')
+      .innerJoinAndSelect('post.user', 'user')
       .take(count)
       .skip(count * (page - 1))
       .where('user.active = :active', { active: true })
