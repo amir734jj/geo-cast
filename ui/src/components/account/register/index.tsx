@@ -9,6 +9,7 @@ import { AlertDismissible, SimpleButton, Spinner } from '../../common';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AxiosError } from 'axios';
+import { NAME_MIN_LENGTH, NAME_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, PASSWORD_REGEX } from '@geo-cast/lib/constants';
 
 type RegisterFormPropType = {
   registerHandler: (arg: RegisterType) => void;
@@ -18,8 +19,8 @@ type RegisterFormPropType = {
 const schema = yup.object({
   name: yup
     .string()
-    .min(3, "must be at least 3 characters long")
-    .max(30, "must be at most 30 characters long")
+    .min(NAME_MIN_LENGTH, `must be at least ${NAME_MIN_LENGTH} characters long`)
+    .max(NAME_MAX_LENGTH, `must be at most ${NAME_MAX_LENGTH} characters long`)
     .required(),
   email: yup
     .string()
@@ -27,10 +28,10 @@ const schema = yup.object({
     .required(),
   password: yup
     .string()
-    .min(8, "must be at least 8 characters long")
-    .max(30, "must be at most 30 characters long")
+    .min(PASSWORD_MIN_LENGTH, `must be at least ${PASSWORD_MIN_LENGTH} characters long`)
+    .max(PASSWORD_MAX_LENGTH, `must be at most ${PASSWORD_MAX_LENGTH} characters long`)
     .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      PASSWORD_REGEX,
       'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character'
     )
     .required(),

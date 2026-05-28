@@ -9,6 +9,7 @@ import { AlertDismissible, SimpleButton, Spinner } from '../../common';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AxiosError } from 'axios';
+import { PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH } from '@geo-cast/lib/constants';
 
 type LoginFormPropType = {
   loginHandler: (arg: LoginType) => void;
@@ -22,8 +23,8 @@ const schema = yup.object({
     .required(),
   password: yup
     .string()
-    .min(8, "must be at least 8 characters long")
-    .max(30, "must be at most 30 characters long")
+    .min(PASSWORD_MIN_LENGTH, `must be at least ${PASSWORD_MIN_LENGTH} characters long`)
+    .max(PASSWORD_MAX_LENGTH, `must be at most ${PASSWORD_MAX_LENGTH} characters long`)
     .required(),
 }).required();
 

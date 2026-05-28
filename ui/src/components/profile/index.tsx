@@ -9,16 +9,17 @@ import { ProfileType } from '@geo-cast/lib/dto/account/profile.account';
 import { useAuthStore } from "../../stores";
 import _ from 'lodash';
 import { AxiosError } from 'axios';
+import { NAME_MIN_LENGTH, NAME_MAX_LENGTH, DESCRIPTION_MAX_LENGTH } from '@geo-cast/lib/constants';
 
 const schema = yup.object({
   name: yup
     .string()
-    .min(3, "must be at least 3 characters long")
-    .max(30, "must be at most 30 characters long")
+    .min(NAME_MIN_LENGTH, `must be at least ${NAME_MIN_LENGTH} characters long`)
+    .max(NAME_MAX_LENGTH, `must be at most ${NAME_MAX_LENGTH} characters long`)
     .required(),
   description: yup
     .string()
-    .max(300, "should have maximum of 280 characters long")
+    .max(DESCRIPTION_MAX_LENGTH, `should have maximum of ${DESCRIPTION_MAX_LENGTH} characters long`)
     .notRequired(),
 }).required();
 
