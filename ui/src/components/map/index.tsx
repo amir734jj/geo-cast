@@ -7,6 +7,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useMapFocusStore, useThemeStore} from "../../stores";
 import _ from "lodash";
 import worldCountries from '@geo-cast/lib/data/world-countries.json';
+import {useMediaQuery} from '../../utilities';
 
 type CoordinateInfoType = Coordinate & { color?: string };
 
@@ -18,13 +19,16 @@ export type MapPropType = {
 const minZoom = 1;
 const maxZoom = 8;
 const defaultPosition: { coordinates: [number, number]; zoom: number } = {coordinates: [0, 0], zoom: 1};
-const statesProvincesUrl = "https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_50m_admin_1_states_provinces_lines.geojson";
+const statesProvincesUrl50m = "https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_50m_admin_1_states_provinces_lines.geojson";
+const statesProvincesUrl110m = "https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_110m_admin_1_states_provinces_lines.geojson";
 
 const Map = ({coordinates, countryStats}: MapPropType) => {
   const [position, setPosition] = useState(defaultPosition);
   const mapFocusContext = useMapFocusStore();
   const { theme } = useThemeStore();
   const isDark = theme === 'dark';
+  const isMobile = useMediaQuery('(max-width: 767px)');
+  const statesProvincesUrl = isMobile ? statesProvincesUrl110m : statesProvincesUrl50m;
 
   const maxCount = useMemo(() => {
     if (!countryStats || countryStats.size === 0) return 0;
