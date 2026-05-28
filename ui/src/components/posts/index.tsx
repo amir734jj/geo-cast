@@ -8,6 +8,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPause, faPlay, faStop, faTrash, faForward} from "@fortawesome/free-solid-svg-icons";
 import {DateTime} from "luxon";
 import _ from "lodash";
+import {useMediaQuery} from '../../utilities';
 import Player, {EventType, PlayerInfoPropType} from "../player";
 import {LinkContainer} from "react-router-bootstrap";
 import {EntityType} from '@geo-cast/lib/dto/account';
@@ -78,6 +79,7 @@ const Posts = () => {
   const mapFocusContext = useMapFocusStore();
   const authContext = useAuthStore();
   const isAdmin = checkAdmin(authContext?.auth?.roles);
+  const isMobile = useMediaQuery('(max-width: 767px)');
   const {confirmAction, ConfirmModal} = useConfirmModal();
 
   const count = 2;
@@ -202,7 +204,7 @@ const Posts = () => {
                 <Player
                   mediaBlobUrl={`/api/board/download/${post.recordingId}`}
                   play={board.playerInfos[post.id]?.play}
-                  showWaveform={true}
+                  showWaveform={!isMobile}
                   onchange={(playerInfo: Partial<PlayerInfoPropType>, event: EventType) => {
                     setBoard(
                       combine(
