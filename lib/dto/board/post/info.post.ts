@@ -8,7 +8,6 @@ export type PostInfoType = {
   createdAt: string;
   country?: string;
   user: {
-    email: string;
     name: string;
   } & EntityType
 } & EntityType;

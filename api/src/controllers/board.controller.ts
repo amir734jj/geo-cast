@@ -30,7 +30,6 @@ import JwtAuthGuard from 'src/guards/jwt-auth.guard';
 import RecordingPost from 'src/models/post.model';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FormDataBody, FormDataDtoValidator } from 'src/decorators/form-data.decorator';
-import CreateUserDto from 'src/dto/create.user.dto';
 import { TypeTransformer } from 'src/decorators/type-transformer.decorator';
 import QueryPostDto from '../dto/query.post.dto';
 
@@ -132,7 +131,7 @@ export default class BoardController {
   @UseInterceptors(FileInterceptor('file'))
   @FormDataDtoValidator()
   async createPost (
-    @FormDataBody(CreateUserDto)
+    @FormDataBody(CreatePostDto)
     @Body(new TypeTransformer(CreatePostDto)) post: CreatePostDtoType,
       @UploadedFile(
         new ParseFilePipeBuilder()

@@ -6,8 +6,7 @@ export type ProfileType = {
 };
 
 export type ExtendedProfileType = ProfileType & {
-  email: string;
   roles: RoleType[];
+  active: boolean;
   createdAt?: string | Date;
-  lastLoginAt?: string | Date | null;
 };
