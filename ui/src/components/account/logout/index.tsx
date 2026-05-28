@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../../stores";
-import { Spinner } from "../../common";
+import { logout as logoutAction } from "../../../actions";
 
 const Logout = () => {
   const authContext = useAuthStore();
@@ -9,10 +9,11 @@ const Logout = () => {
 
   useEffect(() => {
     authContext.logout();
+    logoutAction().catch(() => {});
     navigate("/");
-  }, [authContext])
+  }, []);
 
-  return <Spinner />;
-}
+  return null;
+};
 
 export default Logout;

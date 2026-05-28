@@ -10,18 +10,21 @@ import { Login, Logout, Register } from "./components/account";
 import { useAuthStore } from "./stores";
 import Profile from "./components/profile";
 import Manage from "./components/manage";
-import PublicProfile from "./components/publicProfile";
+import PublicProfile from "./components/public-profile";
+import Stats from "./components/stats";
+import { isAdmin } from '@geo-cast/lib/utils';
 
 const Router = () => {
   const authContext = useAuthStore();
   const authenticated = !!authContext?.auth;
-  const admin = authContext?.auth && authContext.auth.roles.filter(x => x.name === 'admin').length;
+  const admin = isAdmin(authContext?.auth?.roles);
 
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="about" element={<About />} />
       <Route path="home" element={<Home />} />
+      <Route path="stats" element={<Stats />} />
       {
         authenticated ?
           <>

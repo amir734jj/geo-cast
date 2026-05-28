@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { ConfigModule, ConfigService } from '@nestjs/config'
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -8,16 +8,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
+        const isProduction = configService.get<string>('ENV') === 'Production';
         const defaultOptions = {
           applicationName: configService.get<string>('APP_NAME'),
-          synchronize: true,
+          synchronize: !isProduction,
           migrationsRun: false,
           logging: false,
           autoLoadEntities: true,
           cache: true
-        }
+        };
 
-        if (configService.get<string>('ENV') === 'Production') {
+        if (isProduction) {
           return {
             ...defaultOptions,
             type: 'postgres',
@@ -27,13 +28,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
                 rejectUnauthorized: false
               }
             }
-          }
+          };
         } else {
           return {
             ...defaultOptions,
             type: 'sqlite',
             database: 'database.sqlite'
-          }
+          };
         }
       }
     })

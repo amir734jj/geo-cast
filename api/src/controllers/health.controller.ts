@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Get } from '@nestjs/common';
 import {
   HealthCheckService,
   HttpHealthIndicator,
@@ -7,8 +7,8 @@ import {
   TypeOrmHealthIndicator,
   DiskHealthIndicator,
   MemoryHealthIndicator
-} from '@nestjs/terminus'
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger'
+} from '@nestjs/terminus';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('health')
 @Controller('health')
@@ -33,6 +33,6 @@ export class HealthController {
       async () =>
         await this.disk.checkStorage('storage', { path: '/', thresholdPercent: 0.5 }),
       async () => await this.memory.checkHeap('memory_heap', 150 * 1024 * 1024)
-    ])
+    ]);
   }
 }

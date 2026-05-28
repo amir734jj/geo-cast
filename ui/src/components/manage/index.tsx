@@ -3,16 +3,19 @@ import { useEffect, useState } from "react";
 import { getUsers, setUserActive as setUserActiveAction } from "../../actions";
 import { Button, Table } from "react-bootstrap";
 import {useAuthStore} from "../../stores";
+import { Spinner } from "../common";
 
 const Manage = () => {
   const authContext = useAuthStore();
 
   const [users, setUsers] = useState<(EntityType & UserType)[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const refreshUsers = () => getUsers()
     .then(response => {
       setUsers(response.data);
-    });
+    })
+    .finally(() => setLoading(false));
 
   const setUserActive = async (user: EntityType, active: boolean) => {
     await setUserActiveAction(user, active);
@@ -23,8 +26,12 @@ const Manage = () => {
     refreshUsers();
   }, []);
 
+  if (loading) {
+    return <Spinner />;
+  }
+
   return <div className="mt-3">
-    <Table bordered hover>
+    <Table bordered hover responsive>
       <thead>
         <tr>
           <th>Name</th>

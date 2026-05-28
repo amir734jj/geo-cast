@@ -12,9 +12,10 @@ import Player, { PlayerInfoPropType } from "../player";
 import { createPost, downloadBlob } from "../../actions";
 import { AlertDismissible, Spinner } from "../common";
 import { AxiosError } from "axios";
-import { useLocationStore } from "../../stores";
+import { useLocationStore, usePostsStore } from "../../stores";
 import { DateTime } from "luxon";
 import ms from "ms";
+import { MIN_RECORDING_DURATION, MAX_RECORDING_DURATION, RECORDING_WARNING_THRESHOLD } from '@geo-cast/lib/constants';
 
 type BoardType = {
   play: boolean;
@@ -29,6 +30,7 @@ type BoardType = {
 
 const Recorder = () => {
   const locationContext = useLocationStore();
+  const { triggerRefresh } = usePostsStore();
   const [board, setBoard] = useState<BoardType>({
     play: false,
     recording: false,
@@ -73,10 +75,11 @@ const Recorder = () => {
       setBoard((x) => ({
         ...x,
         upload: false,
-        duration: null,
+        recordingDuration: undefined,
         mediaBlobUrl: null,
         error: null,
       }));
+      triggerRefresh();
     } catch (e) {
       setBoard((x) => ({
         ...x,
@@ -91,7 +94,7 @@ const Recorder = () => {
   };
 
   const recordingIsValid = () => {
-    if (mediaBlobUrl && board.playerInfo.duration && (board.playerInfo.duration < 5 || board.playerInfo.duration > 30)) {
+    if (mediaBlobUrl && board.playerInfo.duration && (board.playerInfo.duration < MIN_RECORDING_DURATION || board.playerInfo.duration > MAX_RECORDING_DURATION)) {
       return false;
     }
 
@@ -116,22 +119,22 @@ const Recorder = () => {
         <Col sm={12}>
           {mediaBlobUrl &&
           board.playerInfo.duration &&
-          board.playerInfo?.duration < 5 ? (
+          board.playerInfo?.duration < MIN_RECORDING_DURATION ? (
             <AlertDismissible
               dismissible={false}
               header="uploading recording failed"
               variant="danger"
-              message={"recording is too short to post (less than 5 seconds)"}
+              message={`recording is too short to post (less than ${MIN_RECORDING_DURATION} seconds)`}
             />
           ) : null}
           {mediaBlobUrl &&
           board.playerInfo.duration &&
-          board.playerInfo?.duration >= 30 ? (
+          board.playerInfo?.duration >= MAX_RECORDING_DURATION ? (
             <AlertDismissible
               dismissible={false}
               header="uploading recording failed"
               variant="danger"
-              message={"recording is too long to post (more than 30 seconds)"}
+              message={`recording is too long to post (more than ${MAX_RECORDING_DURATION} seconds)`}
             />
           ) : null}
         </Col>
@@ -190,7 +193,7 @@ const Recorder = () => {
                 board.playerInfo.playing ? (
                   <Button
                     variant="outline-secondary"
-                    title="pauseRecording"
+                    title="pause-recording"
                     disabled={board.recording}
                     onClick={() => setBoard((x) => ({ ...x, play: false }))}
                   >
@@ -211,9 +214,9 @@ const Recorder = () => {
               ) : null}
               {mediaBlobUrl && board.playerInfo.duration ? (
                 <Button
-                  variant="outline-dark"
+                  variant="outline-success"
                   title="share"
-                  disabled={!recordingIsValid()}
+                  disabled={!recordingIsValid() || board.upload}
                   onClick={async () => {
                     await uploadRecordingHandler();
                   }}
@@ -223,9 +226,10 @@ const Recorder = () => {
               ) : null}
             </ButtonGroup>
             { board.recording ? <p>
-              {DateTime.now().diff(DateTime.fromJSDate(board.recordingStartedAt!), "seconds").seconds} seconds
-            </p> : board.playerInfo.duration ? (
-              <p>{board.playerInfo.duration.toFixed(2)} seconds</p>
+              {(board.recordingDuration ?? 0).toFixed(2)} seconds
+              {(board.recordingDuration ?? 0) >= MAX_RECORDING_DURATION - RECORDING_WARNING_THRESHOLD ? <span className="text-danger ms-2">(max {MAX_RECORDING_DURATION} seconds)</span> : null}
+            </p> : (board.playerInfo.duration ?? board.recordingDuration) ? (
+              <p>{Number(board.playerInfo.duration ?? board.recordingDuration).toFixed(2)} seconds</p>
             ) : null}
           </Container>
         </Col>

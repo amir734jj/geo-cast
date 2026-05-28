@@ -12,38 +12,38 @@ const About = () => {
     setTimeout(() => {
       setFade(false);
     }, 1000);
-  }
+  };
 
   useEffect(() => {
     animateIcon();
   }, []);
 
   return (
-    <Container className='m-5'>
+    <Container className='my-4 mx-auto px-3'>
       <Row>
-        <Col xs={8}>
+        <Col xs={12} md={8}>
           <h3>Mission</h3>
           <p>
-            The mission of this website is to quickly hear what people in a region are talking about
-            at any given time, and enable people to engage in a conversation using their geological location.
+            Hear what people around you are talking about, right now.
+            Record a short audio clip tied to your location and listen to what others have shared nearby.
           </p>
 
-          <h3>Open</h3>
+          <h3>Open Source</h3>
           <p>
-            This website is completely <a href="https://github.com/amir734jj/geo-cast">open source</a>. We welcome any contribution.
+            Fully <a href="https://github.com/amir734jj/geo-cast">open source</a>. No tracking, no ads. Contributions welcome.
           </p>
 
           <h3>Privacy</h3>
           <p>
-            The audio files will never be sold to third party and they are stored in Azure Blob storage.
+            Your recordings are never sold or shared with third parties.
           </p>
 
           <h3>Author</h3>
           <p>
-            Seyedamirhossein Hesamian (<a href="mailto:hesamian@uwm.edu">hesamian@uwm.edu</a>)
+            Amir Hesamian (<a href="mailto:hesamian@uwm.edu">hesamian@uwm.edu</a>)
           </p>
         </Col>
-        <Col xs={4}>
+        <Col xs={12} md={4}>
           <div className='d-flex align-items-center justify-content-center mt-5'>
             <span className="fa-layers fa-fw mx-auto">
               <FontAwesomeIcon icon={faTowerCell} size="5x" color='grey' pulse={fade} onMouseOver={() => animateIcon()} />

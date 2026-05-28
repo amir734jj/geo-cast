@@ -6,6 +6,7 @@ export type PostInfoType = {
   latitude: number;
   recordingId: string;
   created_at: string;
+  country?: string;
   user: {
     email: string;
     name: string;

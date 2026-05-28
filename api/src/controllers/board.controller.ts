@@ -3,9 +3,11 @@ import {
   Get,
   Request,
   Post,
+  Delete,
   UseGuards,
   Body,
   HttpStatus,
+  ForbiddenException,
   UploadedFile,
   ParseFilePipeBuilder,
   Param,
@@ -13,24 +15,24 @@ import {
   StreamableFile,
   Header,
   Query
-} from '@nestjs/common'
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiConsumes,
   ApiOkResponse,
   ApiTags
-} from '@nestjs/swagger'
-import CreatePostDto, { CreatePostDtoType } from 'src/dto/create.post.dto'
-import bytes from 'bytes'
-import BoardService from 'src/services/board.service'
-import JwtAuthGuard from 'src/guards/jwt-auth.guard'
-import RecordingPost from 'src/models/post.model'
-import { FileInterceptor } from '@nestjs/platform-express'
-import { FormDataBody, FormDataDtoValidator } from 'src/decorators/form-data.decorator'
-import CreateUserDto from 'src/dto/create.user.dto'
-import { TypeTransformer } from 'src/decorators/type-transformer.decorator'
-import QueryPostDto from '../dto/query.post.dto'
+} from '@nestjs/swagger';
+import CreatePostDto, { CreatePostDtoType } from 'src/dto/create.post.dto';
+import bytes from 'bytes';
+import BoardService from 'src/services/board.service';
+import JwtAuthGuard from 'src/guards/jwt-auth.guard';
+import RecordingPost from 'src/models/post.model';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FormDataBody, FormDataDtoValidator } from 'src/decorators/form-data.decorator';
+import CreateUserDto from 'src/dto/create.user.dto';
+import { TypeTransformer } from 'src/decorators/type-transformer.decorator';
+import QueryPostDto from '../dto/query.post.dto';
 
 @ApiTags('board')
 @Controller('board')
@@ -45,11 +47,11 @@ export default class BoardController {
     type: StreamableFile
   })
   @ApiBadRequestResponse({ description: 'Bad request.' })
-  @Header('Cache-Control', 'none')
+  @Header('Cache-Control', 'public, max-age=31536000, immutable')
   @Header('Content-Disposition', 'attachment; filename=voice.wav')
   async download (@Param('recordingId') recordingId: string) {
-    const { readable } = await this.boardService.downloadRecording(recordingId)
-    return new StreamableFile(readable)
+    const { readable } = await this.boardService.downloadRecording(recordingId);
+    return new StreamableFile(readable);
   }
 
   @Get('query')
@@ -60,7 +62,7 @@ export default class BoardController {
   })
   @ApiBadRequestResponse({ description: 'Bad request.' })
   async query (@Query() query: QueryPostDto): Promise<RecordingPost[]> {
-    return await this.boardService.query(query.count, query.page, { longitude: query.longitude, latitude: query.latitude })
+    return await this.boardService.query(query.count, query.page, { longitude: query.longitude, latitude: query.latitude });
   }
 
   @UseGuards(JwtAuthGuard)
@@ -71,7 +73,7 @@ export default class BoardController {
   })
   @ApiBadRequestResponse({ description: 'Bad request.' })
   async like (@Param('postId') postId: number, @Request() req): Promise<RecordingPost> {
-    return await this.boardService.like(req.user, postId)
+    return await this.boardService.like(req.user, postId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -82,7 +84,42 @@ export default class BoardController {
   })
   @ApiBadRequestResponse({ description: 'Bad request.' })
   async unlike (@Param('postId') postId: number, @Request() req): Promise<RecordingPost> {
-    return await this.boardService.unlike(req.user, postId)
+    return await this.boardService.unlike(req.user, postId);
+  }
+
+  @Get('stats')
+  @ApiOkResponse({
+    description: 'Successfully returned recording statistics per country'
+  })
+  @ApiBadRequestResponse({ description: 'Bad request.' })
+  async stats (): Promise<{country: string; count: number}[]> {
+    return await this.boardService.getStats();
+  }
+
+  @Get('user/:userId')
+  @ApiOkResponse({
+    description: 'Successfully returned user posts',
+    type: RecordingPost,
+    isArray: true
+  })
+  @ApiBadRequestResponse({ description: 'Bad request.' })
+  async getUserPosts (@Param('userId') userId: number): Promise<RecordingPost[]> {
+    return await this.boardService.getUserPosts(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':postId')
+  @ApiOkResponse({
+    description: 'Successfully deleted the post'
+  })
+  @ApiBadRequestResponse({ description: 'Bad request.' })
+  async deletePost (@Param('postId') postId: number, @Request() req): Promise<void> {
+    const isAdmin = req.user?.roles?.some((r: any) => r.name === 'admin');
+    const isOwner = await this.boardService.isPostOwner(req.user.id, postId);
+    if (!isAdmin && !isOwner) {
+      throw new ForbiddenException('You can only delete your own recordings');
+    }
+    await this.boardService.deletePost(postId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -110,6 +147,6 @@ export default class BoardController {
       recording: Express.Multer.File,
       @Request() req
   ): Promise<RecordingPost> {
-    return await this.boardService.createPost(req.user, post, recording)
+    return await this.boardService.createPost(req.user, post, recording);
   }
 }

@@ -1,17 +1,19 @@
 import { useForm } from 'react-hook-form';
-import { Button, Form, FormGroup } from 'react-bootstrap';
+import { Form, FormGroup } from 'react-bootstrap';
 import { useAuthStore } from "../../../stores";
 import { useEffect, useState } from "react";
 import { LoginType } from "@geo-cast/lib/dto/account";
 import { login as LoginAction, accountInfo as accountInfoAction } from '../../../actions';
 import { useNavigate } from "react-router-dom";
-import { AlertDismissible, Spinner } from '../../common';
+import { AlertDismissible, SimpleButton, Spinner } from '../../common';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AxiosError } from 'axios';
+import { PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH } from '@geo-cast/lib/constants';
 
 type LoginFormPropType = {
-  loginHandler: (arg: LoginType) => void
+  loginHandler: (arg: LoginType) => void;
+  loading: boolean;
 };
 
 const schema = yup.object({
@@ -21,14 +23,14 @@ const schema = yup.object({
     .required(),
   password: yup
     .string()
-    .min(8, "must be at least 8 characters long")
-    .max(30, "must be at most 30 characters long")
+    .min(PASSWORD_MIN_LENGTH, `must be at least ${PASSWORD_MIN_LENGTH} characters long`)
+    .max(PASSWORD_MAX_LENGTH, `must be at most ${PASSWORD_MAX_LENGTH} characters long`)
     .required(),
 }).required();
 
 type SchemaType = yup.InferType<typeof schema> & LoginType;
 
-const LoginForm = ({ loginHandler }: LoginFormPropType) => {
+const LoginForm = ({ loginHandler, loading }: LoginFormPropType) => {
   const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<SchemaType>({
     resolver: yupResolver(schema)
   });
@@ -63,11 +65,11 @@ const LoginForm = ({ loginHandler }: LoginFormPropType) => {
           {...formRegister("password")}
         />
         <Form.Text className="text-muted">
-          Password has to be between 8 to 20 characters log
+          Password has to be between 8 to 30 characters long
         </Form.Text>
         {errors.password ? <Form.Control.Feedback type="invalid">{errors.password.message}</Form.Control.Feedback> : null}
       </FormGroup>
-      <Button variant="primary" type="submit">Submit</Button>
+      <SimpleButton variant="primary" type="submit" loading={loading}>Submit</SimpleButton>
     </Form>
   );
 };
@@ -75,10 +77,12 @@ const LoginForm = ({ loginHandler }: LoginFormPropType) => {
 const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(false);
   const authContext = useAuthStore();
   const navigate = useNavigate();
 
   const loginHandler = async (arg: LoginType) => {
+    setLoading(true);
     try {
       const { data: token } = await LoginAction(arg);
       authContext.setToken(token);
@@ -88,17 +92,19 @@ const Login = () => {
       navigate("/");
     } catch (e) {
       setError((e as AxiosError).message);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   if (loggedIn) {
-    return <Spinner />
+    return <Spinner />;
   }
 
-  return <>
+  return <div className="mt-3 px-2">
     {error ? <AlertDismissible header='logging in failed' variant='danger' message={error} /> : null}
-    <LoginForm loginHandler={loginHandler} />
-  </>;
-}
+    <LoginForm loginHandler={loginHandler} loading={loading} />
+  </div>;
+};
 
 export default Login;

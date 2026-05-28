@@ -45,16 +45,10 @@ export abstract class AbstractDal<T extends EntityType>
   }
 
   public async find(props: Partial<T>): Promise<T | null> {
-    const data = await this.repository.findOne({
+    return await this.repository.findOne({
       where: props,
       relations: this.includes,
     } as FindOneOptions<T>);
-
-    if (data && data.id) {
-      return await this.get(data.id) as T;
-    } else {
-      return null;
-    }
   }
 
   public async findMany(props: Partial<T>): Promise<T[]> {

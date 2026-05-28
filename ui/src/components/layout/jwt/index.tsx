@@ -1,6 +1,6 @@
 import { useAuthStore } from "../../../stores";
 import { useEffect, useState } from "react";
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { DateTime } from "luxon";
 import { accountInfo as accountInfoAction, refreshToken as refreshTokenAction } from '../../../actions';
 import ms from 'ms';
@@ -15,9 +15,9 @@ const JWT = () => {
   useEffect(() => {
     if (authContext.token && !recoverAuth) {
       setRecoverAuth(true);
-      const { exp } = jwt_decode<{ exp: number }>(authContext.token);
+      const { exp } = jwtDecode<{ exp: number }>(authContext.token);
       const expiredAt = new Date(0);
-      expiredAt.setUTCSeconds(exp);
+      expiredAt.setUTCSeconds(exp!);
 
       if (DateTime.fromJSDate(expiredAt).diffNow().milliseconds > 0) {
         accountInfoAction()
@@ -37,13 +37,13 @@ const JWT = () => {
     if (authContext.auth && !scheduledTokenRenew) {
       setScheduledTokenRenew(true);
       
-      const { exp } = jwt_decode<{ exp: number }>(authContext.token!);
+      const { exp } = jwtDecode<{ exp: number }>(authContext.token!);
       const expiredAt = new Date(0);
-      expiredAt.setUTCSeconds(exp);
+      expiredAt.setUTCSeconds(exp!);
       
       // Calculate refresh time as 75% of token lifetime or 5 minutes before expiry
       const timeToExpiry = DateTime.fromJSDate(expiredAt).diffNow().milliseconds;
-      const refreshTime = Math.min(timeToExpiry * 0.75, timeToExpiry - ms("5min"));
+      const refreshTime = Math.max(0, Math.min(timeToExpiry * 0.75, timeToExpiry - ms("5min")));
       
       if (refreshTime <= 0) {
         // Token already expired or about to expire

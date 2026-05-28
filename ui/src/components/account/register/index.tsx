@@ -1,24 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button, Form, FormGroup } from 'react-bootstrap';
+import { Form, FormGroup } from 'react-bootstrap';
 import { RegisterType } from "@geo-cast/lib/dto/account";
 import { register as registerAction } from "../../../actions";
 import { useNavigate } from "react-router-dom";
 import { PasswordType } from '../../../types';
-import { AlertDismissible, Spinner } from '../../common';
+import { AlertDismissible, SimpleButton, Spinner } from '../../common';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AxiosError } from 'axios';
+import { NAME_MIN_LENGTH, NAME_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, PASSWORD_REGEX } from '@geo-cast/lib/constants';
 
 type RegisterFormPropType = {
-  registerHandler: (arg: RegisterType) => void
+  registerHandler: (arg: RegisterType) => void;
+  loading: boolean;
 };
 
 const schema = yup.object({
   name: yup
     .string()
-    .min(3, "must be at least 3 characters long")
-    .max(30, "must be at most 30 characters long")
+    .min(NAME_MIN_LENGTH, `must be at least ${NAME_MIN_LENGTH} characters long`)
+    .max(NAME_MAX_LENGTH, `must be at most ${NAME_MAX_LENGTH} characters long`)
     .required(),
   email: yup
     .string()
@@ -26,10 +28,10 @@ const schema = yup.object({
     .required(),
   password: yup
     .string()
-    .min(8, "must be at least 8 characters long")
-    .max(30, "must be at most 30 characters long")
+    .min(PASSWORD_MIN_LENGTH, `must be at least ${PASSWORD_MIN_LENGTH} characters long`)
+    .max(PASSWORD_MAX_LENGTH, `must be at most ${PASSWORD_MAX_LENGTH} characters long`)
     .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      PASSWORD_REGEX,
       'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character'
     )
     .required(),
@@ -41,7 +43,7 @@ const schema = yup.object({
 
 type SchemaType = yup.InferType<typeof schema> & RegisterType & PasswordType;
 
-const RegisterForm = ({ registerHandler }: RegisterFormPropType) => {
+const RegisterForm = ({ registerHandler, loading }: RegisterFormPropType) => {
   const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<SchemaType>({
     resolver: yupResolver(schema)
   });
@@ -62,7 +64,7 @@ const RegisterForm = ({ registerHandler }: RegisterFormPropType) => {
           {...formRegister("name")}
         />
         <Form.Text className="text-muted">
-          Password has to be at least 3 characters log
+          Name has to be at least 3 characters long
         </Form.Text>
         {errors.name ? <Form.Control.Feedback type="invalid">{errors.name.message}</Form.Control.Feedback> : null}
       </FormGroup>
@@ -87,7 +89,7 @@ const RegisterForm = ({ registerHandler }: RegisterFormPropType) => {
           {...formRegister("password")}
         />
         <Form.Text className="text-muted">
-          Password has to be between 8 to 20 characters log
+          Password has to be between 8 to 30 characters long
         </Form.Text>
         {errors.password ? <Form.Control.Feedback type="invalid">{errors.password.message}</Form.Control.Feedback> : null}
       </FormGroup>
@@ -104,7 +106,7 @@ const RegisterForm = ({ registerHandler }: RegisterFormPropType) => {
         </Form.Text>
         {errors.password_confirmation ? <Form.Control.Feedback type="invalid">{errors.password_confirmation.message}</Form.Control.Feedback> : null}
       </FormGroup>
-      <Button type="submit">Submit</Button>
+      <SimpleButton type="submit" loading={loading}>Submit</SimpleButton>
     </Form>
   );
 };
@@ -113,25 +115,29 @@ const Register = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [registered, setRegistered] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const registerHandler = async (arg: RegisterType) => {
+    setLoading(true);
     try {
       await registerAction(arg);
       setRegistered(true);
       navigate("/login");
     } catch (e) {
       setError((e as AxiosError).message);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   if (registered) {
-    return <Spinner />
+    return <Spinner />;
   }
 
-  return <>
+  return <div className="mt-3 px-2">
     {error ? <AlertDismissible header='registering failed' variant='danger' message={error} /> : null}
-    <RegisterForm registerHandler={registerHandler} />
-  </>;
-}
+    <RegisterForm registerHandler={registerHandler} loading={loading} />
+  </div>;
+};
 
 export default Register;
