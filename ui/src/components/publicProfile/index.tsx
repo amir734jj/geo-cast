@@ -4,6 +4,7 @@ import {ExtendedProfileType} from "@geo-cast/lib/dto/account";
 import {getUserPublicProfile} from "../../actions";
 import {getUserPosts, deletePost as deletePostAction} from "../../actions/board.action";
 import {Spinner, useConfirmModal} from "../common";
+import {isAdmin as checkAdmin} from '@geo-cast/lib/utils';
 import {useAuthStore} from "../../stores";
 import _ from "lodash";
 import {Card, Button} from "react-bootstrap";
@@ -19,7 +20,7 @@ const PublicProfile = () => {
   const { userId } = useParams();
   const authContext = useAuthStore();
   const currentUserId = authContext?.auth?.id;
-  const isAdmin = authContext?.auth?.roles?.some(r => r.name === 'admin');
+  const isAdmin = checkAdmin(authContext?.auth?.roles);
   const {confirmAction, ConfirmModal} = useConfirmModal();
 
   const [profile, setProfile] = useState<ExtendedProfileType>();

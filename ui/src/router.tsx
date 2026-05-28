@@ -12,11 +12,12 @@ import Profile from "./components/profile";
 import Manage from "./components/manage";
 import PublicProfile from "./components/publicProfile";
 import Stats from "./components/stats";
+import { isAdmin } from '@geo-cast/lib/utils';
 
 const Router = () => {
   const authContext = useAuthStore();
   const authenticated = !!authContext?.auth;
-  const admin = authContext?.auth?.roles?.some(r => r.name === 'admin');
+  const admin = isAdmin(authContext?.auth?.roles);
 
   return (
     <Routes>

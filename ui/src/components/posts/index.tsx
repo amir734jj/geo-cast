@@ -15,6 +15,7 @@ import {combine} from "../../utilities";
 import {PostInfoType} from '@geo-cast/lib/dto/board/post';
 import ms from 'ms';
 import {useConfirmModal} from '../common';
+import {isAdmin as checkAdmin} from '@geo-cast/lib/utils';
 
 type PlayerInfoType = Record<number, PlayerInfoPropType & {
   play: boolean,
@@ -76,7 +77,7 @@ const Posts = () => {
   const locationContext = useLocationStore();
   const mapFocusContext = useMapFocusStore();
   const authContext = useAuthStore();
-  const isAdmin = authContext?.auth?.roles?.some(r => r.name === 'admin');
+  const isAdmin = checkAdmin(authContext?.auth?.roles);
   const {confirmAction, ConfirmModal} = useConfirmModal();
 
   const count = 2;

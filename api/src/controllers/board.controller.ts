@@ -33,6 +33,7 @@ import { FormDataBody, FormDataDtoValidator } from 'src/decorators/form-data.dec
 import CreateUserDto from 'src/dto/create.user.dto';
 import { TypeTransformer } from 'src/decorators/type-transformer.decorator';
 import QueryPostDto from '../dto/query.post.dto';
+import { isAdmin } from '@geo-cast/lib/utils';
 
 @ApiTags('board')
 @Controller('board')

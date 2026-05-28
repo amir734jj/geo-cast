@@ -3,6 +3,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { useAuthStore, useThemeStore } from "../../../stores";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
+import { isAdmin } from '@geo-cast/lib/utils';
 
 const Header = () => {
   const authContext = useAuthStore();
@@ -38,7 +39,7 @@ const Header = () => {
               </>
               :
               <>
-                {authContext.auth?.roles?.some(r => r.name === 'admin') ?
+                {isAdmin(authContext.auth?.roles) ?
                   <LinkContainer to="/manage">
                     <Nav.Link>Manage</Nav.Link>
                   </LinkContainer> : null}
