@@ -189,7 +189,7 @@ const Posts = () => {
                 </Card.Title>
                 <Card.Subtitle
                   className="mb-2 text-muted">
-                  {post.duration.toFixed(2)}sec
+                  {Number(post.duration).toFixed(2)}sec
                   - {DateTime.fromISO(post.created_at.toString()).toLocaleString(DateTime.DATETIME_MED)}
                 </Card.Subtitle>
                 <Player
