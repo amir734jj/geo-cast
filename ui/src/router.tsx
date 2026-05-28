@@ -10,7 +10,7 @@ import { Login, Logout, Register } from "./components/account";
 import { useAuthStore } from "./stores";
 import Profile from "./components/profile";
 import Manage from "./components/manage";
-import PublicProfile from "./components/publicProfile";
+import PublicProfile from "./components/public-profile";
 import Stats from "./components/stats";
 import { isAdmin } from '@geo-cast/lib/utils';
 
