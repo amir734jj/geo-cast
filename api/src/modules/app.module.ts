@@ -17,9 +17,9 @@ import { APP_GUARD } from '@nestjs/core';
     DatabaseModule,
     ConfigModule.forRoot(),
     ThrottlerModule.forRoot([
-      { name: 'short', ttl: 1000, limit: 5 },
-      { name: 'medium', ttl: 10000, limit: 30 },
-      { name: 'long', ttl: 60000, limit: 100 }
+      { name: 'short', ttl: 1000, limit: 10 },
+      { name: 'medium', ttl: 10000, limit: 60 },
+      { name: 'long', ttl: 60000, limit: 200 }
     ]),
     MulterModule.registerAsync({
       imports: [ConfigModule],
