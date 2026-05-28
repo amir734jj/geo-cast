@@ -240,7 +240,7 @@ const Posts = () => {
                     );
                   }}/>
                 {board.playerInfos[post.id]?.playing
-                  ? <Button variant="outline-secondary" title="pauseRecording" onClick={() => {
+                  ? <Button variant="outline-secondary" title="pause-recording" onClick={() => {
                     setBoard(
                       combine(
                         stopAutoPlay,
@@ -261,13 +261,8 @@ const Posts = () => {
                   }}>
                     <FontAwesomeIcon icon={faPlay}/>
                   </Button>}
-                {board.playerInfos[post.id]?.playing ?
-                  <ProgressBar
-                    now={getProgressPercentage(board.playerInfos[post.id])}
-                    className="mt-2"
-                    animated/> : null}
                 {isAdmin ?
-                  <Button variant="outline-danger" size="sm" className="ms-2" title="delete recording"
+                  <Button variant="outline-danger" size="sm" className="ms-2" title="delete-recording"
                     onClick={async () => {
                       if (await confirmAction('This will permanently delete the recording.')) {
                         await deletePostAction(post.id);
@@ -280,6 +275,11 @@ const Posts = () => {
                     }}>
                     <FontAwesomeIcon icon={faTrash}/>
                   </Button> : null}
+                {board.playerInfos[post.id]?.playing ?
+                  <ProgressBar
+                    now={getProgressPercentage(board.playerInfos[post.id])}
+                    className="mt-2"
+                    animated/> : null}
               </Card.Body>
             </Card>
           ))}

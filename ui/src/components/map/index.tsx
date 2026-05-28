@@ -111,11 +111,11 @@ const Map = ({coordinates}: MapPropType) => {
       <div style={{position: 'absolute', bottom: '0.5rem', left: '0.5rem'}}>
         <ButtonGroup aria-label="manual zoom">
           <Button onClick={handleZoomIn} variant="outline-secondary" disabled={position.zoom === maxZoom}
-                  title="zoom in">
+                  title="zoom-in">
             <FontAwesomeIcon icon={faPlus}/>
           </Button>
           <Button onClick={handleZoomOut} variant="outline-secondary" disabled={position.zoom === minZoom}
-                  title="zoom out">
+                  title="zoom-out">
             <FontAwesomeIcon icon={faMinus}/>
           </Button>
           <Button
@@ -124,7 +124,7 @@ const Map = ({coordinates}: MapPropType) => {
               mapFocusContext.clearCoordinates();
             }} variant="outline-secondary"
             disabled={!mapFocusContext.coordinate && _.eq(defaultPosition, position)}
-            title="clear map coordinate">
+            title="clear-map-coordinate">
             <FontAwesomeIcon icon={faRotateLeft}/>
           </Button>
         </ButtonGroup>

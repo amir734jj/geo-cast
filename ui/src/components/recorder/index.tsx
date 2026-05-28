@@ -190,7 +190,7 @@ const Recorder = () => {
                 board.playerInfo.playing ? (
                   <Button
                     variant="outline-secondary"
-                    title="pauseRecording"
+                    title="pause-recording"
                     disabled={board.recording}
                     onClick={() => setBoard((x) => ({ ...x, play: false }))}
                   >
