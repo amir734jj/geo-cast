@@ -13,6 +13,7 @@ ENV PORT=80
 ENV ENV=Production
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/api/node_modules ./api/node_modules
 COPY --from=builder /usr/src/app/api/dist ./api/dist
 COPY --from=builder /usr/src/app/api/package.json ./api/package.json
 EXPOSE 80 443
