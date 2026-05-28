@@ -9,11 +9,18 @@ import { join } from 'path';
 import BoardModule from './board.module';
 import { MulterModule } from '@nestjs/platform-express';
 import bytes from 'bytes';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
     DatabaseModule,
     ConfigModule.forRoot(),
+    ThrottlerModule.forRoot([
+      { name: 'short', ttl: 1000, limit: 5 },
+      { name: 'medium', ttl: 10000, limit: 30 },
+      { name: 'long', ttl: 60000, limit: 100 }
+    ]),
     MulterModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -33,6 +40,8 @@ import bytes from 'bytes';
     })
   ],
   controllers: [],
-  providers: []
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard }
+  ]
 })
 export default class AppModule { }
