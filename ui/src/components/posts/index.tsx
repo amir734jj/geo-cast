@@ -5,7 +5,7 @@ import {useAuthStore, useLocationStore, useMapFocusStore, usePostsStore} from ".
 import InfiniteScroll from 'react-infinite-scroller';
 import {Button, ButtonGroup, ProgressBar, Spinner} from 'react-bootstrap';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPause, faPlay, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faPause, faPlay, faStop, faTrash, faForward} from "@fortawesome/free-solid-svg-icons";
 import {DateTime} from "luxon";
 import _ from "lodash";
 import Player, {EventType, PlayerInfoPropType} from "../player";
@@ -82,7 +82,7 @@ const Posts = () => {
   const {confirmAction, ConfirmModal} = useConfirmModal();
 
   const count = 2;
-  const {posts, appendPosts, clearPosts, removePost} = usePostsStore();
+  const {appendPosts, clearPosts, removePost} = usePostsStore();
 
   const [scroll, setScrollRef] = useState<any>(null);
   const [board, setBoard] = useState<BoardType>({
@@ -153,25 +153,30 @@ const Posts = () => {
 
   return (
     <Fragment>
-      <ButtonGroup className="mb-2 mt-1">
-        {posts.length && board.autoPlay ?
-          <Fragment>
+      {Object.keys(board.playerInfos).length > 1 ?
+        <ButtonGroup className="mb-2 mt-1">
+          {board.autoPlay ?
             <Button
               variant="outline-danger"
+              size="sm"
               onClick={() => {
                 setBoard(
                   combine(
                     stopAutoPlay,
                     hardStopPlaying));
-              }}> stop playlist </Button> :
+              }}>
+              <FontAwesomeIcon icon={faStop} className="me-1" />Stop Playlist
+            </Button> :
             <Button
               variant="outline-success"
+              size="sm"
               disabled={!!(_.find(_.values(board.playerInfos), {play: true}))}
               onClick={() => {
                 setBoard(startAutoPlay);
-              }}> start playlist </Button>
-          </Fragment> : null}
-      </ButtonGroup>
+              }}>
+              <FontAwesomeIcon icon={faForward} className="me-1" />Play All
+            </Button>}
+        </ButtonGroup> : null}
       <div style={{height: '60vh', maxHeight: '37rem', overflowY: 'auto'}} ref={(ref) => setScrollRef(ref)}>
         <InfiniteScroll
           pageStart={0}

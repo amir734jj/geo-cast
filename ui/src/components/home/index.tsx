@@ -54,7 +54,7 @@ const Board = () => {
         <Col sm={12} md={6} lg={8}>
           <Map coordinates={coordinates}/>
         </Col>
-        <Col sm={12} md={6} lg={4}>
+        <Col sm={12} md={6} lg={4} style={{maxHeight: '100vh', overflowY: 'auto'}}>
           <Row>
             <Col sm={12}>
               <Container className="mt-1 mb-3 p-0">
