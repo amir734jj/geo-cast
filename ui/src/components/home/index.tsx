@@ -49,7 +49,7 @@ const Board = () => {
   }
 
   return (
-    <Container>
+    <Container fluid className="px-0">
       <Row>
         <Col sm={12} md={6} lg={8}>
           <Map coordinates={coordinates}/>
