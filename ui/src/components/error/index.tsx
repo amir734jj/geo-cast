@@ -6,7 +6,7 @@ const Error = () => {
   return <Container>
     <h3>Route not found</h3>
     <code>Path: {location.pathname}</code>
-  </Container>
-}
+  </Container>;
+};
 
 export default Error;

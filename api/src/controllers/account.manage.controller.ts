@@ -1,17 +1,17 @@
-import { Controller, Param, ParseBoolPipe, Post, UseGuards } from '@nestjs/common'
+import { Controller, Param, ParseBoolPipe, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags
-} from '@nestjs/swagger'
-import AuthService from '../services/auth.service'
-import JwtAuthGuard from '../guards/jwt-auth.guard'
-import type User from '../models/users.model'
-import { RolesGuard } from '../guards/roles.guard'
-import { Roles } from '../decorators/roles.decorator'
-import { UserRole } from '../enums/role.enum'
+} from '@nestjs/swagger';
+import AuthService from '../services/auth.service';
+import JwtAuthGuard from '../guards/jwt-auth.guard';
+import type User from '../models/users.model';
+import { RolesGuard } from '../guards/roles.guard';
+import { Roles } from '../decorators/roles.decorator';
+import { UserRole } from '../enums/role.enum';
 
 @ApiTags('manage_account')
 @Controller('manage/account')
@@ -35,7 +35,7 @@ export default class ManageAccountController {
     @Param('id') userId: number,
       @Param('role') role: UserRole
   ): Promise<User | null> {
-    return await this.authService.setUserRole(userId, role)
+    return await this.authService.setUserRole(userId, role);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -52,6 +52,6 @@ export default class ManageAccountController {
     @Param('id') userId: number,
       @Param('active', ParseBoolPipe) active: boolean
   ): Promise<User | null> {
-    return await this.authService.setUserActive(userId, active)
+    return await this.authService.setUserActive(userId, active);
   }
 }

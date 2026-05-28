@@ -33,6 +33,6 @@ const PublicProfile = () => {
       <p>{profile?.description || "No profile description"}</p>
     </>
   );
-}
+};
 
 export default PublicProfile;

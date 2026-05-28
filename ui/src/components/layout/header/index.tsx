@@ -1,5 +1,5 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
-import { LinkContainer } from 'react-router-bootstrap'
+import { LinkContainer } from 'react-router-bootstrap';
 import { useAuthStore } from "../../../stores";
 
 const Header = () => {
@@ -48,7 +48,7 @@ const Header = () => {
         </Navbar.Collapse>
       </Container>
     </Navbar>
-  )
+  );
 };
 
 export default Header;

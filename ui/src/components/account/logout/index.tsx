@@ -24,6 +24,6 @@ const Logout = () => {
   }, [doLogout]);
 
   return <Spinner />;
-}
+};
 
 export default Logout;

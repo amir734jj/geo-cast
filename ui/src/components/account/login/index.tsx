@@ -89,16 +89,16 @@ const Login = () => {
     } catch (e) {
       setError((e as AxiosError).message);
     }
-  }
+  };
 
   if (loggedIn) {
-    return <Spinner />
+    return <Spinner />;
   }
 
   return <>
     {error ? <AlertDismissible header='logging in failed' variant='danger' message={error} /> : null}
     <LoginForm loginHandler={loginHandler} />
   </>;
-}
+};
 
 export default Login;

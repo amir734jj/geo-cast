@@ -32,7 +32,7 @@ const Board = () => {
         location = <AlertDismissible
           variant="danger"
           header="recording not possible"
-          message="Geolocation is not enabled. Please try again by refreshing the page."/>
+          message="Geolocation is not enabled. Please try again by refreshing the page."/>;
         break;
       case "not-supported":
         location = <AlertDismissible
@@ -41,7 +41,7 @@ const Board = () => {
           message="Your browser does not support Geolocation."/>;
         break;
       case "not-ready":
-        location = <Spinner/>
+        location = <Spinner/>;
         break;
       default:
         break;

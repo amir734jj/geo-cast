@@ -7,54 +7,54 @@ import {
   ManyToMany,
   JoinTable,
   Index
-} from 'typeorm'
-import Token from './token.model'
-import Post from './post.model'
-import { ApiProperty } from '@nestjs/swagger'
-import { Exclude } from 'class-transformer'
-import Role from './roles.model'
-import { type EntityType, type ProfileType, type UserType } from '@geo-cast/lib/dto/account'
+} from 'typeorm';
+import Token from './token.model';
+import Post from './post.model';
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
+import Role from './roles.model';
+import { type EntityType, type ProfileType, type UserType } from '@geo-cast/lib/dto/account';
 
 @Entity()
 @Unique(['email'])
 export default class User implements EntityType, UserType, ProfileType {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
   @ApiProperty()
   @Index()
   @Column()
-    active: boolean
+    active: boolean;
 
   @ApiProperty()
   @Column({ type: 'text', default: '' })
-    description: string
+    description: string;
 
   @ApiProperty()
   @Column({ length: 256, default: '' })
-    name: string
+    name: string;
 
   @ApiProperty()
   @Column({ length: 256, default: '' })
-    email: string
+    email: string;
 
   @Exclude()
   @Column({ length: 256 })
-    password: string
+    password: string;
 
   @Exclude()
   @OneToMany(() => Token, (token) => token.user)
-    tokens: Token[]
+    tokens: Token[];
 
   @JoinTable({ name: 'user-role-relationship' })
   @ManyToMany(() => Role, (role) => role.users)
-    roles: Role[]
+    roles: Role[];
 
   @OneToMany(() => Post, (post) => post.user)
-    posts: Post[]
+    posts: Post[];
 
   @JoinTable({ name: 'user-post-like-relationship' })
   @ManyToMany(() => Post, (post) => post.likedBy)
-    likes: Post[]
+    likes: Post[];
 }

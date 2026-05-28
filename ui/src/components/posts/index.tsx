@@ -34,14 +34,14 @@ const stopAutoPlay = (board: BoardType): BoardType => {
     ...board,
     autoPlay: false,
     currentAutoPlaying: -1
-  }
+  };
 };
 
 const hardStopPlaying = (board: BoardType): BoardType => {
   return {
     ...board,
     playerInfos: _.reduce(_.values(board.playerInfos), (acc, x) => ({...acc, [x.id]: {...x, play: false}}), {})
-  }
+  };
 };
 
 const startAutoPlay = (board: BoardType): BoardType => {
@@ -65,7 +65,7 @@ const playNextPost = (board: BoardType): BoardType => {
         ...acc,
         [x.id]: {...x, play: nextPostId != null && nextPostId === x.id}
       }), {})
-    }
+    };
   }
 };
 
@@ -111,7 +111,7 @@ const Posts = () => {
             [x.id]: { ...x, page: queryPage + 1}
           }), {}))
         };
-      })
+      });
     } catch (e) {
       setBoard(board => ({...board, error: true}));
     }
@@ -225,7 +225,7 @@ const Posts = () => {
                           if (event === "finish" && x.autoPlay) {
                             return playNextPost(x);
                           } else {
-                            return x
+                            return x;
                           }
                         }
                       )
@@ -236,7 +236,7 @@ const Posts = () => {
                     setBoard(
                       combine(
                         stopAutoPlay,
-                        hardStopPlaying))
+                        hardStopPlaying));
                   }}>
                     <FontAwesomeIcon icon={faPause} beatFade/>
                   </Button> : <Button variant="outline-primary" title="play-recording" onClick={() => {
@@ -249,7 +249,7 @@ const Posts = () => {
                             ...acc,
                             [y.id]: {...y, play: y.id === post.id}
                           }), {})
-                        })))
+                        })));
                   }}>
                     <FontAwesomeIcon icon={faPlay}/>
                   </Button>}
@@ -265,6 +265,6 @@ const Posts = () => {
       </div>
     </Fragment>
   );
-}
+};
 
 export default Posts;

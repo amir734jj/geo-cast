@@ -122,16 +122,16 @@ const Register = () => {
     } catch (e) {
       setError((e as AxiosError).message);
     }
-  }
+  };
 
   if (registered) {
-    return <Spinner />
+    return <Spinner />;
   }
 
   return <>
     {error ? <AlertDismissible header='registering failed' variant='danger' message={error} /> : null}
     <RegisterForm registerHandler={registerHandler} />
   </>;
-}
+};
 
 export default Register;

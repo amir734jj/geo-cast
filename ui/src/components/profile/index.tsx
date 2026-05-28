@@ -90,10 +90,10 @@ const Profile = () => {
     } finally {
       setUpdating(false);
     }
-  }
+  };
 
   if (updating) {
-    return <Spinner />
+    return <Spinner />;
   }
 
   return (
@@ -102,6 +102,6 @@ const Profile = () => {
       <ProfileForm {...{ profile: _.pick(authContext.auth!, ['name', 'description']) as ProfileType, updateProfileHandler }} />
     </>
   );
-}
+};
 
 export default Profile;

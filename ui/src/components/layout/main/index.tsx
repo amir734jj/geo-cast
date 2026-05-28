@@ -9,4 +9,4 @@ const Main = ({ children }: ReactChildrenArg) => {
   </div>;
 };
 
-export default Main
+export default Main;

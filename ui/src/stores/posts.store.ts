@@ -16,7 +16,7 @@ export const usePostsStore = create<PostsState & PostsActions>()(immer((set) => 
   posts: [],
   appendPosts: (posts) => {
     set((state) => {
-      state.posts = state.posts.filter(p => !_.find(posts, { id: p.id })).concat(posts)
+      state.posts = state.posts.filter(p => !_.find(posts, { id: p.id })).concat(posts);
     });
   },
   clearPosts: () => {

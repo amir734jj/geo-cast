@@ -56,7 +56,7 @@ const Map = ({coordinates}: MapPropType) => {
                  from={1} to={0}/>
       </circle>
     </>);
-  }
+  };
 
   return (
     <div>
@@ -119,7 +119,7 @@ const Map = ({coordinates}: MapPropType) => {
           <Button
             onClick={() => {
               setPosition(defaultPosition);
-              mapFocusContext.clearCoordinates()
+              mapFocusContext.clearCoordinates();
             }} variant="outline-secondary"
             disabled={!mapFocusContext.coordinate && _.eq(defaultPosition, position)}
             title="clear map coordinate">
