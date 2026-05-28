@@ -13,7 +13,7 @@ import {
   ApiCreatedResponse,
   ApiOkResponse
 } from '@nestjs/swagger';
-import type BasicCrud from '../../interfaces/crud.interface';
+import type BasicCrud from '../interfaces/crud.interface';
 
 export abstract class AbstractController<T> {
   abstract service: BasicCrud<T>

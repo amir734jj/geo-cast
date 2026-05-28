@@ -4,7 +4,7 @@ import {
   type FindOptionsWhere,
   type Repository,
 } from 'typeorm';
-import type IBasicCrud from '../../interfaces/crud.interface';
+import type IBasicCrud from '../interfaces/crud.interface';
 import { type EntityType } from '@geo-cast/lib/dto/account';
 import { type QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
