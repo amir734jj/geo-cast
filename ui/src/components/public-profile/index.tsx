@@ -9,10 +9,11 @@ import {useAuthStore} from "../../stores";
 import _ from "lodash";
 import {Card, Button} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlay, faPause, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faPlay, faPause, faTrash, faStop, faForward} from "@fortawesome/free-solid-svg-icons";
 import {DateTime} from "luxon";
 import Player, {EventType, PlayerInfoPropType} from "../player";
 import {PostInfoType} from "@geo-cast/lib/dto/board/post";
+import {ButtonGroup} from "react-bootstrap";
 
 type PostWithPlayer = PostInfoType & { id: number; play: boolean } & Partial<PlayerInfoPropType>;
 
@@ -26,6 +27,30 @@ const PublicProfile = () => {
   const [profile, setProfile] = useState<ExtendedProfileType>();
   const [posts, setPosts] = useState<PostWithPlayer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [autoPlay, setAutoPlay] = useState(false);
+  const [currentAutoPlaying, setCurrentAutoPlaying] = useState(-1);
+
+  const isAnyPlaying = posts.some(p => p.play);
+
+  const stopAll = () => {
+    setAutoPlay(false);
+    setCurrentAutoPlaying(-1);
+    setPosts(prev => prev.map(p => ({...p, play: false})));
+  };
+
+  const playNext = (index: number) => {
+    if (index >= posts.length) {
+      stopAll();
+    } else {
+      setCurrentAutoPlaying(index);
+      setPosts(prev => prev.map((p, i) => ({...p, play: i === index})));
+    }
+  };
+
+  const startAutoPlay = () => {
+    setAutoPlay(true);
+    playNext(0);
+  };
 
   useEffect(() => {
     if (userId) {
@@ -51,6 +76,23 @@ const PublicProfile = () => {
       <p>{profile?.description || "No profile description"}</p>
 
       <h5 className="mt-3">{posts.length ? `Recordings (${posts.length})` : 'No recordings yet'}</h5>
+      {posts.length >= 3 ?
+        <ButtonGroup className="mb-2">
+          {autoPlay ?
+            <Button
+              variant="outline-danger"
+              size="sm"
+              onClick={stopAll}>
+              <FontAwesomeIcon icon={faStop} className="me-1" />Stop Playlist
+            </Button> :
+            <Button
+              variant="outline-success"
+              size="sm"
+              disabled={isAnyPlaying}
+              onClick={startAutoPlay}>
+              <FontAwesomeIcon icon={faForward} className="me-1" />Play All
+            </Button>}
+        </ButtonGroup> : null}
       {posts.map((post) => (
         <Card key={`profile-post-${post.id}`} className="mb-2">
           <Card.Body style={{padding: '0.5rem'}}>
@@ -67,20 +109,24 @@ const PublicProfile = () => {
                   ...playerInfo,
                   play: event === 'pause' || event === 'finish' ? false : event === 'play' ? true : p.play
                 } : {...p, play: false}));
+                if (event === 'finish' && autoPlay) {
+                  playNext(currentAutoPlaying + 1);
+                }
               }}/>
             {post.playing
-              ? <Button variant="outline-secondary" size="sm" title="pause-recording" onClick={() => {
-                  setPosts(prev => prev.map(p => ({...p, play: false})));
-                }}>
+              ? <Button variant="outline-secondary" size="sm" title="pause-recording" onClick={stopAll}>
                   <FontAwesomeIcon icon={faPause} beatFade/>
                 </Button>
               : <Button variant="outline-primary" size="sm" title="play-recording" onClick={() => {
+                  setAutoPlay(false);
+                  setCurrentAutoPlaying(-1);
                   setPosts(prev => prev.map(p => ({...p, play: p.id === post.id})));
                 }}>
                   <FontAwesomeIcon icon={faPlay}/>
                 </Button>}
             {canDelete ?
               <Button variant="outline-danger" size="sm" className="ms-2" title="delete-recording"
+                disabled={autoPlay || isAnyPlaying}
                 onClick={async () => {
                   if (await confirmAction('This will permanently delete the recording.')) {
                     await deletePostAction(post.id);
