@@ -264,7 +264,7 @@ const Posts = () => {
                 {isAdmin ?
                   <Button variant="outline-danger" size="sm" className="ms-2" title="delete recording"
                     onClick={async () => {
-                      if (await confirmAction('Are you sure you want to delete this recording?')) {
+                      if (await confirmAction('This will permanently delete the recording.')) {
                         await deletePostAction(post.id);
                         removePost(post.id);
                         setBoard(prev => {

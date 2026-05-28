@@ -1,43 +1,57 @@
-import {useState, useCallback, useRef} from 'react';
-import {Modal, Button} from 'react-bootstrap';
+import {isValidElement, useState, type ReactNode} from 'react';
+import {Modal, Button, Row, Col} from 'react-bootstrap';
+import classNames from 'classnames';
+
+type ShowData = {
+  message?: ReactNode | ReactNode[];
+} | null;
 
 export const useConfirmModal = () => {
-  const [show, setShow] = useState(false);
-  const [message, setMessage] = useState('');
-  const resolveRef = useRef<((value: boolean) => void) | null>(null);
+  const [showData, setShowData] = useState<ShowData>(null);
+  const [resolvePromise, setResolvePromise] = useState<((value: boolean) => void) | null>(null);
 
-  const confirmAction = useCallback((msg: string): Promise<boolean> => {
-    setMessage(msg);
-    setShow(true);
+  const confirmAction = (message?: ReactNode | ReactNode[]): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
-      resolveRef.current = resolve;
+      setShowData({message});
+      setResolvePromise(() => resolve);
     });
-  }, []);
+  };
 
-  const handleConfirm = useCallback(() => {
-    setShow(false);
-    resolveRef.current?.(true);
-    resolveRef.current = null;
-  }, []);
+  const handleConfirm = () => {
+    resolvePromise?.(true);
+    setShowData(null);
+  };
 
-  const handleCancel = useCallback(() => {
-    setShow(false);
-    resolveRef.current?.(false);
-    resolveRef.current = null;
-  }, []);
+  const handleClose = () => {
+    resolvePromise?.(false);
+    setShowData(null);
+  };
 
-  const ConfirmModal = useCallback(() => (
-    <Modal show={show} onHide={handleCancel} centered>
+  const ConfirmModal = ({messageClassName}: {messageClassName?: string} = {}) => (
+    <Modal show={!!showData} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Confirm</Modal.Title>
+        <Modal.Title>Confirm Action</Modal.Title>
       </Modal.Header>
-      <Modal.Body>{message}</Modal.Body>
+      <Modal.Body>
+        <Row className="justify-content-around align-items-center">
+          <Col md={10}>
+            <p>Are you sure you want to proceed?</p>
+            {!showData?.message ? null : Array.isArray(showData.message) ?
+              showData.message.filter(Boolean).map((item, index) => (
+                <p key={index} className={classNames('mt-1', messageClassName)}>{item}</p>
+              )) :
+              isValidElement(showData.message) ?
+                <div className={classNames('mt-1', messageClassName)}>{showData.message}</div> :
+                <p className={classNames('mt-1', messageClassName)}>{showData.message}</p>}
+          </Col>
+        </Row>
+      </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleCancel}>Cancel</Button>
-        <Button variant="danger" onClick={handleConfirm}>Confirm</Button>
+        <Button variant="secondary" onClick={handleClose}>Cancel</Button>
+        <Button variant="primary" onClick={handleConfirm}>Yes</Button>
       </Modal.Footer>
     </Modal>
-  ), [show, message, handleCancel, handleConfirm]);
+  );
 
   return {confirmAction, ConfirmModal};
 };
