@@ -194,7 +194,7 @@ const Posts = () => {
           useWindow={false}
           getScrollParent={() => scroll}
         >
-          {_.map(orderPosts(board)).map((post) => (
+          {_.map(orderPosts(board)).filter(post => post.user).map((post) => (
             <Card key={`post-${post.id}`} style={{marginBottom: '0.5rem'}}>
               <Card.Body style={{padding: '0.75rem'}}>
                 <Card.Title as="p">
