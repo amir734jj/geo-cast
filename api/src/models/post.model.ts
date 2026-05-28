@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, CreateDateColumn } from 'typeorm'
 import User from './users.model'
 import { type EntityType } from '@geo-cast/lib/dto/account'
 import { ApiProperty } from '@nestjs/swagger'
@@ -26,7 +26,7 @@ export default class Post implements EntityType {
     recordingId: string
 
   @ApiProperty()
-  @Column({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at' })
     createdAt: Date
 
   @ManyToOne(() => User, (user) => user.posts)
