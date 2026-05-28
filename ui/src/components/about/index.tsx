@@ -36,6 +36,7 @@ const About = () => {
           <h3>Privacy</h3>
           <p>
             Your recordings are never sold or shared with third parties.
+            Location coordinates displayed on the map are slightly randomized to protect your exact position.
           </p>
 
           <h3>Author</h3>

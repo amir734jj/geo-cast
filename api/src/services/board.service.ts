@@ -36,9 +36,18 @@ export default class BoardService {
     });
   }
 
+  private addNoise (value: number): number {
+    return value + (Math.random() - 0.5) * 0.02;
+  }
+
   async query (count: number, page: number, coordinate: Coordinate): Promise<(Post & { country: string })[]> {
     const posts = await this.postService.query(count, page, coordinate);
-    return posts.map(p => ({ ...p, country: this.getCountryForCoordinate(p.longitude, p.latitude) }));
+    return posts.map(p => ({
+      ...p,
+      country: this.getCountryForCoordinate(p.longitude, p.latitude),
+      latitude: this.addNoise(Number(p.latitude)),
+      longitude: this.addNoise(Number(p.longitude))
+    }));
   }
 
   async like (user: User, postId: number): Promise<Post> {
@@ -71,7 +80,12 @@ export default class BoardService {
 
   async getUserPosts (userId: number): Promise<(Post & { country: string })[]> {
     const posts = await this.postService.queryByUser(userId);
-    return posts.map(p => ({ ...p, country: this.getCountryForCoordinate(p.longitude, p.latitude) }));
+    return posts.map(p => ({
+      ...p,
+      country: this.getCountryForCoordinate(p.longitude, p.latitude),
+      latitude: this.addNoise(Number(p.latitude)),
+      longitude: this.addNoise(Number(p.longitude))
+    }));
   }
 
   async downloadRecording (recordingId: string): Promise<FileInfo> {
