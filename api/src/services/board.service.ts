@@ -7,7 +7,7 @@ import type User from 'src/models/users.model';
 import { DateTime } from 'luxon';
 import { AbstractBlobProvider, type FileInfo } from 'src/abstracts/abstract.file.provider';
 import { type Coordinate } from '@geo-cast/lib/dto/board/common';
-import * as worldCountries from '../data/world-countries.json';
+import * as worldCountries from '@geo-cast/lib/data/world-countries.json';
 
 @Injectable()
 export default class BoardService {

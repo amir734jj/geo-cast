@@ -6,7 +6,7 @@ import {faPlus, faMinus, faRotateLeft} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useMapFocusStore, useThemeStore} from "../../stores";
 import _ from "lodash";
-import worldCountries from './world-countries.json';
+import worldCountries from '@geo-cast/lib/data/world-countries.json';
 
 type CoordinateInfoType = Coordinate & { color?: string };
 
