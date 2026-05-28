@@ -45,7 +45,7 @@ export default class BoardController {
     type: StreamableFile
   })
   @ApiBadRequestResponse({ description: 'Bad request.' })
-  @Header('Cache-Control', 'none')
+  @Header('Cache-Control', 'public, max-age=31536000, immutable')
   @Header('Content-Disposition', 'attachment; filename=voice.wav')
   async download (@Param('recordingId') recordingId: string) {
     const { readable } = await this.boardService.downloadRecording(recordingId)

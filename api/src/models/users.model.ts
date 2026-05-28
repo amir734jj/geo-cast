@@ -5,7 +5,8 @@ import {
   OneToMany,
   Unique,
   ManyToMany,
-  JoinTable
+  JoinTable,
+  Index
 } from 'typeorm'
 import Token from './token.model'
 import Post from './post.model'
@@ -22,6 +23,7 @@ export default class User implements EntityType, UserType, ProfileType {
     id: number
 
   @ApiProperty()
+  @Index()
   @Column()
     active: boolean
 

@@ -8,16 +8,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
+        const isProduction = configService.get<string>('ENV') === 'Production'
         const defaultOptions = {
           applicationName: configService.get<string>('APP_NAME'),
-          synchronize: true,
+          synchronize: !isProduction,
           migrationsRun: false,
           logging: false,
           autoLoadEntities: true,
           cache: true
         }
 
-        if (configService.get<string>('ENV') === 'Production') {
+        if (isProduction) {
           return {
             ...defaultOptions,
             type: 'postgres',

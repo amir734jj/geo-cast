@@ -72,9 +72,10 @@ export default class AuthService {
   }
 
   public async logout(user: User): Promise<User | null> {
-    await Promise.all(
-      user.tokens.map(async (tk) => await this.tokenService.delete(tk.id))
-    );
+    const tokenIds = user.tokens.map(tk => tk.id);
+    if (tokenIds.length > 0) {
+      await this.tokenService.deleteMany(tokenIds);
+    }
 
     return await this.userService.get(user.id);
   }
@@ -239,9 +240,7 @@ export default class AuthService {
     );
 
     if (expiringTokens.length > 0) {
-      await Promise.all(
-        expiringTokens.map(async (x) => await this.tokenService.delete(x.id))
-      );
+      await this.tokenService.deleteMany(expiringTokens.map(x => x.id));
       return true;
     }
 
