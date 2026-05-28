@@ -28,16 +28,18 @@ async function bootstrap () {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.setGlobalPrefix('api');
 
-  const options = new DocumentBuilder()
-    .setTitle('GEO-CAST API')
-    .setDescription('geo-cast back-end api')
-    .setVersion('1.0')
-    .addTag('social-network')
-    .addBearerAuth()
-    .build();
+  if (config.get<string>('ENV') !== 'Production') {
+    const options = new DocumentBuilder()
+      .setTitle('GEO-CAST API')
+      .setDescription('geo-cast back-end api')
+      .setVersion('1.0')
+      .addTag('social-network')
+      .addBearerAuth()
+      .build();
 
-  const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('swagger', app, document);
+    const document = SwaggerModule.createDocument(app, options);
+    SwaggerModule.setup('swagger', app, document);
+  }
 
   Logger.log(`Started the app in port ${port}`);
 
