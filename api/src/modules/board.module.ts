@@ -8,7 +8,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import BoardService from 'src/services/board.service'
 import { AzureBlobProvider } from 'src/logic/azure-blob.provider'
 import { FileSystemBlobProvider } from 'src/logic/filesystem-blob.provider'
+import { S3BlobProvider } from 'src/logic/s3-provider'
 import { AbstractBlobProvider } from 'src/abstracts/abstract.file.provider'
+import { S3Client } from '@aws-sdk/client-s3'
 
 @Module({
   imports: [TypeOrmModule.forFeature([Post]), ConfigModule],
@@ -17,11 +19,22 @@ import { AbstractBlobProvider } from 'src/abstracts/abstract.file.provider'
     provide: AbstractBlobProvider,
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => {
-      if (configService.get<string>('ENV') === 'Production') {
-        return new AzureBlobProvider(BlobServiceClient.fromConnectionString(configService.getOrThrow<string>('BLOB_CONNECTION_STRING')))
-      } else {
-        return new FileSystemBlobProvider()
+      const blobConnectionString = configService.get<string>('BLOB_CONNECTION_STRING')
+      if (blobConnectionString != null) {
+        return new AzureBlobProvider(BlobServiceClient.fromConnectionString(blobConnectionString))
       }
+
+      const spacesKey = configService.get<string>('SPACES_KEY')
+      const spacesSecret = configService.get<string>('SPACES_SECRET')
+      const spacesEndpoint = configService.get<string>('SPACES_ENDPOINT')
+      if (spacesKey != null && spacesSecret != null && spacesEndpoint != null) {
+        return new S3BlobProvider(new S3Client({
+          endpoint: spacesEndpoint,
+          credentials: { accessKeyId: spacesKey, secretAccessKey: spacesSecret }
+        }))
+      }
+
+      return new FileSystemBlobProvider()
     }
   }],
   exports: [PostService, BoardService]
