@@ -19,9 +19,9 @@ const Location = ({ onload, onNotAvailable, onNotSupported }: LocationPropType) 
     });
 
   useEffect(() => {
-    if (!isGeolocationAvailable) {
+    if (isGeolocationAvailable === false) {
       onNotSupported();
-    } else if (!isGeolocationEnabled) {
+    } else if (isGeolocationEnabled === false) {
       onNotAvailable();
     } else if (coords) {
       onload({ latitude: coords.latitude, longitude: coords.longitude });

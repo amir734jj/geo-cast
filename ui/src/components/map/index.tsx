@@ -42,17 +42,17 @@ const Map = ({coordinates}: MapPropType) => {
   };
 
   const graphDot = (coordinate: CoordinateInfoType) => {
-    const ratio = maxZoom + 1 - position.zoom;
+    const ratio = (maxZoom + 1 - position.zoom) / 2;
 
     return (<>
-      <circle r={ratio} fill="darkgrey"/>
-      <circle r={3 * ratio} fill={coordinate.color}>
-        <animate attributeType="SVG" attributeName="r" begin="0s" dur="1.5s" repeatCount="indefinite" from={1}
-                 to={3 * ratio}/>
+      <circle r={ratio * 0.5} fill="darkgrey"/>
+      <circle r={ratio} fill={coordinate.color}>
+        <animate attributeType="SVG" attributeName="r" begin="0s" dur="1.5s" repeatCount="indefinite" from={0.5}
+                 to={ratio}/>
         <animate attributeType="CSS" attributeName="stroke-width" begin="0s" dur="1.5s" repeatCount="indefinite"
-                 from={3 * ratio} to={0}/>
+                 from={ratio} to={0}/>
         <animate attributeType="CSS" attributeName="opacity" begin="0s" dur="1.5s" repeatCount="indefinite"
-                 from={3 * ratio} to={0}/>
+                 from={1} to={0}/>
       </circle>
     </>);
   }
