@@ -48,8 +48,17 @@ export default class BoardService {
     });
   }
 
+  async getUserPosts (userId: number): Promise<Post[]> {
+    return await this.postService.queryByUser(userId);
+  }
+
   async downloadRecording (recordingId: string): Promise<FileInfo> {
     return await this.blobServiceClient.download(recordingId);
+  }
+
+  async isPostOwner (userId: number, postId: number): Promise<boolean> {
+    const post = await this.postService.get(postId);
+    return post?.user?.id === userId;
   }
 
   async deletePost (postId: number): Promise<void> {

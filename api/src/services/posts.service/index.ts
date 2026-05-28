@@ -42,6 +42,20 @@ export default class PostService extends AbstractDal<Post> {
       })) as Post[];
   }
 
+  public async queryByUser (userId: number): Promise<Post[]> {
+    const cleanUser = (user: any) => _.pick(user, ['id', 'name']);
+
+    return (await this.repository.find({
+      where: { user: { id: userId } },
+      relations: ['user'],
+      order: { created_at: 'DESC' },
+    })).map(({ user = {}, likedBy = [], ...row }) => ({
+      ...row,
+      user: cleanUser(user),
+      likedBy: (likedBy ?? []).map(cleanUser)
+    })) as Post[];
+  }
+
   resolver (partial: Partial<Post>): Post {
     return _.extend(new Post(), partial);
   }
