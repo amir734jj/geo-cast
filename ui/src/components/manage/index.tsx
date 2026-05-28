@@ -31,7 +31,7 @@ const Manage = () => {
   }
 
   return <div className="mt-3">
-    <Table bordered hover>
+    <Table bordered hover responsive>
       <thead>
         <tr>
           <th>Name</th>

@@ -97,10 +97,10 @@ const Profile = () => {
   }
 
   return (
-    <>
+    <div className="mt-3 px-2">
       {error ? <AlertDismissible header='updating profile failed' variant='danger' message={error} /> : null}
       <ProfileForm {...{ profile: _.pick(authContext.auth!, ['name', 'description']) as ProfileType, updateProfileHandler }} />
-    </>
+    </div>
   );
 };
 

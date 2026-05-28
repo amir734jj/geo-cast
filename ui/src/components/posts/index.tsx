@@ -176,7 +176,7 @@ const Posts = () => {
               <FontAwesomeIcon icon={faForward} className="me-1" />Play All
             </Button>}
         </ButtonGroup> : null}
-      <div style={{height: '60vh', maxHeight: '37rem', overflowY: 'auto'}} ref={(ref) => setScrollRef(ref)}>
+      <div className="posts-scroll" style={{height: '60vh', maxHeight: '37rem', overflowY: 'auto'}} ref={(ref) => setScrollRef(ref)}>
         <InfiniteScroll
           pageStart={0}
           loadMore={(page) => nextPage(page)}

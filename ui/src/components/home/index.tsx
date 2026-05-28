@@ -61,10 +61,10 @@ const Board = () => {
   return (
     <Container fluid className="px-0">
       <Row>
-        <Col sm={12} md={6} lg={8}>
+        <Col sm={12} md={6} lg={8} className="map-container">
           <GeoMap coordinates={coordinates} countryStats={countryStats}/>
         </Col>
-        <Col sm={12} md={6} lg={4} style={{maxHeight: '100vh', overflowY: 'auto'}}>
+        <Col sm={12} md={6} lg={4} style={{maxHeight: '100vh', overflowY: 'auto'}} className="px-2 px-md-3">
           <Row>
             <Col sm={12}>
               <Container className="mt-1 mb-3 p-0">

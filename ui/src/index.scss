@@ -27,3 +27,15 @@ main {
   }
 }
 
+@media (max-width: 767px) {
+  .map-container {
+    max-height: 45vh;
+    overflow: hidden;
+  }
+
+  .posts-scroll {
+    height: auto !important;
+    max-height: 50vh !important;
+  }
+}
+

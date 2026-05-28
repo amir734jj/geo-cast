@@ -25,7 +25,7 @@ const Stats = () => {
   }
 
   return (
-    <Container className="mt-3">
+    <Container className="mt-3 px-2">
       <h3>Recording Statistics</h3>
       <p className="text-muted">Total recordings: {total}</p>
       {stats.length === 0 ? (

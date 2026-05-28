@@ -100,10 +100,10 @@ const Login = () => {
     return <Spinner />;
   }
 
-  return <>
+  return <div className="mt-3 px-2">
     {error ? <AlertDismissible header='logging in failed' variant='danger' message={error} /> : null}
     <LoginForm loginHandler={loginHandler} loading={loading} />
-  </>;
+  </div>;
 };
 
 export default Login;

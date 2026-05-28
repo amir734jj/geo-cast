@@ -133,10 +133,10 @@ const Register = () => {
     return <Spinner />;
   }
 
-  return <>
+  return <div className="mt-3 px-2">
     {error ? <AlertDismissible header='registering failed' variant='danger' message={error} /> : null}
     <RegisterForm registerHandler={registerHandler} loading={loading} />
-  </>;
+  </div>;
 };
 
 export default Register;
