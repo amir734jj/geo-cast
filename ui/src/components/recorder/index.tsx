@@ -15,7 +15,7 @@ import { AxiosError } from "axios";
 import { useLocationStore } from "../../stores";
 import { DateTime } from "luxon";
 import ms from "ms";
-import { MIN_RECORDING_DURATION, MAX_RECORDING_DURATION } from '@geo-cast/lib/constants';
+import { MIN_RECORDING_DURATION, MAX_RECORDING_DURATION, RECORDING_WARNING_THRESHOLD } from '@geo-cast/lib/constants';
 
 type BoardType = {
   play: boolean;
@@ -225,7 +225,7 @@ const Recorder = () => {
             </ButtonGroup>
             { board.recording ? <p>
               {(board.recordingDuration ?? 0).toFixed(2)} seconds
-              {(board.recordingDuration ?? 0) >= MAX_RECORDING_DURATION - 5 ? <span className="text-danger ms-2">(max {MAX_RECORDING_DURATION} seconds)</span> : null}
+              {(board.recordingDuration ?? 0) >= MAX_RECORDING_DURATION - RECORDING_WARNING_THRESHOLD ? <span className="text-danger ms-2">(max {MAX_RECORDING_DURATION} seconds)</span> : null}
             </p> : (board.playerInfo.duration ?? board.recordingDuration) ? (
               <p>{Number(board.playerInfo.duration ?? board.recordingDuration).toFixed(2)} seconds</p>
             ) : null}
