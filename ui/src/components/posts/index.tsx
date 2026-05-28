@@ -14,6 +14,7 @@ import {EntityType} from '@geo-cast/lib/dto/account';
 import {combine} from "../../utilities";
 import {PostInfoType} from '@geo-cast/lib/dto/board/post';
 import ms from 'ms';
+import {useConfirmModal} from '../common';
 
 type PlayerInfoType = Record<number, PlayerInfoPropType & {
   play: boolean,
@@ -78,6 +79,7 @@ const Posts = () => {
   const mapFocusContext = useMapFocusStore();
   const authContext = useAuthStore();
   const isAdmin = authContext?.auth?.roles?.some(r => r.name === 'admin');
+  const {confirmAction, ConfirmModal} = useConfirmModal();
 
   const count = 2;
   const {posts, appendPosts, clearPosts, removePost} = usePostsStore();
@@ -262,7 +264,7 @@ const Posts = () => {
                 {isAdmin ?
                   <Button variant="outline-danger" size="sm" className="ms-2" title="delete recording"
                     onClick={async () => {
-                      if (confirm('Delete this recording?')) {
+                      if (await confirmAction('Are you sure you want to delete this recording?')) {
                         await deletePostAction(post.id);
                         removePost(post.id);
                         setBoard(prev => {
@@ -278,6 +280,7 @@ const Posts = () => {
           ))}
         </InfiniteScroll>
       </div>
+      <ConfirmModal />
     </Fragment>
   );
 };
