@@ -16,6 +16,8 @@ COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/api/node_modules ./api/node_modules
 COPY --from=builder /usr/src/app/api/dist ./api/dist
 COPY --from=builder /usr/src/app/api/package.json ./api/package.json
+COPY --from=builder /usr/src/app/lib ./lib
+COPY --from=builder /usr/src/app/package.json ./package.json
 EXPOSE 80 443
 WORKDIR /usr/src/app/api
 ENTRYPOINT [ "npm", "run", "start:prod" ]
