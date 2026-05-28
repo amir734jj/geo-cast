@@ -33,8 +33,6 @@ import { FormDataBody, FormDataDtoValidator } from 'src/decorators/form-data.dec
 import CreateUserDto from 'src/dto/create.user.dto';
 import { TypeTransformer } from 'src/decorators/type-transformer.decorator';
 import QueryPostDto from '../dto/query.post.dto';
-import { isAdmin } from '@geo-cast/lib/utils';
-import { MAX_RECORDING_SIZE } from '@geo-cast/lib/constants';
 
 @ApiTags('board')
 @Controller('board')
@@ -139,7 +137,7 @@ export default class BoardController {
       @UploadedFile(
         new ParseFilePipeBuilder()
           .addMaxSizeValidator({
-            maxSize: bytes(MAX_RECORDING_SIZE) as number
+            maxSize: bytes('5mb') as number
           })
           .build({
             errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
