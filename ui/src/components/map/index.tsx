@@ -61,7 +61,7 @@ const Map = ({coordinates}: MapPropType) => {
   };
 
   return (
-    <div>
+    <div style={{position: 'relative'}}>
       <ComposableMap projection="geoMercator" style={{backgroundColor: isDark ? '#1a2744' : '#d4e6f1'}}>
         <ZoomableGroup
           zoom={position.zoom}
@@ -72,8 +72,8 @@ const Map = ({coordinates}: MapPropType) => {
           color="red">
           <Geographies
             geography={worldCountries}
-            fill={isDark ? '#2c3e50' : 'lightgrey'}
-            stroke={isDark ? '#5dade2' : 'DarkMagenta'}>
+            fill={isDark ? '#4a6274' : 'lightgrey'}
+            stroke={isDark ? '#7fb3d3' : 'DarkMagenta'}>
             {({geographies}) =>
               geographies.map((geo) => (
                 <Geography key={geo.rsmKey} geography={geo} style={{
@@ -87,7 +87,7 @@ const Map = ({coordinates}: MapPropType) => {
           <Geographies
             geography={usStatesUrl}
             fill="none"
-            stroke={isDark ? '#5dade2' : 'DarkMagenta'}
+            stroke={isDark ? '#7fb3d3' : 'DarkMagenta'}
             strokeWidth={0.4}>
             {({geographies}) =>
               geographies.map((geo) => (
@@ -108,7 +108,7 @@ const Map = ({coordinates}: MapPropType) => {
           }
         </ZoomableGroup>
       </ComposableMap>
-      <div className="mt-3">
+      <div style={{position: 'absolute', bottom: '0.5rem', left: '0.5rem'}}>
         <ButtonGroup aria-label="manual zoom">
           <Button onClick={handleZoomIn} variant="outline-secondary" disabled={position.zoom === maxZoom}
                   title="zoom in">
