@@ -4,7 +4,7 @@ import {useState} from "react";
 import {Button, ButtonGroup} from "react-bootstrap";
 import {faPlus, faMinus, faRotateLeft} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {useMapFocusStore} from "../../stores";
+import {useMapFocusStore, useThemeStore} from "../../stores";
 import _ from "lodash";
 import worldCountries from './world-countries.json';
 
@@ -22,6 +22,8 @@ const usStatesUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 const Map = ({coordinates}: MapPropType) => {
   const [position, setPosition] = useState(defaultPosition);
   const mapFocusContext = useMapFocusStore();
+  const { theme } = useThemeStore();
+  const isDark = theme === 'dark';
 
   const handleZoomIn = () => {
     if (position.zoom >= maxZoom) {
@@ -60,7 +62,7 @@ const Map = ({coordinates}: MapPropType) => {
 
   return (
     <div>
-      <ComposableMap projection="geoMercator">
+      <ComposableMap projection="geoMercator" style={{backgroundColor: isDark ? '#1a2744' : '#d4e6f1'}}>
         <ZoomableGroup
           zoom={position.zoom}
           center={position.coordinates}
@@ -70,8 +72,8 @@ const Map = ({coordinates}: MapPropType) => {
           color="red">
           <Geographies
             geography={worldCountries}
-            fill="lightgrey"
-            stroke="DarkMagenta">
+            fill={isDark ? '#2c3e50' : 'lightgrey'}
+            stroke={isDark ? '#5dade2' : 'DarkMagenta'}>
             {({geographies}) =>
               geographies.map((geo) => (
                 <Geography key={geo.rsmKey} geography={geo} style={{
@@ -85,7 +87,7 @@ const Map = ({coordinates}: MapPropType) => {
           <Geographies
             geography={usStatesUrl}
             fill="none"
-            stroke="DarkMagenta"
+            stroke={isDark ? '#5dade2' : 'DarkMagenta'}
             strokeWidth={0.4}>
             {({geographies}) =>
               geographies.map((geo) => (
