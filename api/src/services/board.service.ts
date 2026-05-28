@@ -11,10 +11,29 @@ import * as worldCountries from '@geo-cast/lib/data/world-countries.json';
 
 @Injectable()
 export default class BoardService {
+  private readonly countryIndex: { name: string; minLng: number; maxLng: number; minLat: number; maxLat: number; rings: number[][][] }[];
+  private readonly countryCache = new Map<string, string>();
+
   constructor (
     private readonly postService: PostService,
     private readonly blobServiceClient: AbstractBlobProvider
   ) {
+    this.countryIndex = (worldCountries as any).features.map((feature: any) => {
+      const geom = feature.geometry;
+      const rings: number[][][] = geom.type === 'MultiPolygon'
+        ? geom.coordinates.flat()
+        : geom.coordinates;
+      let minLng = Infinity; let maxLng = -Infinity; let minLat = Infinity; let maxLat = -Infinity;
+      for (const ring of rings) {
+        for (const [lng, lat] of ring) {
+          if (lng < minLng) minLng = lng;
+          if (lng > maxLng) maxLng = lng;
+          if (lat < minLat) minLat = lat;
+          if (lat > maxLat) maxLat = lat;
+        }
+      }
+      return { name: feature.properties.name, minLng, maxLng, minLat, maxLat, rings };
+    });
   }
 
   async query (count: number, page: number, coordinate: Coordinate): Promise<(Post & { country: string })[]> {
@@ -72,17 +91,20 @@ export default class BoardService {
   }
 
   private getCountryForCoordinate (lng: number, lat: number): string {
-    for (const feature of (worldCountries as any).features) {
-      const geom = feature.geometry;
-      const rings = geom.type === 'MultiPolygon'
-        ? geom.coordinates.flat()
-        : geom.coordinates;
+    const key = `${lng},${lat}`;
+    const cached = this.countryCache.get(key);
+    if (cached) return cached;
+
+    for (const { name, minLng, maxLng, minLat, maxLat, rings } of this.countryIndex) {
+      if (lng < minLng || lng > maxLng || lat < minLat || lat > maxLat) continue;
       for (const ring of rings) {
         if (this.pointInPolygon([lng, lat], ring)) {
-          return feature.properties.name;
+          this.countryCache.set(key, name);
+          return name;
         }
       }
     }
+    this.countryCache.set(key, 'Unknown');
     return 'Unknown';
   }
 
