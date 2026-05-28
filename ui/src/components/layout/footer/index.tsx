@@ -1,8 +1,5 @@
 const Footer = () => {
-  return <div style={{
-    width: '100%',
-    textAlign: 'center',
-    background: "#F8F9FA",
+  return <div className="bg-body-tertiary text-center" style={{
     padding: '0.5rem 0',
     marginTop: 'auto'
   }}>
