@@ -29,7 +29,7 @@ import bytes from 'bytes'
     BoardModule,
     HealthModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'client')
+      rootPath: join(__dirname, 'client')
     })
   ],
   controllers: [],
