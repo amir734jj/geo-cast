@@ -83,7 +83,7 @@ const Player = ({ mediaBlobUrl, onchange = () => {}, play, showWaveform = false,
     }
   }, [play, playerReady, playing, playerCtrl]);
 
-  return <div id={playerDomId.current} style={showWaveform ? { marginBottom: '0.25rem' } : { display: 'none' }}>player</div>;
+  return <div id={playerDomId.current} style={showWaveform ? { marginBottom: '0.25rem' } : { display: 'none' }} />;
 };
 
 export default Player;

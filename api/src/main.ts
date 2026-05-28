@@ -18,7 +18,19 @@ async function bootstrap () {
 
   Logger.log(`Starting the app in port ${port}`);
 
-  app.use(helmet());
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "blob:"],
+        workerSrc: ["'self'", "blob:"],
+        connectSrc: ["'self'", "blob:", "https://cdn.jsdelivr.net"],
+        imgSrc: ["'self'", "data:", "blob:"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        mediaSrc: ["'self'", "blob:"],
+      },
+    },
+  }));
   app.use(compression());
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,

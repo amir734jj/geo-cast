@@ -211,7 +211,7 @@ const Recorder = () => {
               ) : null}
               {mediaBlobUrl && board.playerInfo.duration ? (
                 <SimpleButton
-                  variant="outline-dark"
+                  variant="outline-success"
                   tooltip="share"
                   disabled={!recordingIsValid()}
                   loading={board.upload}
