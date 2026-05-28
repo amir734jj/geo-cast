@@ -1,23 +1,20 @@
-FROM node:lts-alpine
+FROM node:lts-alpine AS builder
+WORKDIR /usr/src/app
+COPY . .
+RUN npm install && \
+    npm --prefix ui run build && \
+    npm --prefix api run build && \
+    mkdir -p api/dist/client && \
+    cp -rf ui/dist/. api/dist/client && \
+    npm prune --omit=dev
 
+FROM node:lts-alpine
 ENV PORT=80
 ENV ENV=Production
-
 WORKDIR /usr/src/app
-
-COPY . .
-
-RUN npm install
-
-RUN cd ui && npm run build
-
-RUN cd api && \
-  npm run build && \
-  mkdir -p dist/client && \
-  cp -rf ../ui/dist/. dist/client
-
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/api/dist ./api/dist
+COPY --from=builder /usr/src/app/api/package.json ./api/package.json
 EXPOSE 80 443
-
 WORKDIR /usr/src/app/api
-
 ENTRYPOINT [ "npm", "run", "start:prod" ]
