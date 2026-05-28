@@ -6,13 +6,14 @@ import {
   ManyToMany
 } from 'typeorm'
 import { ApiProperty } from '@nestjs/swagger'
+import { Exclude } from 'class-transformer'
 import { type EntityType } from '@geo-cast/lib/dto/account'
 import User from './users.model'
 
 @Entity()
 @Unique(['name'])
 export default class Role implements EntityType {
-  @ApiProperty()
+  @Exclude()
   @PrimaryGeneratedColumn()
     id: number
 

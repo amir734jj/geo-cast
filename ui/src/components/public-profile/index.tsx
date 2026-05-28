@@ -75,7 +75,7 @@ const PublicProfile = () => {
       </h3>
       <p>{profile?.description || "No profile description"}</p>
 
-      <h5 className="mt-3">{posts.length ? `Recordings (${posts.length})` : 'No recordings yet'}</h5>
+      <h5 className="mt-4">{posts.length ? `Recordings (${posts.length})` : 'No recordings yet'}</h5>
       {posts.length >= 3 ?
         <ButtonGroup className="mb-2">
           {autoPlay ?
