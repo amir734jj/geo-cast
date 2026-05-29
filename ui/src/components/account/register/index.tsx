@@ -102,7 +102,8 @@ const Register = () => {
       setRegistered(true);
       navigate("/login");
     } catch (e) {
-      setError((e as AxiosError).message);
+      const err = e as AxiosError<{ message: string }>;
+      setError(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
     }

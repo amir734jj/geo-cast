@@ -32,6 +32,11 @@ export default class AuthService {
   ) {}
 
   public async register(userData: CreateUserDto): Promise<User> {
+    const existing = await this.userService.find({ email: userData.email });
+    if (existing) {
+      throw new BadRequestException('A user with this email already exists');
+    }
+
     const count = await this.userService.count({ active: true });
     const roles = [BASIC_ROLE];
     let active = false;
