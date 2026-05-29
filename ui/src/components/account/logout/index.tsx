@@ -8,9 +8,11 @@ const Logout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    authContext.logout();
-    logoutAction().catch(() => {});
-    navigate("/");
+    (async () => {
+      await logoutAction();
+      authContext.logout();
+      navigate("/");
+    })();
   }, []);
 
   return null;
