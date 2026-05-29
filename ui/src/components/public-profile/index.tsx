@@ -74,7 +74,7 @@ const PublicProfile = () => {
         {profile?.name} { _.find(profile?.roles, { name: "admin"}) ? <span style={{ fontSize: "1.25rem"}}>(admin)</span> : null }
       </h3>
       <p style={{whiteSpace: 'pre-line'}}>{profile?.description || "No profile description"}</p>
-      {profile?.createdAt ? <p className="text-muted">Member since {DateTime.fromISO(String(profile.createdAt)).toLocaleString(DateTime.DATE_MED)}</p> : null}
+      {profile?.createdAt ? <small className="text-muted">Member since {DateTime.fromISO(String(profile.createdAt)).toLocaleString(DateTime.DATE_MED)}</small> : null}
 
       <h5 className="mt-4">{posts.length ? `Recordings (${posts.length})` : 'No recordings yet'}</h5>
       {posts.length >= 3 ?

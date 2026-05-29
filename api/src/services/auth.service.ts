@@ -101,7 +101,12 @@ export default class AuthService {
         .as('minutes');
 
       if (minutesToExpire >= 1) {
-        return await this.userService.get(token.user.id);
+        const user = await this.userService.get(token.user.id);
+        if (user?.active) {
+          return user;
+        } else {
+          Logger.log('User is disabled');
+        }
       } else {
         Logger.log('Token is expired.');
       }
