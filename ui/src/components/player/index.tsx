@@ -65,8 +65,8 @@ const Player = ({ mediaBlobUrl, onChange = _.noop, play, showWaveform = false, w
       onChange({ currentTime: time }, 'timeupdate');
     });
 
-    wavesurfer.on('seek', (position) => {
-      onChange({ currentTime: position * wavesurfer.getDuration() }, 'seek');
+    wavesurfer.on('seeking', (currentTime) => {
+      onChange({ currentTime }, 'seek');
     });
 
     setPlayerCtrl(wavesurfer);
