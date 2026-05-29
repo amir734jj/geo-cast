@@ -8,18 +8,18 @@ export type PlayerInfoPropType = {
   currentTime: number,
 };
 
-export type EventType = 'ready' | 'pause' | 'finish' | 'play' | 'timeupdate';
+export type EventType = 'ready' | 'pause' | 'finish' | 'play' | 'timeupdate' | 'seek';
 
 export type PlayerPropType = {
   play: boolean,
   repeat?: boolean,
   mediaBlobUrl: string,
-  onchange?: (info: Partial<PlayerInfoPropType>, event: EventType) => void,
+  onChange?: (info: Partial<PlayerInfoPropType>, event: EventType) => void,
   showWaveform?: boolean,
   waveformHeight?: number,
 };
 
-const Player = ({ mediaBlobUrl, onchange = () => {}, play, showWaveform = false, waveformHeight = 32 }: PlayerPropType) => {
+const Player = ({ mediaBlobUrl, onChange = _.noop, play, showWaveform = false, waveformHeight = 32 }: PlayerPropType) => {
 
   const playerDomId = useRef(_.uniqueId("player-container"));
   const [playerCtrl, setPlayerCtrl] = useState<WaveSurfer | null>(null);
@@ -29,7 +29,6 @@ const Player = ({ mediaBlobUrl, onchange = () => {}, play, showWaveform = false,
   useEffect(() => {
     const wavesurfer = WaveSurfer.create({
       container: `#${playerDomId.current}`,
-      url: mediaBlobUrl,
       height: waveformHeight,
       barWidth: 2,
       barGap: 1,
@@ -40,28 +39,34 @@ const Player = ({ mediaBlobUrl, onchange = () => {}, play, showWaveform = false,
       cursorColor: '#0d6efd',
     });
 
+    wavesurfer.load(mediaBlobUrl);
+
     wavesurfer.on('ready', () => {
       setPlayerReady(true);
-      onchange({ duration: wavesurfer.getDuration(), playing: false }, 'ready');
+      onChange({ duration: wavesurfer.getDuration(), playing: false }, 'ready');
     });
 
     wavesurfer.on('play', () => {
       setPlaying(true);
-      onchange({ playing: true }, 'play');
+      onChange({ playing: true }, 'play');
     });
 
     wavesurfer.on('pause', () => {
       setPlaying(false);
-      onchange({ playing: false }, 'pause');
+      onChange({ playing: false }, 'pause');
     });
 
     wavesurfer.on('finish', () => {
       setPlaying(false);
-      onchange({ playing: false, currentTime: 0 }, 'finish');
+      onChange({ playing: false, currentTime: 0 }, 'finish');
     });
 
     wavesurfer.on('timeupdate', (time: number) => {
-      onchange({ currentTime: time }, 'timeupdate');
+      onChange({ currentTime: time }, 'timeupdate');
+    });
+
+    wavesurfer.on('seek', (position) => {
+      onChange({ currentTime: position * wavesurfer.getDuration() }, 'seek');
     });
 
     setPlayerCtrl(wavesurfer);

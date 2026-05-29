@@ -212,7 +212,7 @@ const Posts = () => {
                   mediaBlobUrl={`/api/board/download/${post.recordingId}`}
                   play={board.playerInfos[post.id]?.play}
                   showWaveform={!isMobile}
-                  onchange={(playerInfo: Partial<PlayerInfoPropType>, event: EventType) => {
+                  onChange={(playerInfo: Partial<PlayerInfoPropType>, event: EventType) => {
                     setBoard(
                       combine(
                         (x: BoardType) => ({

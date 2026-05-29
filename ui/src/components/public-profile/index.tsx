@@ -105,7 +105,7 @@ const PublicProfile = () => {
               mediaBlobUrl={`/api/board/download/${post.recordingId}`}
               play={post.play}
               showWaveform={true}
-              onchange={(playerInfo: Partial<PlayerInfoPropType>, event: EventType) => {
+              onChange={(playerInfo: Partial<PlayerInfoPropType>, event: EventType) => {
                 setPosts(prev => prev.map(p => p.id === post.id ? {
                   ...p,
                   ...playerInfo,

@@ -177,7 +177,7 @@ const Recorder = () => {
                 <Player
                   play={board.play}
                   mediaBlobUrl={mediaBlobUrl}
-                  onchange={(info, event) => {
+                  onChange={(info, event) => {
                     setBoard((board) => ({
                       ...board,
                       play: event === "finish" ? false : board.play,
