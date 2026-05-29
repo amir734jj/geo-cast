@@ -4,12 +4,11 @@ import { Form, FormGroup } from 'react-bootstrap';
 import { RegisterType } from "@geo-cast/lib/dto/account";
 import { register as registerAction } from "../../../actions";
 import { useNavigate } from "react-router-dom";
-import { PasswordType } from '../../../types';
 import { AlertDismissible, SimpleButton, Spinner } from '../../common';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AxiosError } from 'axios';
-import { NAME_MIN_LENGTH, NAME_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, PASSWORD_REGEX } from '@geo-cast/lib/constants';
+import { NAME_MIN_LENGTH, NAME_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH } from '@geo-cast/lib/constants';
 
 type RegisterFormPropType = {
   registerHandler: (arg: RegisterType) => void;
@@ -30,18 +29,10 @@ const schema = yup.object({
     .string()
     .min(PASSWORD_MIN_LENGTH, `must be at least ${PASSWORD_MIN_LENGTH} characters long`)
     .max(PASSWORD_MAX_LENGTH, `must be at most ${PASSWORD_MAX_LENGTH} characters long`)
-    .matches(
-      PASSWORD_REGEX,
-      'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character'
-    )
-    .required(),
-  password_confirmation: yup
-    .string()
-    .oneOf([yup.ref('password')], 'passwords do not match')
     .required(),
 }).required();
 
-type SchemaType = yup.InferType<typeof schema> & RegisterType & PasswordType;
+type SchemaType = yup.InferType<typeof schema> & RegisterType;
 
 const RegisterForm = ({ registerHandler, loading }: RegisterFormPropType) => {
   const { register: formRegister, handleSubmit, formState: { errors, isValid } } = useForm<SchemaType>({
@@ -92,19 +83,6 @@ const RegisterForm = ({ registerHandler, loading }: RegisterFormPropType) => {
           Password has to be between 8 to 30 characters long
         </Form.Text>
         {errors.password ? <Form.Control.Feedback type="invalid">{errors.password.message}</Form.Control.Feedback> : null}
-      </FormGroup>
-      <FormGroup className='mb-3' controlId="confirm_password">
-        <Form.Label>Password Confirmation</Form.Label>
-        <Form.Control
-          className="form-control"
-          isInvalid={!!errors.password_confirmation}
-          type="password"
-          {...formRegister("password_confirmation")}
-        />
-        <Form.Text className="text-muted">
-          Password confirmation must match the password
-        </Form.Text>
-        {errors.password_confirmation ? <Form.Control.Feedback type="invalid">{errors.password_confirmation.message}</Form.Control.Feedback> : null}
       </FormGroup>
       <SimpleButton type="submit" loading={loading}>Submit</SimpleButton>
     </Form>

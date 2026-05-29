@@ -29,7 +29,7 @@ const Player = ({ mediaBlobUrl, onChange = _.noop, play, showWaveform = false, w
   useEffect(() => {
     const wavesurfer = WaveSurfer.create({
       container: `#${playerDomId.current}`,
-      height: waveformHeight,
+      height: showWaveform ? waveformHeight : 0,
       barWidth: 2,
       barGap: 1,
       barRadius: 2,
@@ -88,7 +88,7 @@ const Player = ({ mediaBlobUrl, onChange = _.noop, play, showWaveform = false, w
     }
   }, [play, playerReady, playing, playerCtrl]);
 
-  return <div id={playerDomId.current} style={showWaveform ? { marginBottom: '0.25rem' } : { display: 'none' }} />;
+  return <div id={playerDomId.current} style={showWaveform ? { marginBottom: '0.25rem' } : { display: 'none', height: 0, overflow: 'hidden' }} />;
 };
 
 export default Player;

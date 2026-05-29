@@ -8,4 +8,3 @@ export const NAME_MAX_LENGTH = 30;
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 30;
 export const DESCRIPTION_MAX_LENGTH = 300;
-export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
