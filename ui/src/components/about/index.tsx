@@ -41,7 +41,7 @@ const About = () => {
 
           <h3>Author</h3>
           <p>
-            Amir Hesamian (<a href="mailto:hesamian@uwm.edu">hesamian@uwm.edu</a>)
+            Amir (<a href="mailto:hesamian@uwm.edu">hesamian [at] uwm.edu</a>)
           </p>
         </Col>
         <Col xs={12} md={4}>
