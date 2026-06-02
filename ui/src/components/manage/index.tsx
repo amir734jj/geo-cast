@@ -23,7 +23,7 @@ const Manage = () => {
     await refreshUsers();
   };
 
-  const deleteUser = async (user: EntityType) => {
+  const deleteUser = async (user: EntityType & UserType) => {
     if (!window.confirm(`Are you sure you want to delete ${user.name}? This will also delete all their recordings.`)) return;
     await deleteUserAction(user);
     await refreshUsers();
