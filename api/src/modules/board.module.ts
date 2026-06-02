@@ -38,6 +38,6 @@ import { S3Client } from '@aws-sdk/client-s3';
       return new FileSystemBlobProvider();
     }
   }],
-  exports: [PostService, BoardService]
+  exports: [PostService, BoardService, AbstractBlobProvider]
 })
 export default class BoardModule { }
