@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import DatabaseModule from './database.module';
 import UserModule from './user.module';
+import BoardModule from './board.module';
 import AuthService from '../services/auth.service';
 import LocalStrategy from '../logic/local-strategy.passport';
 import { JwtModule } from '@nestjs/jwt';
@@ -13,6 +14,7 @@ import ManageAccountController from '../controllers/account.manage.controller';
   imports: [
     DatabaseModule,
     UserModule,
+    BoardModule,
     PassportModule,
     ConfigModule,
     JwtModule.registerAsync({

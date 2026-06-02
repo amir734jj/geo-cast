@@ -18,6 +18,8 @@ import type Role from '../models/roles.model';
 import { ADMIN_ROLE, BASIC_ROLE } from '../constants/role.constant';
 import { UserRole } from '../enums/role.enum';
 import type ProfileDto from 'src/dto/profile.user.dto';
+import PostService from './posts.service';
+import { AbstractBlobProvider } from 'src/abstracts/abstract.file.provider';
 
 @Injectable()
 export default class AuthService {
@@ -28,7 +30,9 @@ export default class AuthService {
     private readonly tokenService: TokenService,
     private readonly roleService: RoleService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly postService: PostService,
+    private readonly blobProvider: AbstractBlobProvider
   ) {}
 
   public async register(userData: CreateUserDto): Promise<User> {
@@ -39,12 +43,11 @@ export default class AuthService {
 
     const count = await this.userService.count({ active: true });
     const roles = [BASIC_ROLE];
-    let active = false;
+    const active = true;
 
     // if there is no existing user, then mark this user as admin
     if (!count) {
       roles.push(ADMIN_ROLE);
-      active = true;
     }
 
     return await this.userService.save({
@@ -149,6 +152,28 @@ export default class AuthService {
     Logger.log('Token successfully refreshed');
 
     return result;
+  }
+
+  public async deleteUser(userId: number): Promise<void> {
+    const user = await this.userService.get(userId);
+    if (user == null) {
+      return;
+    }
+
+    // delete all user's recordings (posts + blob files)
+    const posts = await this.postService.queryByUser(userId);
+    for (const post of posts) {
+      await this.blobProvider.delete(post.recordingId).catch(() => {});
+      await this.postService.delete(post.id);
+    }
+
+    // delete all user's tokens
+    const tokenIds = user.tokens.map(tk => tk.id);
+    if (tokenIds.length > 0) {
+      await this.tokenService.deleteMany(tokenIds);
+    }
+
+    await this.userService.delete(userId);
   }
 
   public async setUserActive(

@@ -1,4 +1,4 @@
-import { Controller, Param, ParseBoolPipe, Post, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Param, ParseBoolPipe, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
@@ -53,5 +53,20 @@ export default class ManageAccountController {
       @Param('active', ParseBoolPipe) active: boolean
   ): Promise<User | null> {
     return await this.authService.setUserActive(userId, active);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Delete(':id')
+  @ApiParam({ name: 'id', description: 'userId' })
+  @ApiOkResponse({
+    description: 'Successfully deleted the user and their recordings'
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden.'
+  })
+  async deleteUser (
+    @Param('id') userId: number
+  ): Promise<void> {
+    return await this.authService.deleteUser(userId);
   }
 }

@@ -1,6 +1,6 @@
 import { EntityType, UserType } from "@geo-cast/lib/dto/account";
 import { useEffect, useState } from "react";
-import { getUsers, setUserActive as setUserActiveAction } from "../../actions";
+import { getUsers, setUserActive as setUserActiveAction, deleteUser as deleteUserAction } from "../../actions";
 import { Button, Table } from "react-bootstrap";
 import {useAuthStore} from "../../stores";
 import { Spinner } from "../common";
@@ -20,6 +20,12 @@ const Manage = () => {
 
   const setUserActive = async (user: EntityType, active: boolean) => {
     await setUserActiveAction(user, active);
+    await refreshUsers();
+  };
+
+  const deleteUser = async (user: EntityType) => {
+    if (!window.confirm(`Are you sure you want to delete ${user.name}? This will also delete all their recordings.`)) return;
+    await deleteUserAction(user);
     await refreshUsers();
   };
 
@@ -54,6 +60,8 @@ const Manage = () => {
             {user.active ?
               <Button variant="danger" onClick={() => setUserActive(user, false)} disabled={authContext.auth?.id === user.id} title={authContext.auth?.id === user.id ? 'You cannot disable yourself' : undefined}>Disable</Button> :
               <Button variant="success" onClick={() => setUserActive(user, true)} disabled={authContext.auth?.id === user.id} title={authContext.auth?.id === user.id ? 'You cannot enable yourself' : undefined}>Enable</Button>}
+            {' '}
+            <Button variant="outline-danger" onClick={() => deleteUser(user)} disabled={authContext.auth?.id === user.id} title={authContext.auth?.id === user.id ? 'You cannot delete yourself' : undefined}>Delete</Button>
           </td>
         </tr>)}
       </tbody>
