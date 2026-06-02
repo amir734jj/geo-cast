@@ -160,6 +160,10 @@ export default class AuthService {
       return;
     }
 
+    if (user.active) {
+      throw new BadRequestException('Cannot delete an enabled user. Disable them first.');
+    }
+
     // delete all user's recordings (posts + blob files)
     const posts = await this.postService.queryByUser(userId);
     for (const post of posts) {

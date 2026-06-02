@@ -59,9 +59,9 @@ const Manage = () => {
           <td>
             {user.active ?
               <Button variant="danger" onClick={() => setUserActive(user, false)} disabled={authContext.auth?.id === user.id} title={authContext.auth?.id === user.id ? 'You cannot disable yourself' : undefined}>Disable</Button> :
-              <Button variant="success" onClick={() => setUserActive(user, true)} disabled={authContext.auth?.id === user.id} title={authContext.auth?.id === user.id ? 'You cannot enable yourself' : undefined}>Enable</Button>}
-            {' '}
-            <Button variant="outline-danger" onClick={() => deleteUser(user)} disabled={authContext.auth?.id === user.id} title={authContext.auth?.id === user.id ? 'You cannot delete yourself' : undefined}>Delete</Button>
+              <><Button variant="success" onClick={() => setUserActive(user, true)} disabled={authContext.auth?.id === user.id} title={authContext.auth?.id === user.id ? 'You cannot enable yourself' : undefined}>Enable</Button>
+              {' '}
+              <Button variant="outline-danger" onClick={() => deleteUser(user)} disabled={authContext.auth?.id === user.id} title={authContext.auth?.id === user.id ? 'You cannot delete yourself' : undefined}>Delete</Button></>}
           </td>
         </tr>)}
       </tbody>
